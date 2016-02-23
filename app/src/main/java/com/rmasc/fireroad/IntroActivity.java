@@ -20,7 +20,7 @@ public class IntroActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
 //cambios ya2erw otro
-//otro caso
+//otro caso2
         AjustarInterface();
     }
 
