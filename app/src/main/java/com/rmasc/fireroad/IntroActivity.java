@@ -21,6 +21,7 @@ public class IntroActivity extends AppCompatActivity {
         setContentView(R.layout.activity_intro);
 //cambios ya2erw otro
 
+//otro caso2 ttt
         AjustarInterface();
     }
 
