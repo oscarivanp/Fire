@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/intro_background"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/tachoMeter"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:max="230"
+            android:progress="0"
+            android:progressDrawable="@drawable/circle" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtValueProgress"
+            android:layout_gravity="center"
+            android:lines="2"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"/>
+
+</FrameLayout>

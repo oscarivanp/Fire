@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+        <ImageButton
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
+        android:id="@+id/imageButtonUser"
+        android:layout_gravity="center_horizontal"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:contentDescription="Foto" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:layout_gravity="center_horizontal">
+
+        <TableRow>
+            <TextView
+                android:text="@string/nombre"
+                android:layout_column="1"/>
+            <EditText
+                android:id="@+id/editTextNombre" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:text="@string/edad"
+                android:layout_column="1"/>
+            <EditText android:id="@+id/editTextEdad"
+                android:inputType="number" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:text="@string/mail"
+                android:layout_column="1"/>
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:ems="10"
+                android:id="@+id/editTextCorreo"
+                />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:text="@string/telefono"
+                android:layout_column="1"/>
+            <EditText
+                android:id="@+id/editTextTelefono"
+                android:inputType="phone" />
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>
