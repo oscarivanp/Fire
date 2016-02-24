@@ -32,6 +32,7 @@
                 android:layout_height="50sp"
                 android:layout_marginLeft="@dimen/iconosmargen"
                 android:background="@drawable/moto"
+                android:id="@+id/btnMotos"
                 android:scaleType="fitXY"
                 />
 
@@ -40,6 +41,7 @@
                 android:layout_height="50sp"
                 android:layout_marginLeft="@dimen/iconosmargen"
                 android:background="@drawable/rutas"
+                android:id="@+id/btnRutas"
                 android:scaleType="fitXY"
                 />
 
@@ -48,6 +50,7 @@
                 android:layout_height="50sp"
                 android:layout_marginLeft="@dimen/iconosmargen"
                 android:background="@drawable/configuration"
+                android:id="@+id/btnSettings"
                 android:scaleType="fitXY"
                 />
 

@@ -74,12 +74,6 @@ public class MainActivity extends AppCompatActivity {
                 {
                     case R.id.imageButtonEstado:
                         //Permite encender la moto (si está disponible).
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ConnectToDevice();
-                            }
-                        });
                         break;
                     case R.id.imageButtonCandado:
                         //Modo parqueo on/off activa o desactiva notificaciones de alarma.
@@ -89,6 +83,12 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.btnRecorrido:
                         //Empieza a guardar datos del recorrido
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ConnectToDevice();
+                            }
+                        });
                     default:
                         break;
                 }
@@ -150,6 +150,12 @@ public class MainActivity extends AppCompatActivity {
         txtValueProgress = (TextView) findViewById(R.id.txtValueProgress);
 
         tachoMeter = (ProgressBar) findViewById(R.id.tachoMeter);
+
+        /*
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        MenuFragment fragmentDemo = new MenuFragment();
+        ft.replace(R.id.fragmentMenu, fragmentDemo);
+        ft.commit();*/
     }
 
     private void ShowMessage(final String message)
