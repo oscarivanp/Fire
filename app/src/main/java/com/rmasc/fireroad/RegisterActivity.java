@@ -1,55 +1,60 @@
 package com.rmasc.fireroad;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 
-import java.io.BufferedOutputStream;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements Serializable {
 
 
     private boolean imagUser = false, imagMoto = false;
+
+    private static boolean imagenCargada=false;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -71,13 +76,24 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static AdapterView.OnItemClickListener itemClickListener;
 
+    ImageView imageView;
+
+
     private static int RESULT_LOAD_IMAGE = 1;
+    private String[] objetos = new String[6];
+    private String idUser="10153923985124320";
+    private String tokenNumero;
+    private String urlFcebook;
+    private String urlFacebookProfile;
+    JSONObject jsonObjectTexts, jsonObjectPicture;
+
 
     BluetoothLE bluetoothLE;
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
         {
@@ -111,6 +127,21 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        StrictMode.ThreadPolicy stream = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(stream);
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        if(token.isExpired())
+        {
+           AccessToken.refreshCurrentAccessTokenAsync();
+           token = AccessToken.getCurrentAccessToken();
+
+        }
+
+        tokenNumero= token.getToken();
+
+        urlFcebook="https://graph.facebook.com/"+idUser+"?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token="+tokenNumero;
+        urlFacebookProfile="http://graph.facebook.com/"+idUser+"/picture?redirect=0&type=large";
+
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -128,7 +159,7 @@ public class RegisterActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                                ScanBluetooth();
+                            ScanBluetooth();
                         }
                     });
                 }
@@ -199,6 +230,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         AssignControls();
 
+        new ValidarUser().execute(urlFcebook, urlFacebookProfile);
+
     }
 
     public static class PlaceholderFragment extends Fragment {
@@ -221,12 +254,17 @@ public class RegisterActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = null;
 
+
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
             {
                 case 1:
-                    rootView = inflater.inflate(R.layout.register_user, container, false);
+
+
+                   rootView = inflater.inflate(R.layout.register_user, container, false);
                     AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
                     break;
+
+
                 case 2:
                     rootView = inflater.inflate(R.layout.register_moto, container, false);
                     AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
@@ -295,8 +333,17 @@ public class RegisterActivity extends AppCompatActivity {
                 editTextCorreo = (EditText) view.findViewById(R.id.editTextCorreo);
                 editTextTelefono = (EditText) view.findViewById(R.id.editTextTelefono);
                 imageButtonUser = (ImageButton) view.findViewById(R.id.imageButtonUser);
+
+                if(!imagenCargada) {
+
+                  imageButtonUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(context.getResources(), R.drawable.no_user)));
+                }
+                else
+                {
+
+
+                }
                 imageButtonUser.setOnClickListener(buttonClickListener);
-                imageButtonUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(context.getResources(), R.drawable.no_user)));
                 break;
             case 2:
                 listVDevices = (ListView) view.findViewById(R.id.listVDevices);
@@ -442,5 +489,65 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
         fileOrDirectory.delete();
+    }
+
+    private class ValidarUser extends AsyncTask<String,String,String[]> {
+
+
+
+
+        @Override
+        protected String[] doInBackground(String... url) {
+
+          //  try {
+             //   jsonObjectTexts = JSONObjectreadJsonFromUrl(url[0]);
+            //    objetos[0] = jsonObjectTexts.getString("name");
+               // objetos[1] = jsonObjectTexts.getString("email");
+               // objetos[2] =  jsonObjectTexts.getString("birthday");
+              //  jsonObjectPicture = .readJsonFromUrl(url[1]);
+               // objetos[3] = jsonObjectPicture.getJSONObject("data").getString("url");
+           // } catch (IOException | JSONException e) {
+        //        e.printStackTrace();
+        //    }
+
+            return objetos;
+        }
+
+        @Override
+        protected void onPostExecute(String[] stringFromDoInBackground) {
+
+            editTextNombre = (EditText) findViewById(R.id.editTextNombre);
+            editTextCorreo = (EditText) findViewById(R.id.editTextCorreo);
+            imageButtonUser = (ImageButton) findViewById(R.id.imageButtonUser);
+            editTextEdad=(EditText) findViewById(R.id.editTextEdad);
+            Date date = new Date();
+            String testDate = stringFromDoInBackground[2];
+            DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+            Date dateFace=null ;
+
+            try {
+                dateFace = format.parse(testDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            int años = date.getYear() -  dateFace.getYear();
+
+            editTextNombre.setText(stringFromDoInBackground[0]);
+            editTextCorreo.setText(stringFromDoInBackground[1]);
+            editTextEdad.setText(Integer.toString(años));
+            if (stringFromDoInBackground[3]!=null) {
+             imagenCargada = true;
+                try {
+                    InputStream prueba = new URL(stringFromDoInBackground[3]).openStream();
+                    Bitmap foto = BitmapFactory.decodeStream(prueba);
+                    imageButtonUser.setImageDrawable(new RoundImages(foto));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                imagenCargada=false;            }
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
@@ -22,16 +23,27 @@ public class RoundImages extends Drawable {
     private final int mBitmapHeight;
 
     public RoundImages(Bitmap bitmap, int mWidth, int mHeight) {
+
         mBitmap = bitmap;
         mRectF = new RectF();
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setDither(true);
-        final BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        mPaint.setDither(false);
+        final BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.MIRROR, Shader.TileMode.MIRROR);
         mPaint.setShader(shader);
+
+        int width = mWidth;
+        int height = mHeight;
+     // float scaleWidth = ((float) newWidth) / width;
+     // float scaleHeight = ((float) newHeight) / height;
+        Matrix matrix = new Matrix();
+     // matrix.postScale(scaleWidth, scaleHeight);
+
+        //Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
 
         mBitmapWidth = mWidth;
         mBitmapHeight = mHeight;
+
     }
 
     public RoundImages(Bitmap bitmap) {
@@ -42,6 +54,7 @@ public class RoundImages extends Drawable {
         mPaint.setDither(true);
         final BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
         mPaint.setShader(shader);
+
 
         mBitmapWidth = mBitmap.getWidth();
         mBitmapHeight = mBitmap.getHeight();

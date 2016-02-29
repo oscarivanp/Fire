@@ -25,6 +25,7 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- LargeHeap permite más memoria. Hay que cambiar el tamaño de las imagenes para no usarlo.         android:largeHeap="true" -->
@@ -34,6 +35,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+
+
         <activity
             android:name=".IntroActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -78,6 +85,13 @@
             android:label="@string/title_activity_maps"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".PerfilActivity"></activity>
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+
     </application>
 
 </manifest>
