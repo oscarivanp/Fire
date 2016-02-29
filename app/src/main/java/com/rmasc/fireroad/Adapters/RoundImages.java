@@ -3,10 +3,12 @@ package com.rmasc.fireroad.Adapters;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
@@ -22,27 +24,30 @@ public class RoundImages extends Drawable {
     private final int mBitmapWidth;
     private final int mBitmapHeight;
 
-    public RoundImages(Bitmap bitmap, int mWidth, int mHeight) {
+    public Bitmap RoundImages(Bitmap bitmap, int mWidth, int mHeight) {
 
-        mBitmap = bitmap;
-        mRectF = new RectF();
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setDither(false);
-        final BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.MIRROR, Shader.TileMode.MIRROR);
-        mPaint.setShader(shader);
 
-        int width = mWidth;
-        int height = mHeight;
-     // float scaleWidth = ((float) newWidth) / width;
-     // float scaleHeight = ((float) newHeight) / height;
-        Matrix matrix = new Matrix();
-     // matrix.postScale(scaleWidth, scaleHeight);
 
-        //Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
 
-        mBitmapWidth = mWidth;
-        mBitmapHeight = mHeight;
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawOval(rectF, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        bitmap.recycle();
+
+        return output;
+
 
     }
 

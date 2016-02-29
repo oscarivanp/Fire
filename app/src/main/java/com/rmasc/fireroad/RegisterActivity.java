@@ -34,7 +34,9 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
+import com.rmasc.fireroad.Entities.JsonParser;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -499,16 +501,17 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         @Override
         protected String[] doInBackground(String... url) {
 
-          //  try {
-             //   jsonObjectTexts = JSONObjectreadJsonFromUrl(url[0]);
-            //    objetos[0] = jsonObjectTexts.getString("name");
-               // objetos[1] = jsonObjectTexts.getString("email");
-               // objetos[2] =  jsonObjectTexts.getString("birthday");
-              //  jsonObjectPicture = .readJsonFromUrl(url[1]);
-               // objetos[3] = jsonObjectPicture.getJSONObject("data").getString("url");
-           // } catch (IOException | JSONException e) {
-        //        e.printStackTrace();
-        //    }
+            try {
+               jsonObjectTexts = JsonParser.readJsonFromUrl(url[0]);
+                objetos[0] = jsonObjectTexts.getString("name");
+                objetos[1] = jsonObjectTexts.getString("email");
+                objetos[2] =  jsonObjectTexts.getString("birthday");
+                jsonObjectPicture = JsonParser.readJsonFromUrl(url[1]);
+                objetos[3] = jsonObjectPicture.getJSONObject("data").getString("url");
+           } catch (IOException | JSONException e) {
+
+               e.printStackTrace();
+          }
 
             return objetos;
         }
@@ -541,7 +544,9 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                 try {
                     InputStream prueba = new URL(stringFromDoInBackground[3]).openStream();
                     Bitmap foto = BitmapFactory.decodeStream(prueba);
-                    imageButtonUser.setImageDrawable(new RoundImages(foto));
+                    RoundImages imaghenFace= new RoundImages(foto);
+                    Bitmap imagenProcesada= imaghenFace.RoundImages(foto, 200, 200);
+                    imageButtonUser.setImageBitmap(imagenProcesada);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
