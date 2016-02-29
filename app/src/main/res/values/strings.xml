@@ -17,5 +17,7 @@
     <string name="add_widget">Add widget</string>
     <string name="title_activity_maps">Mapa</string>
     <string name="nuevo_recorrido">¡Inicia!</string>
+    <string name="server_client_id">847692033013</string>
+    <string name="google_app_id">fireroad-1232</string>
     <string name="facebook_app_id">1672065103033826</string>
 </resources>

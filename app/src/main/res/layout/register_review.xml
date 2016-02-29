@@ -1,15 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
+    android:gravity="center"
     android:layout_height="match_parent">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="40sp"
+        android:textColor="@color/colorPrimary"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/inicio"
         android:id="@+id/textViewResumen"
         android:layout_gravity="center" />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:hint="Usuario"
+        android:ems="10"
+        android:id="@+id/txtUser"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:hint="Contraseña"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:ems="10"
+        android:id="@+id/txtPassword"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

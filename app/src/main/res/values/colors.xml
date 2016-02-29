@@ -6,4 +6,6 @@
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorBackLight">#DDDDDD</color>
     <color name="colorLink">#0062ff</color>
+    <color name="colorWaiting">#ffd91a</color>
+    <color name="colorOk">#3dff33</color>
 </resources>

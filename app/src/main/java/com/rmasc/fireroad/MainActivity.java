@@ -14,7 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
+import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,15 +32,15 @@ import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 import com.rmasc.fireroad.Entities.DeviceBluetooth;
 import com.rmasc.fireroad.Entities.DeviceData;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
     ImageView imageViewBateria, imageViewGas, imageViewUser;
     ImageButton imageButtonEstado, imageButtonCandado;
     Button btnRecorrido;
-    TextView txtUser, txtReporteDispositivo, txtValueProgress;
+    TextView txtUser, txtReporteDispositivo, txtValueProgress, txtConexion;
     ProgressBar tachoMeter;
 
     BluetoothLE bluetoothLE;
@@ -54,13 +54,17 @@ public class MainActivity extends AppCompatActivity {
 
     private static View.OnClickListener buttonClickListener;
 
+    private static boolean isRecorrido = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (IsNewUser())
-        {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        if (IsNewUser()) {
             Intent goToIntro = new Intent(getBaseContext(), IntroActivity.class);
             startActivity(goToIntro);
             finish();
@@ -70,39 +74,49 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                switch (v.getId())
-                {
+                switch (v.getId()) {
                     case R.id.imageButtonEstado:
                         //Permite encender la moto (si está disponible).
                         break;
                     case R.id.imageButtonCandado:
                         //Modo parqueo on/off activa o desactiva notificaciones de alarma.
+                        EnviarAlDispositivo(R.id.imageButtonCandado);
                         break;
                     case R.id.imageViewUser:
                         VerDispositivoMapa();
                         break;
                     case R.id.btnRecorrido:
-                        //Empieza a guardar datos del recorrido
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ConnectToDevice();
-                            }
-                        });
+                        //Empieza a enviar datos del recorrido
+                        isRecorrido = !isRecorrido;
+                        if (isRecorrido) { //Inicia el envio de tramas para el recorrido
+                            btnRecorrido.setText("Stop");
+                            btnRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
+                        } else {
+                            //Detiene el envio de tramas del recorrido
+                            btnRecorrido.setText("Go!");
+                            btnRecorrido.setTextColor(getResources().getColor(R.color.colorOk));
+                        }
+                        break;
+                    case R.id.txtConexion:
+                        if (bluetoothLE != null && DispositivoAsociado == null)
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ConnectToDevice();
+                                }
+                            });
+                        break;
                     default:
                         break;
                 }
             }
         };
 
-        if (LoadDevice())
-        {
-            if(ManagerBluetooth()) {
+        if (LoadDevice()) {
+            if (ManagerBluetooth()) {
                 bluetoothLE.scanLeDevice(true);
             }
-        }
-        else
-        {
+        } else {
             ShowMessage("No hay dispositivo previamente guardado.");
         }
 
@@ -119,20 +133,20 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void AssignViews()
-    {
+    private void AssignViews() {
         imageViewBateria = (ImageView) findViewById(R.id.imageViewBateria);
         imageViewGas = (ImageView) findViewById(R.id.imageViewGas);
         imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
         imageViewUser.setOnClickListener(buttonClickListener);
 
+        //http://www.planetacurioso.com/wp-content/uploads/2006/10/homero-simpson1.jpg
         try {
-            String path = Environment.getExternalStorageDirectory().toString() + "/FireUser.PNG";
-            File streamImage = new File(path);
-            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
-        }
-        catch (Exception e)
-        {
+            //String path = Environment.getExternalStorageDirectory().toString() + "/FireUser.PNG";
+            //File streamImage = new File(path);
+            //imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
+            InputStream inputStream = (InputStream) new URL("http://www.planetacurioso.com/wp-content/uploads/2006/10/homero-simpson1.jpg").getContent();
+            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(inputStream)));
+        } catch (Exception e) {
             e.printStackTrace();
             imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
         }
@@ -148,18 +162,14 @@ public class MainActivity extends AppCompatActivity {
         txtUser = (TextView) findViewById(R.id.txtUser);
         txtReporteDispositivo = (TextView) findViewById(R.id.txtReporteDispositivo);
         txtValueProgress = (TextView) findViewById(R.id.txtValueProgress);
+        txtConexion = (TextView) findViewById(R.id.txtConexion);
+        txtConexion.setOnClickListener(buttonClickListener);
 
         tachoMeter = (ProgressBar) findViewById(R.id.tachoMeter);
 
-        /*
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        MenuFragment fragmentDemo = new MenuFragment();
-        ft.replace(R.id.fragmentMenu, fragmentDemo);
-        ft.commit();*/
     }
 
-    private void ShowMessage(final String message)
-    {
+    private void ShowMessage(final String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -168,8 +178,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void ShowSnackMessage(final String message)
-    {
+    private void ShowSnackMessage(final String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -178,8 +187,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void SetProgressBar(final int value)
-    {
+    private void SetProgressBar(final int value) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -192,19 +200,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public boolean ManagerBluetooth()
-    {
-        try
-        {
-            if (BluetoothAdapter.getDefaultAdapter() == null)
-            {
+    public boolean ManagerBluetooth() {
+        try {
+            if (BluetoothAdapter.getDefaultAdapter() == null) {
                 ShowMessage("Su dispositivo no es compatible con Bluetooth");
                 return false;
-            }
-            else
-            {
-                if (bluetoothLE == null)
-                {
+            } else {
+                if (bluetoothLE == null) {
                     bluetoothLE = new BluetoothLE(getBaseContext());
                     bluetoothLE.bleGattCallback = new BluetoothGattCallback() {
                         @Override
@@ -216,8 +218,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                             super.onCharacteristicChanged(gatt, characteristic);
-                            if (characteristic.getUuid().equals(bluetoothLE.CHARACTERISTIC_SERIAL))
-                            {
+                            if (characteristic.getUuid().equals(bluetoothLE.CHARACTERISTIC_SERIAL)) {
                                 charSerial = characteristic;
                                 ProcesarTrama(charSerial.getStringValue(0));
                             }
@@ -236,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                             bluetoothLE.bluetoothGattServiceList.addAll(gatt.getServices());
-                            for(BluetoothGattService servicios : bluetoothLE.bluetoothGattServiceList) {
+                            for (BluetoothGattService servicios : bluetoothLE.bluetoothGattServiceList) {
                                 bluetoothLE.bleGattCharasteristicList.addAll(servicios.getCharacteristics());
                                 for (final BluetoothGattCharacteristic characteristic : bluetoothLE.bleGattCharasteristicList) {
                                     if (characteristic.getUuid().equals(bluetoothLE.CHARACTERISTIC_SERIAL))
@@ -249,16 +250,18 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-                            switch (status)
-                            {
+                            switch (status) {
                                 case 0:
                                     ShowSnackMessage("Idle Mode");
                                     break;
                                 case 1:
                                     ShowSnackMessage("Connecting");
+                                    txtConexion.setText("Conectando");
+                                    txtConexion.setTextColor(getResources().getColor(R.color.colorWaiting));
                                     break;
                                 case 4:
                                     ShowSnackMessage("Connection closed");
+                                    OnConnectionChanged(false);
                                     break;
                                 default:
                                     ShowSnackMessage("Unknown status: " + String.valueOf(status) + " Ns: " + String.valueOf(newState));
@@ -278,24 +281,18 @@ public class MainActivity extends AppCompatActivity {
                 this.registerReceiver(bluetoothLE.bleBroadcastReceiver, filter2);
             }
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return false;
         }
     }
 
-    private boolean LoadDevice()
-    {
+    private boolean LoadDevice() {
         SharedPreferences sharedPref = getBaseContext().getSharedPreferences("DeviceBLE", Context.MODE_PRIVATE);
         String Nombre = sharedPref.getString("Name", "");
         String Mac = sharedPref.getString("Mac", "");
-        if (Nombre.equals(""))
-        {
+        if (Nombre.equals("")) {
             return false;
-        }
-        else
-        {
+        } else {
             DispositivoAsociado = new DeviceBluetooth();
             DispositivoAsociado.Name = Nombre;
             DispositivoAsociado.Mac = Mac;
@@ -303,22 +300,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void ConnectToDevice()
-    {
-        for (int i = 0; i < bluetoothLE.bleDevices.size() ; i++)
-        {
-            if (bluetoothLE.bleDevices.get(i).getAddress().equals(DispositivoAsociado.Mac))
-            {
-                try
-                {
+    private void ConnectToDevice() {
+        for (int i = 0; i < bluetoothLE.bleDevices.size(); i++) {
+            if (bluetoothLE.bleDevices.get(i).getAddress().equals(DispositivoAsociado.Mac)) {
+                try {
                     bluetoothLE.ConnectToGattServer(bluetoothLE.bleDevices.get(i), true);
 
-                    if(!bluetoothLE.bleGatt.discoverServices())
+                    if (!bluetoothLE.bleGatt.discoverServices())
                         ShowMessage("Servicios no descubiertos.");
                     ShowMessage("Conectado a: " + DispositivoAsociado.Name);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     ShowMessage("Error al conectarse a: " + DispositivoAsociado.Name);
                 }
                 break;
@@ -326,15 +317,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void ProcesarTrama(String tramaIn)
-    {
-        if (tramaIn.contains("ST3"))
-        {
+    public void ProcesarTrama(String tramaIn) {
+        if (tramaIn.contains("ST3")) {
             tramaIncompleta = tramaIn;
             return;
-        }
-        else if (tramaIncompleta.contains("ST3") && tramaIn.endsWith("$"))
-        {
+        } else if (tramaIncompleta.contains("ST3") && tramaIn.endsWith("$")) {
             tramaIncompleta += tramaIn;
             runOnUiThread(new Runnable() {
                 @Override
@@ -348,21 +335,19 @@ public class MainActivity extends AppCompatActivity {
         tramaIncompleta += tramaIn;
     }
 
-     private void ActualizarControles()
-     {
-         SetProgressBar(((int) DispositivoAsociado.DataReceived.Velocidad));
-         runOnUiThread(new Runnable() {
-             @Override
-             public void run() {
-                 txtReporteDispositivo.setText(DispositivoAsociado.DataReceived.Fecha + " " + DispositivoAsociado.DataReceived.Hora);
-                 SetImageViews();
-                 UpdateWidget();
-             }
-         });
-     }
+    private void ActualizarControles() {
+        SetProgressBar(((int) DispositivoAsociado.DataReceived.Velocidad));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txtReporteDispositivo.setText(DispositivoAsociado.DataReceived.Fecha + " " + DispositivoAsociado.DataReceived.Hora);
+                SetImageViews();
+                UpdateWidget();
+            }
+        });
+    }
 
-    private void SetImageViews()
-    {
+    private void SetImageViews() {
         int battPercent = ((int) ((DispositivoAsociado.DataReceived.Bateria * 100.0) / (3.8)));
         if (battPercent < 100)
             imageViewBateria.setImageResource(R.drawable.bateria_100);
@@ -387,8 +372,7 @@ public class MainActivity extends AppCompatActivity {
             imageButtonEstado.setImageResource(R.drawable.estado_off);
     }
 
-    private boolean IsNewUser()
-    {
+    private boolean IsNewUser() {
         SharedPreferences sharedPref = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
         if (sharedPref.getInt("Id", 0) == 0)
             return true;
@@ -396,20 +380,21 @@ public class MainActivity extends AppCompatActivity {
             return false;
     }
 
-    private void VerDispositivoMapa()
-    {
-        if (DispositivoAsociado != null && DispositivoAsociado.DataReceived != null) {
+    private void VerDispositivoMapa() {
+        Intent i = new Intent(getBaseContext(), MapsActivity.class);
+        i.putExtra("Lat", 0);
+        i.putExtra("Lon", 0);
+        startActivity(i);
+/*        if (DispositivoAsociado != null && DispositivoAsociado.DataReceived != null) {
             Intent i = new Intent(getBaseContext(), MapsActivity.class);
             i.putExtra("Lat", DispositivoAsociado.DataReceived.Latitud);
             i.putExtra("Lon", DispositivoAsociado.DataReceived.Longitud);
             startActivity(i);
-        }
-        else
-            ShowMessage("Sin datos para mostrar.");
+        } else
+            ShowMessage("Sin datos para mostrar.");*/
     }
 
-    public void UpdateWidget()
-    {
+    public void UpdateWidget() {
         SharedPreferences sharedPref = getBaseContext().getSharedPreferences("DeviceBLE", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt("Speed", ((int) DispositivoAsociado.DataReceived.Velocidad));
@@ -417,8 +402,37 @@ public class MainActivity extends AppCompatActivity {
 
         Intent updateWidget = new Intent(getBaseContext(), VelocityWidget.class);
         updateWidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        int[] ids = AppWidgetManager.getInstance(getApplicationContext()).getAppWidgetIds(new ComponentName(getApplicationContext(),VelocityWidget.class));
+        int[] ids = AppWidgetManager.getInstance(getApplicationContext()).getAppWidgetIds(new ComponentName(getApplicationContext(), VelocityWidget.class));
         updateWidget.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(updateWidget);
+    }
+
+    public void OnConnectionChanged(boolean isConnected) {
+        if (isConnected) {
+            txtConexion.setText("Online");
+            txtConexion.setTextColor(getResources().getColor(R.color.colorOk));
+        } else {
+            txtConexion.setText("Offline");
+            txtConexion.setTextColor(getResources().getColor(R.color.colorAccent));
+        }
+    }
+
+    public void EnviarAlDispositivo(int IdButton) {
+        switch (IdButton) {
+            case R.id.imageButtonCandado:
+                if (bluetoothLE != null && bluetoothLE.bleGatt != null) {
+                    for (int i = 0; i < bluetoothLE.bleGatt.getConnectedDevices().size(); i++) {
+                        if (bluetoothLE.bleGatt.getConnectedDevices().get(i).getAddress().equals(DispositivoAsociado.Mac)) {
+                            if (charSerial != null) {
+                                charSerial.setValue(""); // EnviarModo parqueo
+                                bluetoothLE.bleGatt.writeCharacteristic(charSerial);
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
