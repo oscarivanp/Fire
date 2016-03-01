@@ -35,6 +35,8 @@ import com.facebook.AccessToken;
 import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 import com.rmasc.fireroad.Entities.JsonParser;
+import com.rmasc.fireroad.Entities.WebServiceParameter;
+import com.rmasc.fireroad.Services.WebService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +51,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class RegisterActivity extends AppCompatActivity implements Serializable {
@@ -77,8 +80,6 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
     private static View.OnClickListener buttonClickListener;
 
     private static AdapterView.OnItemClickListener itemClickListener;
-
-    ImageView imageView;
 
 
     private static int RESULT_LOAD_IMAGE = 1;
@@ -570,6 +571,76 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
             }
             else {
                 imagenCargada=false;            }
+        }
+    }
+
+    private class CrearUsuario extends AsyncTask<String, Void, String>
+    {
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            WebServiceParameter parametro = new WebServiceParameter();
+
+            parametro.Nombre = "Nombres";
+            parametro.Valor = params[1].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter(); // Si no se reinicia genera error.
+            parametro.Nombre = "Telefono";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Sexo";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Correo";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "FechaNacimiento";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "RH";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "FotoPath";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdFacebook";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdTwitter";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "UserLogin";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Password";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            return WebService.ConexionWS(params[0], parameters);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
         }
     }
 }
