@@ -1,59 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-        <ImageButton
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_margin="10dp"
-        android:id="@+id/imageButtonUser"
-        android:layout_gravity="center_horizontal"
-        android:background="@null"
-        android:scaleType="fitXY"
-        android:contentDescription="Foto" />
+            <ImageButton
 
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:layout_gravity="center_horizontal">
+                android:id="@+id/imageButtonUser"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@null"
+                android:contentDescription="Foto"
+                android:scaleType="fitXY" />
 
-        <TableRow>
+
+
+           <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+               <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/activity_horizontal_margin">
+
+                <TableRow>
+
             <TextView
-                android:text="@string/nombre"
-                android:layout_column="1"/>
-            <EditText
-                android:id="@+id/editTextNombre" />
+                android:layout_column="0"
+                android:text="@string/nombre" />
+
+            <EditText android:id="@+id/editTextNombre" />
         </TableRow>
+
+
+                   <TableRow>
+
+                       <TextView
+                           android:layout_column="0"
+                           android:text="@string/apellido" />
+
+                       <EditText android:id="@+id/editTextApellido" />
+                   </TableRow>
         <TableRow>
+
             <TextView
-                android:text="@string/edad"
-                android:layout_column="1"/>
-            <EditText android:id="@+id/editTextEdad"
-                android:inputType="number" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:text="@string/mail"
-                android:layout_column="1"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:ems="10"
-                android:id="@+id/editTextCorreo"
-                />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:text="@string/telefono"
-                android:layout_column="1"/>
+                android:layout_column="0"
+                android:text="@string/telefono" />
+
             <EditText
                 android:id="@+id/editTextTelefono"
                 android:inputType="phone" />
         </TableRow>
 
-    </TableLayout>
+        <TableRow>
 
+            <TextView
+                android:layout_column="0"
+                android:text="@string/Genero" />
+
+            <Spinner
+                android:id="@+id/spinnerSexo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/GeneroItems" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="0"
+                android:text="@string/fechaNacimiento" />
+
+            <EditText
+                android:id="@+id/editTextEdad"
+                android:inputType="number" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="0"
+                android:text="@string/RH" />
+
+            <Spinner
+                android:id="@+id/spinnerRh"
+                android:entries="@array/RhItems" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="0"
+                android:text="@string/mail" />
+
+            <EditText
+
+                android:id="@+id/editTextCorreo"
+                android:ems="10"
+                android:inputType="textEmailAddress" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="0"
+                android:text="@string/Contraseña" />
+
+            <EditText
+                android:id="@+id/editTexPassword"
+                android:inputType="textPassword" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="0"
+                android:text="@string/Confirmacion" />
+
+            <EditText
+                android:id="@+id/editTexPasswordConfirmacion"
+                android:inputType="textPassword" />
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+
+                android:id="@+id/btnRegistrar"
+                android:layout_span="2"
+                android:gravity="center_horizontal"
+                android:text="Registrar" />
+        </TableRow>
+    </TableLayout>
+</ScrollView>
 </LinearLayout>

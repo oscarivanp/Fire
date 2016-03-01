@@ -27,6 +27,7 @@ public class LoginFragment extends Fragment {
     private CallbackManager callbackManager = null;
     private AccessTokenTracker mtracker = null;
     private ProfileTracker mprofileTracker = null;
+    private Profile profile;
 
     public static final String PARCEL_KEY = "parcel_key";
 
@@ -42,6 +43,7 @@ public class LoginFragment extends Fragment {
             Intent goToLogin;
             goToLogin = new Intent(getActivity().getBaseContext(), RegisterActivity.class);
             startActivity(goToLogin);
+
 
         }
 

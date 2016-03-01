@@ -64,7 +64,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
     private ProgressBar progressBar;
 
-    private static EditText editTextNombre, editTextEdad, editTextCorreo, editTextTelefono, editTextNombreMoto;
+    private static EditText editTextNombre, editTextApellido,editTextEdad, editTextCorreo, editTextTelefono, editTextNombreMoto;
 
     private static TextView textViewResumen;
 
@@ -83,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
     private static int RESULT_LOAD_IMAGE = 1;
     private String[] objetos = new String[6];
-    private String idUser="10153923985124320";
+    private String idUser;
     private String tokenNumero;
     private String urlFcebook;
     private String urlFacebookProfile;
@@ -132,6 +132,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         StrictMode.ThreadPolicy stream = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(stream);
         AccessToken token = AccessToken.getCurrentAccessToken();
+        idUser =token.getUserId();
         if(token.isExpired())
         {
            AccessToken.refreshCurrentAccessTokenAsync();
@@ -140,7 +141,6 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         }
 
         tokenNumero= token.getToken();
-
         urlFcebook="https://graph.facebook.com/"+idUser+"?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token="+tokenNumero;
         urlFacebookProfile="http://graph.facebook.com/"+idUser+"/picture?redirect=0&type=large";
 
@@ -503,11 +503,23 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
             try {
                jsonObjectTexts = JsonParser.readJsonFromUrl(url[0]);
-                objetos[0] = jsonObjectTexts.getString("name");
-                objetos[1] = jsonObjectTexts.getString("email");
-                objetos[2] =  jsonObjectTexts.getString("birthday");
+
+                if(!jsonObjectTexts.isNull("first_name")) {
+                    objetos[0] = jsonObjectTexts.getString("first_name");
+                }
+
+                if(!jsonObjectTexts.isNull("last_name")) {
+                    objetos[1] = jsonObjectTexts.getString("last_name");
+                }
+                if(!jsonObjectTexts.isNull("email")) {
+                    objetos[2] = jsonObjectTexts.getString("email");
+                }
+                if(!jsonObjectTexts.isNull("birthday")){
+                    objetos[3] =  jsonObjectTexts.getString("birthday");
+                }
+
                 jsonObjectPicture = JsonParser.readJsonFromUrl(url[1]);
-                objetos[3] = jsonObjectPicture.getJSONObject("data").getString("url");
+                objetos[4] = jsonObjectPicture.getJSONObject("data").getString("url");
            } catch (IOException | JSONException e) {
 
                e.printStackTrace();
@@ -520,29 +532,34 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         protected void onPostExecute(String[] stringFromDoInBackground) {
 
             editTextNombre = (EditText) findViewById(R.id.editTextNombre);
+            editTextApellido = (EditText) findViewById(R.id.editTextApellido);
             editTextCorreo = (EditText) findViewById(R.id.editTextCorreo);
             imageButtonUser = (ImageButton) findViewById(R.id.imageButtonUser);
             editTextEdad=(EditText) findViewById(R.id.editTextEdad);
             Date date = new Date();
-            String testDate = stringFromDoInBackground[2];
+            String testDate = stringFromDoInBackground[3];
             DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
             Date dateFace=null ;
 
-            try {
-                dateFace = format.parse(testDate);
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if(testDate!=null && testDate!="") {
+                try {
+                    dateFace = format.parse(testDate);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                int años = date.getYear() - dateFace.getYear();
+                editTextEdad.setText(Integer.toString(años));
             }
 
-            int años = date.getYear() -  dateFace.getYear();
-
             editTextNombre.setText(stringFromDoInBackground[0]);
-            editTextCorreo.setText(stringFromDoInBackground[1]);
-            editTextEdad.setText(Integer.toString(años));
-            if (stringFromDoInBackground[3]!=null) {
+            editTextApellido.setText(stringFromDoInBackground[1]);
+            editTextCorreo.setText(stringFromDoInBackground[2]);
+
+            if (stringFromDoInBackground[4]!=null) {
              imagenCargada = true;
                 try {
-                    InputStream prueba = new URL(stringFromDoInBackground[3]).openStream();
+                    InputStream prueba = new URL(stringFromDoInBackground[4]).openStream();
                     Bitmap foto = BitmapFactory.decodeStream(prueba);
                     RoundImages imaghenFace= new RoundImages(foto);
                     Bitmap imagenProcesada= imaghenFace.RoundImages(foto, 200, 200);
