@@ -53,7 +53,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -62,7 +61,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class RegisterActivity extends AppCompatActivity implements Serializable {
+public class RegisterActivity extends AppCompatActivity {
 
 
     private boolean imagUser = false, imagMoto = false;
@@ -129,204 +128,203 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
         StrictMode.ThreadPolicy stream = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(stream);
-        tipoLogin=  getIntent().getExtras().getString("TipoLogin");
+        tipoLogin = getIntent().getExtras().getString("TipoLogin");
 
-        if(tipoLogin.equals("twitter")) {
+        if (tipoLogin.equals("twitter")) {
             userNameTwitter = getIntent().getExtras().getString("UserName");
             urlTwitterProfile = "https://twitter.com/" + userNameTwitter + "/profile_image?size=original";
         }
 
-        if(tipoLogin.equals("facebook")) {
-        
+        if (tipoLogin.equals("facebook")) {
+
             AccessToken token = AccessToken.getCurrentAccessToken();
-            idUserFacebook =token.getUserId();
-            if(token.isExpired()) {
-            AccessToken.refreshCurrentAccessTokenAsync();
-            token = AccessToken.getCurrentAccessToken();
+            idUserFacebook = token.getUserId();
+            if (token.isExpired()) {
+                AccessToken.refreshCurrentAccessTokenAsync();
+                token = AccessToken.getCurrentAccessToken();
+
+            }
+
+            tokenNumero = token.getToken();
+            urlFcebook = "https://graph.facebook.com/" + idUserFacebook + "?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token=" + tokenNumero;
+            urlFacebookProfile = "http://graph.facebook.com/" + idUserFacebook + "/picture?redirect=0&type=large";
+
+            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+            mViewPager = (ViewPager) findViewById(R.id.container);
+            mViewPager.setAdapter(mSectionsPagerAdapter);
+            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    SetPageIndicator(position + 1);
+                    if ((position + 1) == 2) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ScanBluetooth();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
+
+            itemClickListener = new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    SaveDevice(view);
+                }
+            };
+
+            buttonClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i;
+                    switch (v.getId()) {
+                        case R.id.imageButtonUser:
+                            imagUser = true;
+                            imagMoto = !imagUser;
+                            i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(i, RESULT_LOAD_IMAGE);
+                            break;
+                        case R.id.imageButtonMoto:
+                            imagMoto = true;
+                            imagUser = !imagMoto;
+                            i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(i, RESULT_LOAD_IMAGE);
+                            break;
+                        case R.id.btnScan:
+                            if (bluetoothLE != null) {
+                                if (!bluetoothLE.mScanning)
+                                    bluetoothLE.scanLeDevice(true);
+                            }
+                            break;
+                        case R.id.btnFinish:
+                            imageButtonUser.buildDrawingCache();
+                            Bitmap imagen = imageButtonUser.getDrawingCache();
+                            if (ComparePassword()) {
+                                if (SaveImage("FireUser", imagen)) {
+                                    imageButtonMoto.buildDrawingCache();
+                                    imagen = imageButtonMoto.getDrawingCache();
+                                    if (SaveImage("FireMoto", imagen)) {
+                                        if (IdUser == 0) {
+                                            new CrearUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CreateUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
+                                                    spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
+                                                    idUserFacebook, "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
+                                        } else {
+                                            new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
+                                                    spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
+                                                    "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
+                                        }
+                                    } else
+                                        ShowMessage("Error al guardar la imagen de la moto.");
+                                } else
+                                    ShowMessage("Error al guardar la imagen de usuario.");
+                            }
+                            break;
+                        case R.id.btnPoliticas:
+                            break;
+                        case R.id.btnFecha:
+                            CalendarPicker calendarioFecha = new CalendarPicker();
+                            calendarioFecha.show(getFragmentManager(), "datepicker");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            };
+
+            AssignControls();
+
+            new ValidarUser().execute(urlFcebook, urlFacebookProfile);
 
         }
-        
-          tokenNumero = token.getToken();
-          urlFcebook = "https://graph.facebook.com/" + idUser + "?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token=" + tokenNumero;
-          urlFacebookProfile = "http://graph.facebook.com/" + idUser + "/picture?redirect=0&type=large";
-           
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+    }
 
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        public static class PlaceholderFragment extends Fragment {
 
+            private static final String ARG_SECTION_NUMBER = "section_number";
+
+            public PlaceholderFragment() {
+            }
+
+            public static PlaceholderFragment newInstance(int sectionNumber) {
+                PlaceholderFragment fragment = new PlaceholderFragment();
+                Bundle args = new Bundle();
+                args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+                fragment.setArguments(args);
+                return fragment;
             }
 
             @Override
-            public void onPageSelected(int position) {
-                SetPageIndicator(position + 1);
-                if ((position + 1) == 2) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ScanBluetooth();
-                        }
-                    });
-                }
-            }
+            public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                     Bundle savedInstanceState) {
+                View rootView = null;
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
 
-            }
-        });
+                switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
+                    case 1:
+                        rootView = inflater.inflate(R.layout.register_user, container, false);
+                        AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
+                        break;
 
-        itemClickListener = new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SaveDevice(view);
-            }
-        };
 
-        buttonClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i;
-                switch (v.getId()) {
-                    case R.id.imageButtonUser:
-                        imagUser = true;
-                        imagMoto = !imagUser;
-                        i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(i, RESULT_LOAD_IMAGE);
+                    case 2:
+                        rootView = inflater.inflate(R.layout.register_moto, container, false);
+                        AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
+
                         break;
-                    case R.id.imageButtonMoto:
-                        imagMoto = true;
-                        imagUser = !imagMoto;
-                        i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(i, RESULT_LOAD_IMAGE);
-                        break;
-                    case R.id.btnScan:
-                        if (bluetoothLE != null) {
-                            if (!bluetoothLE.mScanning)
-                                bluetoothLE.scanLeDevice(true);
-                        }
-                        break;
-                    case R.id.btnFinish:
-                        imageButtonUser.buildDrawingCache();
-                        Bitmap imagen = imageButtonUser.getDrawingCache();
-                        if (ComparePassword()) {
-                            if (SaveImage("FireUser", imagen)) {
-                                imageButtonMoto.buildDrawingCache();
-                                imagen = imageButtonMoto.getDrawingCache();
-                                if (SaveImage("FireMoto", imagen)) {
-                                    if (IdUser == 0) {
-                                        new CrearUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CreateUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
-                                                spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
-                                                idUserFacebook, "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
-                                    }
-                                    else
-                                    {
-                                        new  EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
-                                                spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
-                                                "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
-                                    }
-                                } else
-                                    ShowMessage("Error al guardar la imagen de la moto.");
-                            } else
-                                ShowMessage("Error al guardar la imagen de usuario.");
-                        }
-                        break;
-                    case R.id.btnPoliticas:
-                        break;
-                    case R.id.btnFecha:
-                        CalendarPicker calendarioFecha = new CalendarPicker();
-                        calendarioFecha.show(getFragmentManager(), "datepicker");
+                    case 3:
+                        rootView = inflater.inflate(R.layout.register_review, container, false);
+                        AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
                         break;
                     default:
                         break;
                 }
+
+                return rootView;
             }
-        };
-
-        AssignControls();
-
-        new ValidarUser().execute(urlFcebook, urlFacebookProfile);
-
-    }
-
-    public static class PlaceholderFragment extends Fragment {
-
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
         }
 
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
+        public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = null;
-
-
-            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
-                case 1:
-                    rootView = inflater.inflate(R.layout.register_user, container, false);
-                    AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
-                    break;
-
-
-                case 2:
-                    rootView = inflater.inflate(R.layout.register_moto, container, false);
-                    AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
-
-                    break;
-                case 3:
-                    rootView = inflater.inflate(R.layout.register_review, container, false);
-                    AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
-                    break;
-                default:
-                    break;
+            public SectionsPagerAdapter(FragmentManager fm) {
+                super(fm);
             }
 
-            return rootView;
-        }
-    }
-
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return PlaceholderFragment.newInstance(position + 1);
-        }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
+            @Override
+            public Fragment getItem(int position) {
+                return PlaceholderFragment.newInstance(position + 1);
             }
-            return null;
+
+            @Override
+            public int getCount() {
+                // Show 3 total pages.
+                return 3;
+            }
+
+            @Override
+            public CharSequence getPageTitle(int position) {
+                switch (position) {
+                    case 0:
+                        return "SECTION 1";
+                    case 1:
+                        return "SECTION 2";
+                    case 2:
+                        return "SECTION 3";
+                }
+                return null;
+            }
         }
-    }
 
     public void SetPageIndicator(int position) {
         progressBar.setProgress(position);
@@ -334,6 +332,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
     public void AssignControls() {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
     }
 
     public static void AssignStaticControls(int position, View view, Context context) {
