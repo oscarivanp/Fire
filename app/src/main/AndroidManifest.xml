@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -39,7 +39,6 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-
 
 
         <activity
@@ -84,8 +83,12 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".PerfilActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".PerfilActivity"></activity>
+
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"

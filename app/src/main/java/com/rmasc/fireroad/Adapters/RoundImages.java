@@ -26,8 +26,6 @@ public class RoundImages extends Drawable {
 
     public Bitmap RoundImages(Bitmap bitmap, int mWidth, int mHeight) {
 
-
-
         final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(output);
 

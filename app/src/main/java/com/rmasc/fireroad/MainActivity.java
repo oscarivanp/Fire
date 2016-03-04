@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,8 @@ import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 import com.rmasc.fireroad.Entities.DeviceBluetooth;
 import com.rmasc.fireroad.Entities.DeviceData;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -69,58 +72,60 @@ public class MainActivity extends AppCompatActivity {
             startActivity(goToIntro);
             finish();
         }
+        else {
 
-        buttonClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            buttonClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                switch (v.getId()) {
-                    case R.id.imageButtonEstado:
-                        //Permite encender la moto (si está disponible).
-                        break;
-                    case R.id.imageButtonCandado:
-                        //Modo parqueo on/off activa o desactiva notificaciones de alarma.
-                        EnviarAlDispositivo(R.id.imageButtonCandado);
-                        break;
-                    case R.id.imageViewUser:
-                        VerDispositivoMapa();
-                        break;
-                    case R.id.btnRecorrido:
-                        //Empieza a enviar datos del recorrido
-                        isRecorrido = !isRecorrido;
-                        if (isRecorrido) { //Inicia el envio de tramas para el recorrido
-                            btnRecorrido.setText("Stop");
-                            btnRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
-                        } else {
-                            //Detiene el envio de tramas del recorrido
-                            btnRecorrido.setText("Go!");
-                            btnRecorrido.setTextColor(getResources().getColor(R.color.colorOk));
-                        }
-                        break;
-                    case R.id.txtConexion:
-                        if (bluetoothLE != null && DispositivoAsociado == null)
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ConnectToDevice();
-                                }
-                            });
-                        break;
-                    default:
-                        break;
+                    switch (v.getId()) {
+                        case R.id.imageButtonEstado:
+                            //Permite encender la moto (si está disponible).
+                            break;
+                        case R.id.imageButtonCandado:
+                            //Modo parqueo on/off activa o desactiva notificaciones de alarma.
+                            EnviarAlDispositivo(R.id.imageButtonCandado);
+                            break;
+                        case R.id.imageViewUser:
+                            VerDispositivoMapa();
+                            break;
+                        case R.id.btnRecorrido:
+                            //Empieza a enviar datos del recorrido
+                            isRecorrido = !isRecorrido;
+                            if (isRecorrido) { //Inicia el envio de tramas para el recorrido
+                                btnRecorrido.setText("Stop");
+                                btnRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
+                            } else {
+                                //Detiene el envio de tramas del recorrido
+                                btnRecorrido.setText("Go!");
+                                btnRecorrido.setTextColor(getResources().getColor(R.color.colorOk));
+                            }
+                            break;
+                        case R.id.txtConexion:
+                            if (bluetoothLE != null && DispositivoAsociado == null)
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ConnectToDevice();
+                                    }
+                                });
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-        };
+            };
 
-        if (LoadDevice()) {
-            if (ManagerBluetooth()) {
-                bluetoothLE.scanLeDevice(true);
+            if (LoadDevice()) {
+                if (ManagerBluetooth()) {
+                    bluetoothLE.scanLeDevice(true);
+                }
+            } else {
+                ShowMessage("No hay dispositivo previamente guardado.");
             }
-        } else {
-            ShowMessage("No hay dispositivo previamente guardado.");
+
+            AssignViews();
         }
-
-        AssignViews();
     }
 
     @Override
@@ -139,13 +144,10 @@ public class MainActivity extends AppCompatActivity {
         imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
         imageViewUser.setOnClickListener(buttonClickListener);
 
-        //http://www.planetacurioso.com/wp-content/uploads/2006/10/homero-simpson1.jpg
         try {
-            //String path = Environment.getExternalStorageDirectory().toString() + "/FireUser.PNG";
-            //File streamImage = new File(path);
-            //imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
-            InputStream inputStream = (InputStream) new URL("http://www.planetacurioso.com/wp-content/uploads/2006/10/homero-simpson1.jpg").getContent();
-            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(inputStream)));
+            String path = Environment.getExternalStorageDirectory().toString() + "/FireUser";
+            File streamImage = new File(path);
+            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
         } catch (Exception e) {
             e.printStackTrace();
             imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
@@ -159,7 +161,9 @@ public class MainActivity extends AppCompatActivity {
         btnRecorrido = (Button) findViewById(R.id.btnRecorrido);
         btnRecorrido.setOnClickListener(buttonClickListener);
 
+        SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
         txtUser = (TextView) findViewById(R.id.txtUser);
+        txtUser.setText(user.getString("UserLogin", ""));
         txtReporteDispositivo = (TextView) findViewById(R.id.txtReporteDispositivo);
         txtValueProgress = (TextView) findViewById(R.id.txtValueProgress);
         txtConexion = (TextView) findViewById(R.id.txtConexion);
@@ -381,17 +385,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void VerDispositivoMapa() {
-        Intent i = new Intent(getBaseContext(), MapsActivity.class);
-        i.putExtra("Lat", 0);
-        i.putExtra("Lon", 0);
-        startActivity(i);
-/*        if (DispositivoAsociado != null && DispositivoAsociado.DataReceived != null) {
+        if (DispositivoAsociado != null && DispositivoAsociado.DataReceived != null) {
             Intent i = new Intent(getBaseContext(), MapsActivity.class);
             i.putExtra("Lat", DispositivoAsociado.DataReceived.Latitud);
             i.putExtra("Lon", DispositivoAsociado.DataReceived.Longitud);
             startActivity(i);
         } else
-            ShowMessage("Sin datos para mostrar.");*/
+            ShowMessage("Sin datos para mostrar.");
     }
 
     public void UpdateWidget() {

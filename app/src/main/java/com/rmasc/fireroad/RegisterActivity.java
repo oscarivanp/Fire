@@ -1,5 +1,8 @@
 package com.rmasc.fireroad;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -23,17 +26,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
+import com.rmasc.fireroad.Entities.ImagenData;
 import com.rmasc.fireroad.Entities.JsonParser;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.WebService;
@@ -42,6 +48,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,39 +59,32 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class RegisterActivity extends AppCompatActivity implements Serializable {
 
 
     private boolean imagUser = false, imagMoto = false;
-
-    private static boolean imagenCargada=false;
-
+    private static boolean imagenCargada = false;
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
     private ViewPager mViewPager;
-
     private ProgressBar progressBar;
-
-    private static EditText editTextNombre, editTextApellido,editTextEdad, editTextCorreo, editTextTelefono, editTextNombreMoto;
-
+    private static EditText editTextNombre, editTextApellido, editTextCorreo, editTextTelefono, editTextNombreMoto, editTexPassword, editTexPasswordConfirmacion;
     private static TextView textViewResumen;
-
     private static ImageButton imageButtonUser, imageButtonMoto;
-
-    private static Button btnScan, btnPoliticas, btnFinish;
-
+    private static Button btnScan, btnPoliticas, btnFinish, btnFecha;
     private static ListView listVDevices;
-
     private static View.OnClickListener buttonClickListener;
-
     private static AdapterView.OnItemClickListener itemClickListener;
+    private static Spinner spinnerSexo, spinnerRh;
 
+    private static int IdUser = 0;
+    SharedPreferences sharedPref;
 
     private static int RESULT_LOAD_IMAGE = 1;
     private String[] objetos = new String[6];
-    private String idUser;
+    private String idUserFacebook;
     private String tokenNumero;
     private String urlFcebook;
     private String urlFacebookProfile;
@@ -92,32 +92,23 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
 
     BluetoothLE bluetoothLE;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-
-
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
-        {
-
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
             cursor.moveToFirst();
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
-            if (imagUser)
-            {
-                //imageButtonUser.setImageDrawable(new RoundImages(BitmapFactory.decodeFile(picturePath), imageButtonUser.getWidth(), imageButtonUser.getHeight()));
+            if (imagUser) {
                 imageButtonUser.setImageDrawable(new RoundImages(ReSizeImage(BitmapFactory.decodeFile(picturePath))));
                 imageButtonUser.setScaleType(ImageView.ScaleType.FIT_XY);
                 imagUser = false;
-            }
-            else
-            {
-                //imageButtonMoto.setImageDrawable(new RoundImages(BitmapFactory.decodeFile(picturePath), imageButtonUser.getWidth(), imageButtonUser.getHeight()));
+            } else {
                 imageButtonMoto.setImageDrawable(new RoundImages(ReSizeImage(BitmapFactory.decodeFile(picturePath))));
                 imageButtonMoto.setScaleType(ImageView.ScaleType.FIT_XY);
                 imagMoto = false;
@@ -133,17 +124,19 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         StrictMode.ThreadPolicy stream = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(stream);
         AccessToken token = AccessToken.getCurrentAccessToken();
-        idUser =token.getUserId();
-        if(token.isExpired())
-        {
-           AccessToken.refreshCurrentAccessTokenAsync();
-           token = AccessToken.getCurrentAccessToken();
+        idUserFacebook = token.getUserId();
+        if (token.isExpired()) {
+            AccessToken.refreshCurrentAccessTokenAsync();
+            token = AccessToken.getCurrentAccessToken();
 
         }
 
-        tokenNumero= token.getToken();
-        urlFcebook="https://graph.facebook.com/"+idUser+"?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token="+tokenNumero;
-        urlFacebookProfile="http://graph.facebook.com/"+idUser+"/picture?redirect=0&type=large";
+        sharedPref = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
+        IdUser = sharedPref.getInt("Id", 0);
+
+        tokenNumero = token.getToken();
+        urlFcebook = "https://graph.facebook.com/" + idUserFacebook + "?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token=" + tokenNumero;
+        urlFacebookProfile = "http://graph.facebook.com/" + idUserFacebook + "/picture?redirect=0&type=large";
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -185,45 +178,55 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
             @Override
             public void onClick(View v) {
                 Intent i;
-                switch (v.getId())
-                {
+                switch (v.getId()) {
                     case R.id.imageButtonUser:
                         imagUser = true;
                         imagMoto = !imagUser;
-                        i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(i,RESULT_LOAD_IMAGE);
+                        i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(i, RESULT_LOAD_IMAGE);
                         break;
                     case R.id.imageButtonMoto:
                         imagMoto = true;
                         imagUser = !imagMoto;
-                        i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(i, RESULT_LOAD_IMAGE);
                         break;
                     case R.id.btnScan:
-                        if (bluetoothLE != null)
-                        {
+                        if (bluetoothLE != null) {
                             if (!bluetoothLE.mScanning)
                                 bluetoothLE.scanLeDevice(true);
                         }
                         break;
                     case R.id.btnFinish:
-                        i = new Intent(getBaseContext(), MainActivity.class);
-                        Bitmap imagen = ((RoundImages)(imageButtonUser.getDrawable())).getBitmap();
-                        if (SaveImage("FireUser", imagen))
-                        {
-                            imagen = ((RoundImages)(imageButtonMoto.getDrawable())).getBitmap();
-                            if(SaveImage("FireMoto", imagen))
-                            {
-                                startActivity(i);
-                                finish();
-                            }
-                            else
-                                ShowMessage("Error al guardar la imagen de la moto.");
+                        imageButtonUser.buildDrawingCache();
+                        Bitmap imagen = imageButtonUser.getDrawingCache();
+                        if (ComparePassword()) {
+                            if (SaveImage("FireUser", imagen)) {
+                                imageButtonMoto.buildDrawingCache();
+                                imagen = imageButtonMoto.getDrawingCache();
+                                if (SaveImage("FireMoto", imagen)) {
+                                    if (IdUser == 0) {
+                                        new CrearUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CreateUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
+                                                spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
+                                                idUserFacebook, "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
+                                    }
+                                    else
+                                    {
+                                        new  EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
+                                                spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
+                                                "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
+                                    }
+                                } else
+                                    ShowMessage("Error al guardar la imagen de la moto.");
+                            } else
+                                ShowMessage("Error al guardar la imagen de usuario.");
                         }
-                        else
-                        ShowMessage("Error al guardar la imagen de usuario.");
                         break;
                     case R.id.btnPoliticas:
+                        break;
+                    case R.id.btnFecha:
+                        CalendarPicker calendarioFecha = new CalendarPicker();
+                        calendarioFecha.show(getFragmentManager(), "datepicker");
                         break;
                     default:
                         break;
@@ -258,12 +261,9 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
             View rootView = null;
 
 
-            switch (getArguments().getInt(ARG_SECTION_NUMBER))
-            {
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
-
-
-                   rootView = inflater.inflate(R.layout.register_user, container, false);
+                    rootView = inflater.inflate(R.layout.register_user, container, false);
                     AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
                     break;
 
@@ -316,37 +316,35 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         }
     }
 
-    public void SetPageIndicator(int position)
-    {
+    public void SetPageIndicator(int position) {
         progressBar.setProgress(position);
     }
 
-    public void AssignControls()
-    {
+    public void AssignControls() {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
     }
 
-    public static void AssignStaticControls(int position, View view, Context context)
-    {
-        switch (position)
-        {
+    public static void AssignStaticControls(int position, View view, Context context) {
+        switch (position) {
             case 1:
                 editTextNombre = (EditText) view.findViewById(R.id.editTextNombre);
-                editTextEdad = (EditText) view.findViewById(R.id.editTextEdad);
+                editTextApellido = (EditText) view.findViewById(R.id.editTextApellido);
                 editTextCorreo = (EditText) view.findViewById(R.id.editTextCorreo);
                 editTextTelefono = (EditText) view.findViewById(R.id.editTextTelefono);
                 imageButtonUser = (ImageButton) view.findViewById(R.id.imageButtonUser);
+                editTexPassword = (EditText) view.findViewById(R.id.editTexPassword);
+                editTexPasswordConfirmacion = (EditText) view.findViewById(R.id.editTexPasswordConfirmacion);
 
-                if(!imagenCargada) {
+                if (!imagenCargada) {
 
-                  imageButtonUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(context.getResources(), R.drawable.no_user)));
-                }
-                else
-                {
-
-
+                    imageButtonUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(context.getResources(), R.drawable.no_user)));
                 }
                 imageButtonUser.setOnClickListener(buttonClickListener);
+                spinnerSexo = (Spinner) view.findViewById(R.id.spinnerSexo);
+                spinnerRh = (Spinner) view.findViewById(R.id.spinnerRh);
+
+                btnFecha = (Button) view.findViewById(R.id.btnFecha);
+                btnFecha.setOnClickListener(buttonClickListener);
                 break;
             case 2:
                 listVDevices = (ListView) view.findViewById(R.id.listVDevices);
@@ -364,24 +362,24 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                 btnPoliticas.setOnClickListener(buttonClickListener);
                 btnFinish = (Button) view.findViewById(R.id.btnFinish);
                 btnFinish.setOnClickListener(buttonClickListener);
+                if (IdUser == 0) {
+                    btnFinish.setText("Registrar");
+                } else {
+                    btnFinish.setText("Login");
+                }
                 break;
             default:
                 break;
         }
     }
 
-    private boolean ScanBluetooth()
-    {
-        try
-        {
+    private boolean ScanBluetooth() {
+        try {
             if (BluetoothAdapter.getDefaultAdapter() == null) {
                 ShowMessage("Su dispositivo no es compatible con Bluetooth");
                 return false;
-            }
-            else
-            {
-                if (bluetoothLE == null)
-                {
+            } else {
+                if (bluetoothLE == null) {
                     bluetoothLE = new BluetoothLE(getBaseContext());
 
                     if (!bluetoothLE.isEnabled()) {
@@ -389,26 +387,21 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                         startActivityForResult(enableBtIntent, 1);
                     }
 
-                }
-                else
-                {
+                } else {
                     if (!bluetoothLE.isEnabled()) {
                         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         startActivityForResult(enableBtIntent, 1);
                     }
                 }
                 listVDevices.setAdapter(bluetoothLE.mAdapter);
-                return  true;
+                return true;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return false;
         }
     }
 
-    private void ShowMessage(final String message)
-    {
+    private void ShowMessage(final String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -417,41 +410,36 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         });
     }
 
-    private void SaveDevice(View v)
-    {
-        TextView txtDeviceSelected = (TextView)v;
+    private void SaveDevice(View v) {
+        TextView txtDeviceSelected = (TextView) v;
 
         String nameDevice = txtDeviceSelected.getText().toString();
 
-        for (int i = 0; i < bluetoothLE.bleDevices.size() ; i++)
-        {
-            if (nameDevice.equals(bluetoothLE.bleDevices.get(i).getName()))
-            {
+        for (int i = 0; i < bluetoothLE.bleDevices.size(); i++) {
+            if (nameDevice.equals(bluetoothLE.bleDevices.get(i).getName())) {
                 SharedPreferences sharedPref = getBaseContext().getSharedPreferences("DeviceBLE", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("Name", bluetoothLE.bleDevices.get(i).getName());
                 editor.putString("Mac", bluetoothLE.bleDevices.get(i).getAddress());
                 editor.commit();
-                ShowMessage("Dispositivo " + bluetoothLE.bleDevices.get(i).getName() +" guardado.");
+                ShowMessage("Dispositivo " + bluetoothLE.bleDevices.get(i).getName() + " guardado.");
                 break;
             }
         }
     }
 
-    private Bitmap ReSizeImage (Bitmap imagen)
-    {
+    private Bitmap ReSizeImage(Bitmap imagen) {
         if (imagen.getHeight() <= 200 && imagen.getWidth() <= 200)
             return imagen;
         else if (imagen.getHeight() <= 500 && imagen.getWidth() <= 500)
-            return Bitmap.createScaledBitmap(imagen, (int) (imagen.getWidth()*(0.5)), (int)(imagen.getHeight()*(0.5)), true);
+            return Bitmap.createScaledBitmap(imagen, (int) (imagen.getWidth() * (0.5)), (int) (imagen.getHeight() * (0.5)), true);
         else if (imagen.getHeight() <= 750 && imagen.getWidth() <= 750)
-            return Bitmap.createScaledBitmap(imagen, (int) (imagen.getWidth()*(0.2)), (int)(imagen.getHeight()*(0.2)), true);
+            return Bitmap.createScaledBitmap(imagen, (int) (imagen.getWidth() * (0.2)), (int) (imagen.getHeight() * (0.2)), true);
         else
-            return Bitmap.createScaledBitmap(imagen, (int) (imagen.getWidth()*(0.1)), (int)(imagen.getHeight()*(0.1)), true);
+            return Bitmap.createScaledBitmap(imagen, (int) (imagen.getWidth() * (0.1)), (int) (imagen.getHeight() * (0.1)), true);
     }
 
-    private boolean SaveImage (String fileName, Bitmap imagen)
-    {
+    private boolean SaveImage(String fileName, Bitmap imagen) {
         boolean isOk = true;
         boolean isNew = true;
         try {
@@ -459,8 +447,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
             if (file.exists()) {
                 isNew = false;
                 DeleteRecursive(file);
-            }
-            else
+            } else
                 file.createNewFile();
 
             OutputStream fOut = new FileOutputStream(file);
@@ -469,62 +456,51 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
             fOut.flush();
             fOut.close();
 
-            ShowMessage(file.getPath());
-
             if (!isNew)
                 MediaStore.Images.Media.insertImage(getContentResolver(), file.getAbsolutePath(), file.getName(), file.getName());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             isOk = false;
         }
         return isOk;
     }
 
-    public static void DeleteRecursive(File fileOrDirectory)
-    {
-        if (fileOrDirectory.isDirectory())
-        {
-            for (File child : fileOrDirectory.listFiles())
-            {
+    public static void DeleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory()) {
+            for (File child : fileOrDirectory.listFiles()) {
                 DeleteRecursive(child);
             }
         }
         fileOrDirectory.delete();
     }
 
-    private class ValidarUser extends AsyncTask<String,String,String[]> {
-
-
-
-
+    private class ValidarUser extends AsyncTask<String, String, String[]> {
         @Override
         protected String[] doInBackground(String... url) {
 
             try {
-               jsonObjectTexts = JsonParser.readJsonFromUrl(url[0]);
+                jsonObjectTexts = JsonParser.readJsonFromUrl(url[0]);
 
-                if(!jsonObjectTexts.isNull("first_name")) {
+                if (!jsonObjectTexts.isNull("first_name")) {
                     objetos[0] = jsonObjectTexts.getString("first_name");
                 }
 
-                if(!jsonObjectTexts.isNull("last_name")) {
+                if (!jsonObjectTexts.isNull("last_name")) {
                     objetos[1] = jsonObjectTexts.getString("last_name");
                 }
-                if(!jsonObjectTexts.isNull("email")) {
+                if (!jsonObjectTexts.isNull("email")) {
                     objetos[2] = jsonObjectTexts.getString("email");
                 }
-                if(!jsonObjectTexts.isNull("birthday")){
-                    objetos[3] =  jsonObjectTexts.getString("birthday");
+                if (!jsonObjectTexts.isNull("birthday")) {
+                    objetos[3] = jsonObjectTexts.getString("birthday");
                 }
 
                 jsonObjectPicture = JsonParser.readJsonFromUrl(url[1]);
                 objetos[4] = jsonObjectPicture.getJSONObject("data").getString("url");
-           } catch (IOException | JSONException e) {
+            } catch (IOException | JSONException e) {
 
-               e.printStackTrace();
-          }
+                e.printStackTrace();
+            }
 
             return objetos;
         }
@@ -536,46 +512,43 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
             editTextApellido = (EditText) findViewById(R.id.editTextApellido);
             editTextCorreo = (EditText) findViewById(R.id.editTextCorreo);
             imageButtonUser = (ImageButton) findViewById(R.id.imageButtonUser);
-            editTextEdad=(EditText) findViewById(R.id.editTextEdad);
+            btnFecha = (Button) findViewById(R.id.btnFecha);
             Date date = new Date();
             String testDate = stringFromDoInBackground[3];
             DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-            Date dateFace=null ;
+            Date dateFace = null;
 
-            if(testDate!=null && testDate!="") {
+            if (testDate != null && testDate != "") {
                 try {
                     dateFace = format.parse(testDate);
+                    btnFecha.setText(dateFace.toString());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
-                int años = date.getYear() - dateFace.getYear();
-                editTextEdad.setText(Integer.toString(años));
             }
 
             editTextNombre.setText(stringFromDoInBackground[0]);
             editTextApellido.setText(stringFromDoInBackground[1]);
             editTextCorreo.setText(stringFromDoInBackground[2]);
 
-            if (stringFromDoInBackground[4]!=null) {
-             imagenCargada = true;
+            if (stringFromDoInBackground[4] != null) {
+                imagenCargada = true;
                 try {
                     InputStream prueba = new URL(stringFromDoInBackground[4]).openStream();
                     Bitmap foto = BitmapFactory.decodeStream(prueba);
-                    RoundImages imaghenFace= new RoundImages(foto);
-                    Bitmap imagenProcesada= imaghenFace.RoundImages(foto, 200, 200);
+                    RoundImages imaghenFace = new RoundImages(foto);
+                    Bitmap imagenProcesada = imaghenFace.RoundImages(foto, 200, 200);
                     imageButtonUser.setImageBitmap(imagenProcesada);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else {
+                imagenCargada = false;
             }
-            else {
-                imagenCargada=false;            }
         }
     }
 
-    private class CrearUsuario extends AsyncTask<String, Void, String>
-    {
+    private class CrearUsuario extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
             ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
@@ -592,47 +565,58 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "Sexo";
-            parametro.Valor = params[2].toString();
+            if (params[3].equals("Masculino"))
+                parametro.Valor = String.valueOf(1);
+            else
+                parametro.Valor = String.valueOf(2);
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "Correo";
-            parametro.Valor = params[2].toString();
+            parametro.Valor = params[4].toString();
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "FechaNacimiento";
-            parametro.Valor = params[2].toString();
+            parametro.Valor = params[5].toString();
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "RH";
-            parametro.Valor = params[2].toString();
+            parametro.Valor = params[6].toString();
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "FotoPath";
-            parametro.Valor = params[2].toString();
+            try {
+                String path = Environment.getExternalStorageDirectory().toString() + "/FireUser";
+                File streamImage = new File(path);
+                parametro.Valor = new ImagenData(BitmapFactory.decodeStream(new FileInputStream(streamImage))).content;
+            }
+            catch (Exception e)
+            {
+                parametro.Valor = "No imagen";
+            }
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "IdFacebook";
-            parametro.Valor = params[2].toString();
+            parametro.Valor = params[7].toString();
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "IdTwitter";
-            parametro.Valor = params[2].toString();
+            parametro.Valor = params[8].toString();
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "UserLogin";
-            parametro.Valor = params[2].toString();
+            parametro.Valor = params[9].toString();
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "Password";
-            parametro.Valor = params[2].toString();
+            parametro.Valor = params[10].toString();
             parameters.add(parametro);
 
             return WebService.ConexionWS(params[0], parameters);
@@ -640,7 +624,174 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
         @Override
         protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+            try {
+                JSONObject jsonResponse = new JSONObject(s);
+                int IdUser = jsonResponse.optInt("d");
+
+                SharedPreferences user = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = user.edit();
+                Intent goToMain = new Intent(getBaseContext(), MainActivity.class);
+
+                if (IdUser != 0) {
+                    editor.putInt("Id", IdUser);
+                    editor.putString("Nombres", editTextNombre.getText().toString());
+                    editor.putString("Apellidos", editTextApellido.getText().toString());
+                    editor.putString("Telefono",editTextTelefono.getText().toString());
+                    editor.putString("Sexo",spinnerSexo.getSelectedItem().toString());
+                    editor.putString("Correo",editTextCorreo.getText().toString());
+                    editor.putString("FechaNacimiento", btnFecha.getText().toString());
+                    editor.putString("RH",spinnerRh.getSelectedItem().toString());
+                    editor.putString("IdFacebook", idUserFacebook);
+                    editor.putString("IdTwitter", "0");
+                    editor.putString("UserLogin", editTextNombre.getText().toString());
+                    editor.commit();
+                    startActivity(goToMain);
+                } else {
+                    editor.putInt("Id", 0);
+                    editor.commit();
+                    ShowMessage("Error al registrar, intente más tarde.");
+                }
+
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    private class EditarUsuario extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPostExecute(String params) {
+            try {
+                JSONObject jsonResponse = new JSONObject(params);
+                String isOk = jsonResponse.optString("d");
+
+                SharedPreferences user = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = user.edit();
+                Intent goToMain = new Intent(getBaseContext(), MainActivity.class);
+
+                if (isOk.equals("True")) {
+                    editor.putString("Nombres", editTextNombre.getText().toString());
+                    editor.putString("Apellidos", editTextApellido.getText().toString());
+                    editor.putString("Telefono", editTextTelefono.getText().toString());
+                    editor.putString("Sexo", spinnerSexo.getSelectedItem().toString());
+                    editor.putString("Correo", editTextCorreo.getText().toString());
+                    editor.putString("FechaNacimiento", btnFecha.getText().toString());
+                    editor.putString("RH", spinnerRh.getSelectedItem().toString());
+                    editor.putString("IdTwitter", "0");
+                    editor.putString("UserLogin", editTextNombre.getText().toString());
+                    editor.commit();
+                    startActivity(goToMain);
+                } else {
+                    ShowMessage("Error al editar, intente más tarde.");
+                }
+
+            } catch (Exception e) {
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            WebServiceParameter parametro = new WebServiceParameter();
+
+            SharedPreferences user = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
+            parametro.Nombre = "Id";
+            parametro.Valor = String.valueOf(user.getInt("Id", 0));
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Nombres";
+            parametro.Valor = params[1];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter(); // Si no se reinicia genera error.
+            parametro.Nombre = "Telefono";
+            parametro.Valor = params[2];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Sexo";
+            if (params[3].equals("Masculino"))
+                parametro.Valor = String.valueOf(1);
+            else
+                parametro.Valor = String.valueOf(2);
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Correo";
+            parametro.Valor = params[4];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "FechaNacimiento";
+            parametro.Valor = params[5];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "RH";
+            parametro.Valor = params[6];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "FotoPath";
+            try {
+                String path = Environment.getExternalStorageDirectory().toString() + "/FireUser";
+                File streamImage = new File(path);
+                parametro.Valor = new ImagenData(BitmapFactory.decodeStream(new FileInputStream(streamImage))).content;
+            } catch (Exception e) {
+                parametro.Valor = "No imagen";
+            }
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdFacebook";
+            parametro.Valor = user.getString("IdFacebook", "0");
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdTwitter";
+            parametro.Valor = params[7];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "UserLogin";
+            parametro.Valor = params[8];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Password";
+            parametro.Valor = params[9];
+            parameters.add(parametro);
+
+            return WebService.ConexionWS(params[0], parameters);
+        }
+    }
+
+    private boolean ComparePassword()
+    {
+        if (editTexPassword.getText().toString().equals(editTexPasswordConfirmacion.getText().toString()))
+            return true;
+        else {
+            ShowMessage("Las contraseñas no coinciden.");
+            return false;
+        }
+    }
+
+    public static class CalendarPicker extends DialogFragment implements DatePickerDialog.OnDateSetListener
+    {
+        public int anio = Calendar.getInstance().get(Calendar.YEAR);
+        public int mes = Calendar.getInstance().get(Calendar.MONTH);
+        public int dia = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            DatePickerDialog dialogDatePicker = new DatePickerDialog(getActivity(), this, anio, mes, dia);
+            dialogDatePicker.getDatePicker().setCalendarViewShown(true);
+            return dialogDatePicker;
+        }
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            btnFecha.setText(dayOfMonth + "/" + monthOfYear + "/" + year);
         }
     }
 }

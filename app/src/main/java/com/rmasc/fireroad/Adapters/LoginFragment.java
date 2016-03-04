@@ -1,5 +1,6 @@
 package com.rmasc.fireroad.Adapters;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,8 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -23,7 +22,6 @@ import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
-import com.rmasc.fireroad.MainActivity;
 import com.rmasc.fireroad.R;
 import com.rmasc.fireroad.RegisterActivity;
 import com.rmasc.fireroad.Services.WebService;
@@ -37,6 +35,7 @@ public class LoginFragment extends Fragment {
     private CallbackManager callbackManager = null;
     private AccessTokenTracker mtracker = null;
     private ProfileTracker mprofileTracker = null;
+    ProgressDialog progressDialog;
 
     public static final String PARCEL_KEY = "parcel_key";
 
@@ -45,8 +44,8 @@ public class LoginFragment extends Fragment {
     FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
-            Profile profile = Profile.getCurrentProfile();
-            new ValidarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/LoginFacebook", profile.getId());
+            progressDialog.show(getContext(), "", "Cargando", true);
+            new ValidarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/LoginFacebook", loginResult.getAccessToken().getUserId());
         }
 
         @Override
@@ -156,24 +155,25 @@ public class LoginFragment extends Fragment {
                 JSONObject jsonResponse = new JSONObject(response);
                 int IdUser = jsonResponse.optInt("d");
 
+                SharedPreferences sharedPref = getContext().getSharedPreferences("User", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                Intent goToRegister = new Intent(getContext(), RegisterActivity.class);
+
                 if (IdUser != 0) {
-                    SharedPreferences sharedPref = getContext().getSharedPreferences("User", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putInt("Id", IdUser);
                     editor.commit();
-
-                    Intent goToMain = new Intent(getContext(), MainActivity.class);
-                    startActivity(goToMain);
+                    startActivity(goToRegister);
+                } else {
+                    editor.putInt("Id", 0);
+                    editor.commit();
+                    startActivity(goToRegister);
                 }
-                else
-                {
-                    Intent goToLogin;
-                    goToLogin = new Intent(getActivity().getBaseContext(), RegisterActivity.class);
-                    startActivity(goToLogin);
-                }
+                if (progressDialog != null)
+                    progressDialog.dismiss();
 
             } catch (Exception e) {
             }
+
         }
     }
 }

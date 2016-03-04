@@ -4,136 +4,148 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-            <ImageButton
+    <ImageButton
 
-                android:id="@+id/imageButtonUser"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@null"
-                android:contentDescription="Foto"
-                android:scaleType="fitXY" />
+        android:id="@+id/imageButtonUser"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@null"
+        android:contentDescription="@string/descriptor_Foto"
+        android:scaleType="fitXY" />
 
 
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-           <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-               <TableLayout
+        <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="@dimen/activity_horizontal_margin">
 
-                <TableRow>
+            <TableRow>
 
-            <TextView
-                android:layout_column="0"
-                android:text="@string/nombre" />
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/nombre" />
 
-            <EditText android:id="@+id/editTextNombre" />
-        </TableRow>
+                <EditText android:id="@+id/editTextNombre"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textPersonName" />
+            </TableRow>
 
 
-                   <TableRow>
+            <TableRow>
 
-                       <TextView
-                           android:layout_column="0"
-                           android:text="@string/apellido" />
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/apellido" />
 
-                       <EditText android:id="@+id/editTextApellido" />
-                   </TableRow>
-        <TableRow>
+                <EditText android:id="@+id/editTextApellido"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textPersonName" />
+            </TableRow>
 
-            <TextView
-                android:layout_column="0"
-                android:text="@string/telefono" />
+            <TableRow>
 
-            <EditText
-                android:id="@+id/editTextTelefono"
-                android:inputType="phone" />
-        </TableRow>
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/telefono" />
 
-        <TableRow>
+                <EditText
+                    android:id="@+id/editTextTelefono"
+                    android:inputType="phone"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true" />
+            </TableRow>
 
-            <TextView
-                android:layout_column="0"
-                android:text="@string/Genero" />
+            <TableRow>
 
-            <Spinner
-                android:id="@+id/spinnerSexo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/GeneroItems" />
-        </TableRow>
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/Genero" />
 
-        <TableRow>
+                <Spinner
+                    android:id="@+id/spinnerSexo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/GeneroItems" />
+            </TableRow>
 
-            <TextView
-                android:layout_column="0"
-                android:text="@string/fechaNacimiento" />
+            <TableRow>
 
-            <EditText
-                android:id="@+id/editTextEdad"
-                android:inputType="number" />
-        </TableRow>
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/fechaNacimiento" />
+                <Button android:id="@+id/btnFecha"
+                    android:text="@string/fechaNacimiento"
+                    style="@style/Base.Widget.AppCompat.ActionButton" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
 
-            <TextView
-                android:layout_column="0"
-                android:text="@string/RH" />
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/RH" />
 
-            <Spinner
-                android:id="@+id/spinnerRh"
-                android:entries="@array/RhItems" />
-        </TableRow>
+                <Spinner
+                    android:id="@+id/spinnerRh"
+                    android:entries="@array/RhItems" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
 
-            <TextView
-                android:layout_column="0"
-                android:text="@string/mail" />
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/mail" />
 
-            <EditText
+                <EditText
 
-                android:id="@+id/editTextCorreo"
-                android:ems="10"
-                android:inputType="textEmailAddress" />
-        </TableRow>
+                    android:id="@+id/editTextCorreo"
+                    android:ems="10"
+                    android:inputType="textEmailAddress"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
 
-            <TextView
-                android:layout_column="0"
-                android:text="@string/Contraseña" />
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/Contraseña" />
 
-            <EditText
-                android:id="@+id/editTexPassword"
-                android:inputType="textPassword" />
-        </TableRow>
+                <EditText
+                    android:id="@+id/editTexPassword"
+                    android:inputType="textPassword"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
 
-            <TextView
-                android:layout_column="0"
-                android:text="@string/Confirmacion" />
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/Confirmacion" />
 
-            <EditText
-                android:id="@+id/editTexPasswordConfirmacion"
-                android:inputType="textPassword" />
-        </TableRow>
+                <EditText
+                    android:id="@+id/editTexPasswordConfirmacion"
+                    android:inputType="textPassword"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
 
-            <Button
-
-                android:id="@+id/btnRegistrar"
-                android:layout_span="2"
-                android:gravity="center_horizontal"
-                android:text="Registrar" />
-        </TableRow>
-    </TableLayout>
-</ScrollView>
+                <Button
+                    android:id="@+id/btnRegistrar"
+                    android:layout_span="2"
+                    android:gravity="center_horizontal"
+                    android:text="@string/next" />
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
 </LinearLayout>

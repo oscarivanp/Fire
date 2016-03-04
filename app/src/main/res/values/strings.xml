@@ -5,12 +5,13 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="nombre">Nombre</string>
     <string name="apellido">Apellido</string>
-    <string name="fechaNacimiento">fecha Nacimiento</string>
+    <string name="fechaNacimiento">Fecha Nacimiento</string>
     <string name="mail">Email</string>
     <string name="telefono">Teléfono</string>
     <string name="scan">Scan</string>
     <string name="inicio">Bienvenido</string>
-    <string name="go">Go!</string>
+    <string name="registrar">Registrar</string>
+    <string name="login">Login</string>
     <string name="politicas">Terminos y condiciones</string>
     <string name="marca">Marca</string>
     <string name="placa">Placa</string>
@@ -21,15 +22,17 @@
     <string name="server_client_id">847692033013</string>
     <string name="google_app_id">fireroad-1232</string>
     <string name="facebook_app_id">1672065103033826</string>
-    <string name="Confirmacion">Confirmacion Pass</string>
-    <string name="Genero">Gènero</string>
+    <string name="Confirmacion">Confirmar Contraseña</string>
+    <string name="Genero">Género</string>
     <string name="Contraseña">Contraseña</string>
     <string name="RH">Rh</string>
+    <string name="descriptor_Foto">Foto Perfil</string>
+    <string name="next">Siguiente</string>
 
 
     <string-array name="GeneroItems">
-        <item>Masculino</item>
-        <item>Femenino</item>
+        <item value="1">Masculino</item>
+        <item value="2">Femenino</item>
     </string-array>
 
 

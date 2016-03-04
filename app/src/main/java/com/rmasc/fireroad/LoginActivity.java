@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
+import com.rmasc.fireroad.Services.ObtenerUsuario;
 import com.rmasc.fireroad.Services.WebService;
 
 import org.json.JSONObject;
@@ -124,6 +125,8 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putInt("Id", IdUser);
                     editor.commit();
+
+                    new ObtenerUsuario().execute(getBaseContext());
 
                     startActivity(goToMain);
                     finish();
