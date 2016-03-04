@@ -35,6 +35,8 @@ import com.facebook.AccessToken;
 import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 import com.rmasc.fireroad.Entities.JsonParser;
+import com.rmasc.fireroad.Entities.WebServiceParameter;
+import com.rmasc.fireroad.Services.WebService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,13 +46,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
-public class RegisterActivity extends AppCompatActivity  {
+public class RegisterActivity extends AppCompatActivity implements Serializable {
+
 
     private boolean imagUser = false, imagMoto = false;
 
@@ -90,12 +95,13 @@ public class RegisterActivity extends AppCompatActivity  {
     private String urlFcebook;
     private String urlFacebookProfile;
     JSONObject jsonObjectTexts, jsonObjectPicture;
+
+
     BluetoothLE bluetoothLE;
     @Override
-
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
 
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
@@ -128,37 +134,33 @@ public class RegisterActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_register);
 
         StrictMode.ThreadPolicy stream = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(stream);
-
         tipoLogin=  getIntent().getExtras().getString("TipoLogin");
 
         if(tipoLogin.equals("twitter")) {
-             userNameTwitter = getIntent().getExtras().getString("UserName");
+            userNameTwitter = getIntent().getExtras().getString("UserName");
             urlTwitterProfile = "https://twitter.com/" + userNameTwitter + "/profile_image?size=original";
         }
 
         if(tipoLogin.equals("facebook")) {
-
+        
             AccessToken token = AccessToken.getCurrentAccessToken();
-            idUser = token.getUserId();
-            if (token.isExpired()) {
-                AccessToken.refreshCurrentAccessTokenAsync();
-                token = AccessToken.getCurrentAccessToken();
-
-            }
-
-            tokenNumero = token.getToken();
-            urlFcebook = "https://graph.facebook.com/" + idUser + "?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token=" + tokenNumero;
-            urlFacebookProfile = "http://graph.facebook.com/" + idUser + "/picture?redirect=0&type=large";
-            new ValidarUser().execute(urlFcebook, urlFacebookProfile);
+            idUser =token.getUserId();
+            if(token.isExpired()) {
+            AccessToken.refreshCurrentAccessTokenAsync();
+            token = AccessToken.getCurrentAccessToken();
 
         }
-
+        
+          tokenNumero = token.getToken();
+          urlFcebook = "https://graph.facebook.com/" + idUser + "?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token=" + tokenNumero;
+          urlFacebookProfile = "http://graph.facebook.com/" + idUser + "/picture?redirect=0&type=large";
+           
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -246,7 +248,9 @@ public class RegisterActivity extends AppCompatActivity  {
         AssignControls();
     }
 
+        new ValidarUser().execute(urlFcebook, urlFacebookProfile);
 
+    }
 
     public static class PlaceholderFragment extends Fragment {
 
@@ -272,9 +276,10 @@ public class RegisterActivity extends AppCompatActivity  {
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
             {
                 case 1:
+
+
                    rootView = inflater.inflate(R.layout.register_user, container, false);
                     AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
-
                     break;
 
 
@@ -294,8 +299,6 @@ public class RegisterActivity extends AppCompatActivity  {
             return rootView;
         }
     }
-
-
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -338,7 +341,7 @@ public class RegisterActivity extends AppCompatActivity  {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
     }
 
-    public static void AssignStaticControls(int position, View view, final Context context)
+    public static void AssignStaticControls(int position, View view, Context context)
     {
         switch (position)
         {
@@ -348,7 +351,9 @@ public class RegisterActivity extends AppCompatActivity  {
                 editTextCorreo = (EditText) view.findViewById(R.id.editTextCorreo);
                 editTextTelefono = (EditText) view.findViewById(R.id.editTextTelefono);
                 imageButtonUser = (ImageButton) view.findViewById(R.id.imageButtonUser);
-                if(!imagenCargada) {
+
+                if (!imagenCargada) {
+
                   imageButtonUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(context.getResources(), R.drawable.no_user)));
                 }
                 else
@@ -519,6 +524,9 @@ public class RegisterActivity extends AppCompatActivity  {
 
     private class ValidarUser extends AsyncTask<String,String,String[]> {
 
+
+
+
         @Override
         protected String[] doInBackground(String... url) {
 
@@ -591,6 +599,76 @@ public class RegisterActivity extends AppCompatActivity  {
             }
             else {
                 imagenCargada=false;            }
+        }
+    }
+
+    private class CrearUsuario extends AsyncTask<String, Void, String>
+    {
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            WebServiceParameter parametro = new WebServiceParameter();
+
+            parametro.Nombre = "Nombres";
+            parametro.Valor = params[1].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter(); // Si no se reinicia genera error.
+            parametro.Nombre = "Telefono";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Sexo";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Correo";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "FechaNacimiento";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "RH";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "FotoPath";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdFacebook";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdTwitter";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "UserLogin";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Password";
+            parametro.Valor = params[2].toString();
+            parameters.add(parametro);
+
+            return WebService.ConexionWS(params[0], parameters);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
         }
     }
 }
