@@ -28,12 +28,9 @@ public class LoginFragment extends Fragment {
     private AccessTokenTracker mtracker = null;
     private ProfileTracker mprofileTracker = null;
     private Profile profile;
-
     public static final String PARCEL_KEY = "parcel_key";
-
     private LoginButton loginButton;
     private ImageView imageView;
-
     private Button btnRegistrar;
 
     FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
@@ -42,19 +39,16 @@ public class LoginFragment extends Fragment {
 
             Intent goToLogin;
             goToLogin = new Intent(getActivity().getBaseContext(), RegisterActivity.class);
+            goToLogin.putExtra("TipoLogin", "facebook");
             startActivity(goToLogin);
-
-
         }
 
         @Override
         public void onCancel() {
-
         }
 
         @Override
         public void onError(FacebookException error) {
-
         }
     };
 
@@ -64,8 +58,6 @@ public class LoginFragment extends Fragment {
 
 
         callbackManager = CallbackManager.Factory.create();
-
-
         mtracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
@@ -73,8 +65,6 @@ public class LoginFragment extends Fragment {
                 Log.v("AccessTokenTracker", "oldAccessToken=" + oldAccessToken + "||" + "CurrentAccessToken" + currentAccessToken);
             }
         };
-
-
         mprofileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
@@ -128,11 +118,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-    //   if (isLoggedIn()) {
-    //    loginButton.setVisibility(View.INVISIBLE);
-    //          Profile profile = Profile.getCurrentProfile();
-    //      homeFragment(profile);
-    //  }
 
     }
 }

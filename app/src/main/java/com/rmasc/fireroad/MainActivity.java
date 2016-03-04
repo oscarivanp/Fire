@@ -14,10 +14,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
@@ -31,11 +31,16 @@ import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 import com.rmasc.fireroad.Entities.DeviceBluetooth;
 import com.rmasc.fireroad.Entities.DeviceData;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.io.InputStream;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
+
+
+
+TwitterLoginButton twitterloginButton;
 
     ImageView imageViewBateria, imageViewGas, imageViewUser;
     ImageButton imageButtonEstado, imageButtonCandado;
@@ -59,7 +64,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+       setContentView(R.layout.activity_main);
+
+
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);

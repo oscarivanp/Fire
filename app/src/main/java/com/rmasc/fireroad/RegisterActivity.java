@@ -44,15 +44,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class RegisterActivity extends AppCompatActivity implements Serializable {
-
+public class RegisterActivity extends AppCompatActivity  {
 
     private boolean imagUser = false, imagMoto = false;
 
@@ -78,8 +76,12 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
     private static AdapterView.OnItemClickListener itemClickListener;
 
-    ImageView imageView;
+    String tipoLogin;
 
+    private static String userNameTwitter;
+    private static String urlTwitterProfile;
+
+    ImageView imageView;
 
     private static int RESULT_LOAD_IMAGE = 1;
     private String[] objetos = new String[6];
@@ -88,13 +90,12 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
     private String urlFcebook;
     private String urlFacebookProfile;
     JSONObject jsonObjectTexts, jsonObjectPicture;
-
-
     BluetoothLE bluetoothLE;
     @Override
+
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
 
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
@@ -127,25 +128,37 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_register);
 
         StrictMode.ThreadPolicy stream = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(stream);
-        AccessToken token = AccessToken.getCurrentAccessToken();
-        idUser =token.getUserId();
-        if(token.isExpired())
-        {
-           AccessToken.refreshCurrentAccessTokenAsync();
-           token = AccessToken.getCurrentAccessToken();
+
+        tipoLogin=  getIntent().getExtras().getString("TipoLogin");
+
+        if(tipoLogin.equals("twitter")) {
+             userNameTwitter = getIntent().getExtras().getString("UserName");
+            urlTwitterProfile = "https://twitter.com/" + userNameTwitter + "/profile_image?size=original";
+        }
+
+        if(tipoLogin.equals("facebook")) {
+
+            AccessToken token = AccessToken.getCurrentAccessToken();
+            idUser = token.getUserId();
+            if (token.isExpired()) {
+                AccessToken.refreshCurrentAccessTokenAsync();
+                token = AccessToken.getCurrentAccessToken();
+
+            }
+
+            tokenNumero = token.getToken();
+            urlFcebook = "https://graph.facebook.com/" + idUser + "?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token=" + tokenNumero;
+            urlFacebookProfile = "http://graph.facebook.com/" + idUser + "/picture?redirect=0&type=large";
+            new ValidarUser().execute(urlFcebook, urlFacebookProfile);
 
         }
 
-        tokenNumero= token.getToken();
-        urlFcebook="https://graph.facebook.com/"+idUser+"?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token="+tokenNumero;
-        urlFacebookProfile="http://graph.facebook.com/"+idUser+"/picture?redirect=0&type=large";
-
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -231,10 +244,9 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         };
 
         AssignControls();
-
-        new ValidarUser().execute(urlFcebook, urlFacebookProfile);
-
     }
+
+
 
     public static class PlaceholderFragment extends Fragment {
 
@@ -260,10 +272,9 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
             {
                 case 1:
-
-
                    rootView = inflater.inflate(R.layout.register_user, container, false);
                     AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
+
                     break;
 
 
@@ -283,6 +294,8 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
             return rootView;
         }
     }
+
+
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -325,7 +338,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
     }
 
-    public static void AssignStaticControls(int position, View view, Context context)
+    public static void AssignStaticControls(int position, View view, final Context context)
     {
         switch (position)
         {
@@ -335,9 +348,7 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                 editTextCorreo = (EditText) view.findViewById(R.id.editTextCorreo);
                 editTextTelefono = (EditText) view.findViewById(R.id.editTextTelefono);
                 imageButtonUser = (ImageButton) view.findViewById(R.id.imageButtonUser);
-
                 if(!imagenCargada) {
-
                   imageButtonUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(context.getResources(), R.drawable.no_user)));
                 }
                 else
@@ -346,6 +357,19 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
                 }
                 imageButtonUser.setOnClickListener(buttonClickListener);
+
+                    editTextNombre.setText(userNameTwitter);
+
+                    try {
+                        InputStream prueba = new URL(urlTwitterProfile).openStream();
+                        Bitmap foto = BitmapFactory.decodeStream(prueba);
+                        RoundImages imaghenFace= new RoundImages(foto);
+                        Bitmap imagenProcesada= imaghenFace.RoundImages(foto, 200, 200);
+                        imageButtonUser.setImageBitmap(imagenProcesada);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 break;
             case 2:
                 listVDevices = (ListView) view.findViewById(R.id.listVDevices);
@@ -494,9 +518,6 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
     }
 
     private class ValidarUser extends AsyncTask<String,String,String[]> {
-
-
-
 
         @Override
         protected String[] doInBackground(String... url) {
