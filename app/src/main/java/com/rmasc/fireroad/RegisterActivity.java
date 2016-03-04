@@ -248,6 +248,7 @@ public class RegisterActivity extends AppCompatActivity {
             new ValidarUser().execute(urlFcebook, urlFacebookProfile);
 
         }
+
     }
 
         public static class PlaceholderFragment extends Fragment {
@@ -818,4 +819,6 @@ public class RegisterActivity extends AppCompatActivity {
             btnFecha.setText(dayOfMonth + "/" + monthOfYear + "/" + year);
         }
     }
+
+
 }
