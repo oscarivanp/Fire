@@ -36,10 +36,13 @@ public class LoginFragment extends Fragment {
     private AccessTokenTracker mtracker = null;
     private ProfileTracker mprofileTracker = null;
     ProgressDialog progressDialog;
+    private Profile profile;
 
     public static final String PARCEL_KEY = "parcel_key";
 
     private LoginButton loginButton;
+    private ImageView imageView;
+    private Button btnRegistrar;
 
     FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
         @Override
@@ -81,7 +84,7 @@ public class LoginFragment extends Fragment {
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
 
                 Log.v("Session Tracker", "oldProfile=" + oldProfile + "||" + "currentProfile" + currentProfile);
-            }
+                         }
         };
 
         mtracker.startTracking();
@@ -99,7 +102,7 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         loginButton = (LoginButton) view.findViewById(R.id.login_button);
-        loginButton.setReadPermissions("user_friends", "email");
+        loginButton.setReadPermissions("user_friends","email");
 
         // If using in a fragment
         loginButton.setFragment(this);
@@ -128,11 +131,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //   if (isLoggedIn()) {
-        //    loginButton.setVisibility(View.INVISIBLE);
-        //          Profile profile = Profile.getCurrentProfile();
-        //      homeFragment(profile);
-        //  }
 
     }
 
@@ -162,10 +160,12 @@ public class LoginFragment extends Fragment {
                 if (IdUser != 0) {
                     editor.putInt("Id", IdUser);
                     editor.commit();
+                    goToRegister.putExtra("TipoLogin", "facebook");
                     startActivity(goToRegister);
                 } else {
                     editor.putInt("Id", 0);
                     editor.commit();
+                    goToRegister.putExtra("TipoLogin", "facebook");
                     startActivity(goToRegister);
                 }
                 if (progressDialog != null)
@@ -173,7 +173,6 @@ public class LoginFragment extends Fragment {
 
             } catch (Exception e) {
             }
-
         }
     }
 }

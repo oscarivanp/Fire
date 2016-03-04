@@ -81,6 +81,12 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
     private static int IdUser = 0;
     SharedPreferences sharedPref;
+    String tipoLogin;
+
+    private static String userNameTwitter;
+    private static String urlTwitterProfile;
+
+    ImageView imageView;
 
     private static int RESULT_LOAD_IMAGE = 1;
     private String[] objetos = new String[6];
@@ -123,21 +129,27 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
 
         StrictMode.ThreadPolicy stream = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(stream);
-        AccessToken token = AccessToken.getCurrentAccessToken();
-        idUserFacebook = token.getUserId();
-        if (token.isExpired()) {
+        tipoLogin=  getIntent().getExtras().getString("TipoLogin");
+
+        if(tipoLogin.equals("twitter")) {
+            userNameTwitter = getIntent().getExtras().getString("UserName");
+            urlTwitterProfile = "https://twitter.com/" + userNameTwitter + "/profile_image?size=original";
+        }
+
+        if(tipoLogin.equals("facebook")) {
+        
+            AccessToken token = AccessToken.getCurrentAccessToken();
+            idUserFacebook =token.getUserId();
+            if(token.isExpired()) {
             AccessToken.refreshCurrentAccessTokenAsync();
             token = AccessToken.getCurrentAccessToken();
 
         }
-
-        sharedPref = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
-        IdUser = sharedPref.getInt("Id", 0);
-
-        tokenNumero = token.getToken();
-        urlFcebook = "https://graph.facebook.com/" + idUserFacebook + "?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token=" + tokenNumero;
-        urlFacebookProfile = "http://graph.facebook.com/" + idUserFacebook + "/picture?redirect=0&type=large";
-
+        
+          tokenNumero = token.getToken();
+          urlFcebook = "https://graph.facebook.com/" + idUser + "?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token=" + tokenNumero;
+          urlFacebookProfile = "http://graph.facebook.com/" + idUser + "/picture?redirect=0&type=large";
+           
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -340,6 +352,19 @@ public class RegisterActivity extends AppCompatActivity implements Serializable 
                     imageButtonUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(context.getResources(), R.drawable.no_user)));
                 }
                 imageButtonUser.setOnClickListener(buttonClickListener);
+
+                    editTextNombre.setText(userNameTwitter);
+
+                    try {
+                        InputStream prueba = new URL(urlTwitterProfile).openStream();
+                        Bitmap foto = BitmapFactory.decodeStream(prueba);
+                        RoundImages imaghenFace= new RoundImages(foto);
+                        Bitmap imagenProcesada= imaghenFace.RoundImages(foto, 200, 200);
+                        imageButtonUser.setImageBitmap(imagenProcesada);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 spinnerSexo = (Spinner) view.findViewById(R.id.spinnerSexo);
                 spinnerRh = (Spinner) view.findViewById(R.id.spinnerRh);
 

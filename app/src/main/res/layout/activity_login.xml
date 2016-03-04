@@ -38,7 +38,6 @@
          >
 
             <ImageView
-
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 android:foregroundGravity="center_vertical"
@@ -47,25 +46,7 @@
                 android:src="@mipmap/ic_launcher"
                 />
 
-            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/fragment"
-                android:name="com.rmasc.fireroad.Adapters.LoginFragment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:layout="@layout/login_fragment" />
-
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-
-                android:textColor="@color/colorLink"
-                android:layout_height="wrap_content"
-                android:text="Registrarme"
-                android:id="@+id/btnRegistrar" />
-
             <EditText
-                android:layout_marginTop="40dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
@@ -83,17 +64,49 @@
 
             <Button
                 style="?android:attr/buttonStyleSmall"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
+                android:layout_marginBottom="30dp"
                 android:layout_height="wrap_content"
                 android:text="Ingresar"
                 android:textColor="@color/colorLink"
                 android:id="@+id/btnGo"/>
 
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="180sp"
+                android:background="@color/colorLink"
+                android:textColor="@color/colorBackground"
+                android:layout_height="30sp"
+                android:text="Registrarme"
+                android:textSize="14sp"
+
+                android:id="@+id/btnRegistrar" />
+
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/fragment"
+                android:name="com.rmasc.fireroad.Adapters.LoginFragment"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                tools:layout="@layout/login_fragment" />
 
 
+
+         <com.twitter.sdk.android.core.identity.TwitterLoginButton
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:id="@+id/btnTwitter"/>
+
+            <RelativeLayout
+                android:id="@+id/twitter_login_layout"
+                style="@style/layoutstyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                >
+
+            </RelativeLayout>
         </LinearLayout>
-
-
     </RelativeLayout>
 </RelativeLayout>
