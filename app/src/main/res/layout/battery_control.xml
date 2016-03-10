@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="Batt"
         android:id="@+id/imageViewBateria"
-        android:src="@drawable/batt_0"
+        android:src="@null"
         android:background="@null"/>
     <TextView
         android:layout_width="wrap_content"
