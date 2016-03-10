@@ -35,7 +35,7 @@
             android:orientation="vertical"
             android:gravity="center"
             android:id="@+id/campoLogin"
-         >
+            android:weightSum="1">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -43,10 +43,13 @@
                 android:foregroundGravity="center_vertical"
                 android:id="@+id/imgLogo"
                 android:layout_centerHorizontal="true"
-                android:src="@mipmap/ic_launcher"
+                android:src="@drawable/loginlogo"
                 />
 
+
+
             <EditText
+                android:layout_marginTop="60dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
@@ -54,7 +57,9 @@
                 android:ems="10"
                 android:id="@+id/editTextCorreo" />
 
+
             <EditText
+                android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
@@ -63,40 +68,26 @@
                 android:id="@+id/editTextContrasena" />
 
             <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_marginTop="20dp"
-                android:layout_width="wrap_content"
-                android:layout_marginBottom="30dp"
-                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_width="213dp"
+                android:layout_height="30dp"
                 android:text="Ingresar"
-                android:textColor="@color/colorLink"
+                android:background="@color/dgts__default_accent"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/colorBackground"
                 android:id="@+id/btnGo"/>
 
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="180sp"
-                android:background="@color/colorLink"
-                android:textColor="@color/colorBackground"
-                android:layout_height="30sp"
-                android:text="Registrarme"
-                android:textSize="14sp"
-
-                android:id="@+id/btnRegistrar" />
-
-            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/fragment"
-                android:name="com.rmasc.fireroad.Adapters.LoginFragment"
-                android:layout_width="200sp"
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:layout="@layout/login_fragment" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Registrarme"
+                android:textColor="@color/com_facebook_button_send_background_color"
+                android:id="@+id/btnRegistrar"
+                android:layout_gravity="center_horizontal"
+                android:clickable="true" />
 
-
-
-         <com.twitter.sdk.android.core.identity.TwitterLoginButton
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:id="@+id/btnTwitter"/>
 
             <RelativeLayout
                 android:id="@+id/twitter_login_layout"
@@ -107,6 +98,18 @@
                 >
 
             </RelativeLayout>
+           <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+               xmlns:tools="http://schemas.android.com/tools"
+               android:layout_marginTop="40dp"
+                android:id="@+id/fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:name="com.rmasc.fireroad.Adapters.LoginFragment"
+                tools:layout="@layout/login_fragment"
+            />
         </LinearLayout>
+
+
+
     </RelativeLayout>
 </RelativeLayout>

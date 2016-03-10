@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.rmasc.fireroad.R;
 
 /**
@@ -61,7 +62,6 @@ public class IntroFragment extends Fragment {
         // Inflate the layout resource file
         View view = getActivity().getLayoutInflater().inflate(layoutResId, container, false);
 
-        // Set the current page index as the View's tag (useful in the PageTransformer)
         view.setTag(mPage);
 
         return view;

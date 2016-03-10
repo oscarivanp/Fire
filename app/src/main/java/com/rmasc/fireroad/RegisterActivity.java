@@ -1,13 +1,14 @@
 package com.rmasc.fireroad;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -80,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static int IdUser = 0;
     SharedPreferences sharedPref;
-    String tipoLogin;
+    String tipoLogin="";
 
     private static String userNameTwitter;
     private static String urlTwitterProfile;
@@ -94,31 +95,61 @@ public class RegisterActivity extends AppCompatActivity {
     private String urlFcebook;
     private String urlFacebookProfile;
     JSONObject jsonObjectTexts, jsonObjectPicture;
-
+    private String APP_DIRECTORY = "myPictureApp/";
+    private String MEDIA_DIRECTORY = APP_DIRECTORY + "media";
+    private String TEMPORAL_PICTURE_NAME = "temporal.jpg";
+    private final int PHOTO_CODE = 100;
+    private final int SELECT_PICTURE = 200;
 
     BluetoothLE bluetoothLE;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
+
             if (imagUser) {
-                imageButtonUser.setImageDrawable(new RoundImages(ReSizeImage(BitmapFactory.decodeFile(picturePath))));
-                imageButtonUser.setScaleType(ImageView.ScaleType.FIT_XY);
+
+
+                switch (requestCode){
+                    case PHOTO_CODE:
+                        if(resultCode == RESULT_OK){
+                            String dir =  Environment.getExternalStorageDirectory() + File.separator
+                                    + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+                            decodeBitmap(dir,"User");
+                        }
+                        break;
+
+                    case SELECT_PICTURE:
+                        if(resultCode == RESULT_OK){
+                            Uri path = data.getData();
+                            imageButtonUser.setImageURI(path);
+                        }
+                        break;
+                }
+
+
                 imagUser = false;
             } else {
-                imageButtonMoto.setImageDrawable(new RoundImages(ReSizeImage(BitmapFactory.decodeFile(picturePath))));
-                imageButtonMoto.setScaleType(ImageView.ScaleType.FIT_XY);
-                imagMoto = false;
+                switch (requestCode){
+                    case PHOTO_CODE:
+                        if(resultCode == RESULT_OK){
+                            String dir =  Environment.getExternalStorageDirectory() + File.separator
+                                    + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+                            decodeBitmap(dir,"Moto");
+                        }
+                        break;
+
+                    case SELECT_PICTURE:
+                        if(resultCode == RESULT_OK){
+                            Uri path = data.getData();
+                            imageButtonMoto.setImageURI(path);
+                        }
+                        break;
+                }
+
+              imagMoto = false;
             }
-        }
+
     }
 
     @Override
@@ -128,7 +159,12 @@ public class RegisterActivity extends AppCompatActivity {
 
         StrictMode.ThreadPolicy stream = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(stream);
-        tipoLogin = getIntent().getExtras().getString("TipoLogin");
+
+        if(getIntent().getExtras()!=null){
+
+            tipoLogin = getIntent().getExtras().getString("TipoLogin");
+
+        }
 
         if (tipoLogin.equals("twitter")) {
             userNameTwitter = getIntent().getExtras().getString("UserName");
@@ -148,11 +184,14 @@ public class RegisterActivity extends AppCompatActivity {
             tokenNumero = token.getToken();
             urlFcebook = "https://graph.facebook.com/" + idUserFacebook + "?fields=id,name,first_name,birthday,last_name,middle_name,email,picture&access_token=" + tokenNumero;
             urlFacebookProfile = "http://graph.facebook.com/" + idUserFacebook + "/picture?redirect=0&type=large";
+            new ValidarUser().execute(urlFcebook, urlFacebookProfile);
 
+
+        }
             mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
             mViewPager = (ViewPager) findViewById(R.id.container);
             mViewPager.setAdapter(mSectionsPagerAdapter);
+
             mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -193,14 +232,51 @@ public class RegisterActivity extends AppCompatActivity {
                         case R.id.imageButtonUser:
                             imagUser = true;
                             imagMoto = !imagUser;
-                            i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            startActivityForResult(i, RESULT_LOAD_IMAGE);
+
+                            final CharSequence[] options = {"Tomar foto", "Elegir de galeria", "Cancelar"};
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+                            builder.setTitle("Elige una opcion");
+                            builder.setItems(options, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int seleccion) {
+                                    if (options[seleccion] == "Tomar foto") {
+                                        openCamera();
+                                    } else if (options[seleccion] == "Elegir de galeria") {
+                                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                        intent.setType("image/*");
+                                        startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                                    } else if (options[seleccion] == "Cancelar") {
+                                        dialog.dismiss();
+                                    }
+                                }
+                            });
+                            builder.show();
+
                             break;
                         case R.id.imageButtonMoto:
                             imagMoto = true;
                             imagUser = !imagMoto;
-                            i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            startActivityForResult(i, RESULT_LOAD_IMAGE);
+
+                            final CharSequence[] optionsMoto = {"Tomar foto", "Elegir de galeria", "Cancelar"};
+                            final AlertDialog.Builder builderMoto = new AlertDialog.Builder(RegisterActivity.this);
+                            builderMoto.setTitle("Elige una opcion");
+                            builderMoto.setItems(optionsMoto, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int seleccion) {
+                                    if(optionsMoto[seleccion] == "Tomar foto"){
+                                        openCamera();
+                                    }else if (optionsMoto[seleccion] == "Elegir de galeria") {
+                                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                        intent.setType("image/*");
+                                        startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                                    }else if(optionsMoto[seleccion] == "Cancelar"){
+                                        dialog.dismiss();
+                                    }
+                                }
+                            });
+                            builderMoto.show();
+
+
                             break;
                         case R.id.btnScan:
                             if (bluetoothLE != null) {
@@ -245,13 +321,25 @@ public class RegisterActivity extends AppCompatActivity {
 
             AssignControls();
 
-            new ValidarUser().execute(urlFcebook, urlFacebookProfile);
 
-        }
 
     }
+    private void openCamera() {
+        File file = new File(Environment.getExternalStorageDirectory(), MEDIA_DIRECTORY);
+        file.mkdirs();
 
-        public static class PlaceholderFragment extends Fragment {
+        String path = Environment.getExternalStorageDirectory() + File.separator
+                + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+
+        File newFile = new File(path);
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(newFile));
+        startActivityForResult(intent, PHOTO_CODE);
+    }
+
+
+    public static class PlaceholderFragment extends Fragment {
 
             private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -820,5 +908,25 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    private void decodeBitmap(String dir, String tipo) {
+        Bitmap bitmap;
+        bitmap = BitmapFactory.decodeFile(dir);
+
+        if(tipo.equals("User"))
+        {
+            RoundImages imaghenFace = new RoundImages(bitmap);
+            Bitmap imagenProcesada = imaghenFace.RoundImages(bitmap, 200, 200);
+            imageButtonUser.setImageBitmap(imagenProcesada);
+
+        }
+        if(tipo.equals("Moto")){
+
+            RoundImages imaghenFace = new RoundImages(bitmap);
+            Bitmap imagenProcesada = imaghenFace.RoundImages(bitmap, 200, 200);
+            imageButtonMoto.setImageBitmap(imagenProcesada);
+
+        }
+
+    }
 
 }

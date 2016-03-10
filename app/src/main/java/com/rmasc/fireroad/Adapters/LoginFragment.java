@@ -42,6 +42,7 @@ public class LoginFragment extends Fragment {
 
     private LoginButton loginButton;
 
+
     FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {

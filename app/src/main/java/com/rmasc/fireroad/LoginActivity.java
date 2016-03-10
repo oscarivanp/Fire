@@ -35,10 +35,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TWITTER_KEY = "ZQqwjflLo84ULNenXXiHAGR9s";
     private static final String TWITTER_SECRET = "ZttElB9UKZfgl3My0xgkjgol5OLtVtRDuQrCpQ7052eipvxhYR";
-    private Button btnGo, btnRegistrar;
+    private Button btnGo;
+    private TextView btnRegistrar;
 
     public EditText editTextContrasena, editTextCorreo;
 
+    private ImageButton imgBtnFace, imgBtnTwitt;
     private static TwitterLoginButton twitterloginButton;
     private View.OnClickListener buttonClickListener;
 
@@ -49,40 +51,40 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig));
+       /// TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+      //  Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_login);
-        twitterloginButton = (TwitterLoginButton) findViewById(R.id.btnTwitter);
-        twitterloginButton.setCallback(new Callback<TwitterSession>() {
+      //  twitterloginButton = (TwitterLoginButton) findViewById(R.id.btnTwitter);
+      //  twitterloginButton.setCallback(new Callback<TwitterSession>() {
 
-            @Override
-            public void success(Result<TwitterSession> result) {
-                // The TwitterSession is also available through:
+          //  @Override
+         //   public void success(Result<TwitterSession> result) {
+         //       // The TwitterSession is also available through:
 
-                TwitterSession session = result.data;
+          //      TwitterSession session = result.data;
 
-                // TODO: Remove toast and use the TwitterSession's userID
+           //     // TODO: Remove toast and use the TwitterSession's userID
                 // with your app's user model
-                Intent goToLogin;
-                Bundle bundle = new Bundle();
-                bundle.putString("UserName" ,session.getUserName() );
-                bundle.putString("TipoLogin", "twitter" );
-                goToLogin = new Intent(getBaseContext(), RegisterActivity.class);
-                goToLogin.putExtras(bundle);
-                startActivity(goToLogin);
+          //      Intent goToLogin;
+          //      Bundle bundle = new Bundle();
+          //      bundle.putString("UserName" ,session.getUserName() );
+          //      bundle.putString("TipoLogin", "twitter" );
+          //      goToLogin = new Intent(getBaseContext(), RegisterActivity.class);
+           //     goToLogin.putExtras(bundle);
+            //    startActivity(goToLogin);
 
-            }
+          //  }
 
-            @Override
-            public void failure(TwitterException exception) {
-                Log.d("TwitterKit", "Login with Twitter failure", exception);
-            }
+          //  @Override
+          //  public void failure(TwitterException exception) {
+         //       Log.d("TwitterKit", "Login with Twitter failure", exception);
+         //   }
 
-            @Override
-            protected Object clone() throws CloneNotSupportedException {
-                return super.clone();
-            }
-        });
+          //  @Override
+         //   protected Object clone() throws CloneNotSupportedException {
+          //      return super.clone();
+          //  }
+      //  });
 
         goToMain = new Intent(getBaseContext(), MainActivity.class);
         sharedPref = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
@@ -115,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
         btnGo = (Button) findViewById(R.id.btnGo);
         btnGo.setOnClickListener(buttonClickListener);
 
-        btnRegistrar = (Button) findViewById(R.id.btnRegistrar);
+        btnRegistrar = (TextView) findViewById(R.id.btnRegistrar);
         btnRegistrar.setOnClickListener(buttonClickListener);
 
         editTextContrasena = (EditText) findViewById(R.id.editTextContrasena);
@@ -136,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        twitterloginButton.onActivityResult(requestCode, resultCode, data);
+      //  twitterloginButton.onActivityResult(requestCode, resultCode, data);
     }
 
     private void IniciarLogin()
@@ -179,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                     editor.commit();
 
                     new ObtenerUsuario().execute(getBaseContext());
-
+                    ShowMessage("Bienvenido");
                     startActivity(goToMain);
                     finish();
                 }
