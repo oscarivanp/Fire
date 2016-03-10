@@ -37,14 +37,15 @@ public class ObtenerUsuario extends AsyncTask <Context, Void, String> {
                 editor.putString("RH", data.optString("RH"));
                 editor.putString("IdTwitter", data.optString("IdTwitter"));
                 editor.putString("IdFacebook", data.optString("IdFacebook"));
-                editor.putString("UserLogin", data.optString("UserLogin"));
+                editor.putString("UserLogin", data.optString("Login"));
                 editor.commit();
+
+                new ObtenerVehiculo().execute(appContext);
             }
 
         }
         catch (Exception e)
         {
-
         }
     }
 
@@ -54,7 +55,7 @@ public class ObtenerUsuario extends AsyncTask <Context, Void, String> {
         WebServiceParameter parametro = new WebServiceParameter();
 
         SharedPreferences userPref = params[0].getSharedPreferences("User", Context.MODE_PRIVATE);
-        parametro.Nombre = "Id";
+        parametro.Nombre = "IdUser";
         parametro.Valor = String.valueOf(userPref.getInt("Id", 0));
         parameters.add(parametro);
         appContext = params[0];

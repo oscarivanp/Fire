@@ -39,8 +39,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public EditText editTextContrasena, editTextCorreo;
 
-    private ImageButton imgBtnFace, imgBtnTwitt;
-    private EditText editTextContrasena;
     private static TwitterLoginButton twitterloginButton;
     private View.OnClickListener buttonClickListener;
 
@@ -140,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
 
         twitterloginButton.onActivityResult(requestCode, resultCode, data);
     }
-    private boolean IniciarLogin()
+
     private void IniciarLogin()
     {
         new LoginWebService().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/Login", editTextCorreo.getText().toString(), editTextContrasena.getText().toString());
@@ -154,12 +152,12 @@ public class LoginActivity extends AppCompatActivity {
             WebServiceParameter parametro = new WebServiceParameter();
 
             parametro.Nombre = "Correo";
-            parametro.Valor = urls[1].toString();
+            parametro.Valor = urls[1];
             parameters.add(parametro);
 
             parametro = new WebServiceParameter(); // Si no se reinicia genera error.
             parametro.Nombre = "Password";
-            parametro.Valor = urls[2].toString();
+            parametro.Valor = urls[2];
             parameters.add(parametro);
 
             return WebService.ConexionWS(urls[0], parameters);

@@ -25,8 +25,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
@@ -42,14 +44,13 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
 
+    TwitterLoginButton twitterloginButton;
 
-TwitterLoginButton twitterloginButton;
-
-    ImageView imageViewBateria, imageViewGas, imageViewUser;
-    ImageButton imageButtonEstado, imageButtonCandado;
-    Button btnRecorrido;
+    ImageView imageViewBateria, imageViewUser;
+    Button btnRecorrido, btnMapa;
     TextView txtUser, txtReporteDispositivo, txtValueProgress, txtConexion;
-    ProgressBar tachoMeter;
+    ProgressBar tachoMeter, progressBattMoto, progressBattDispositivo, progressCombustible;
+    Switch switchEncendido, switchEstacionado;
 
     BluetoothLE bluetoothLE;
     BluetoothGattCharacteristic charSerial;
@@ -67,9 +68,7 @@ TwitterLoginButton twitterloginButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       setContentView(R.layout.activity_main);
-
-
+        setContentView(R.layout.activity_main);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -78,22 +77,19 @@ TwitterLoginButton twitterloginButton;
             Intent goToIntro = new Intent(getBaseContext(), IntroActivity.class);
             startActivity(goToIntro);
             finish();
-        }
-        else {
+        } else {
 
             buttonClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
                     switch (v.getId()) {
-                        case R.id.imageButtonEstado:
-                            //Permite encender la moto (si está disponible).
-                            break;
-                        case R.id.imageButtonCandado:
-                            //Modo parqueo on/off activa o desactiva notificaciones de alarma.
-                            EnviarAlDispositivo(R.id.imageButtonCandado);
-                            break;
+                        //Modo parqueo on/off activa o desactiva notificaciones de alarma.
+                        //EnviarAlDispositivo(R.id.imageButtonCandado);
                         case R.id.imageViewUser:
+
+                            break;
+                        case R.id.btnMapa:
                             VerDispositivoMapa();
                             break;
                         case R.id.btnRecorrido:
@@ -109,7 +105,7 @@ TwitterLoginButton twitterloginButton;
                             }
                             break;
                         case R.id.txtConexion:
-                            if (bluetoothLE != null && DispositivoAsociado == null)
+                            if (bluetoothLE != null && DispositivoAsociado != null)
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -147,9 +143,14 @@ TwitterLoginButton twitterloginButton;
 
     private void AssignViews() {
         imageViewBateria = (ImageView) findViewById(R.id.imageViewBateria);
-        imageViewGas = (ImageView) findViewById(R.id.imageViewGas);
         imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
         imageViewUser.setOnClickListener(buttonClickListener);
+
+        switchEncendido = (Switch) findViewById(R.id.switchEncendido);
+        switchEncendido.setEnabled(false);
+        switchEstacionado = (Switch) findViewById(R.id.switchEstacionado);
+        switchEstacionado.setEnabled(false);
+
 
         try {
             String path = Environment.getExternalStorageDirectory().toString() + "/FireUser";
@@ -160,13 +161,10 @@ TwitterLoginButton twitterloginButton;
             imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
         }
 
-        imageButtonEstado = (ImageButton) findViewById(R.id.imageButtonEstado);
-        imageButtonEstado.setOnClickListener(buttonClickListener);
-        imageButtonCandado = (ImageButton) findViewById(R.id.imageButtonCandado);
-        imageButtonCandado.setOnClickListener(buttonClickListener);
-
         btnRecorrido = (Button) findViewById(R.id.btnRecorrido);
         btnRecorrido.setOnClickListener(buttonClickListener);
+        btnMapa = (Button) findViewById(R.id.btnMapa);
+        btnMapa.setOnClickListener(buttonClickListener);
 
         SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
         txtUser = (TextView) findViewById(R.id.txtUser);
@@ -177,6 +175,9 @@ TwitterLoginButton twitterloginButton;
         txtConexion.setOnClickListener(buttonClickListener);
 
         tachoMeter = (ProgressBar) findViewById(R.id.tachoMeter);
+        progressBattDispositivo = (ProgressBar) findViewById(R.id.progressBattDispositivo);
+        progressBattMoto = (ProgressBar) findViewById(R.id.progressBattMoto);
+        progressCombustible = (ProgressBar) findViewById(R.id.progressCombustible);
 
     }
 
@@ -275,7 +276,17 @@ TwitterLoginButton twitterloginButton;
                                     OnConnectionChanged(false);
                                     break;
                                 default:
-                                    ShowSnackMessage("Unknown status: " + String.valueOf(status) + " Ns: " + String.valueOf(newState));
+                                    break;
+                            }
+                            switch (newState) {
+                                case 0:
+                                    OnConnectionChanged(false);
+                                    break;
+                                case 2:
+                                    OnConnectionChanged(true);
+                                    break;
+                                default:
+                                    break;
                             }
                             super.onConnectionStateChange(gatt, status, newState);
                         }
@@ -298,9 +309,9 @@ TwitterLoginButton twitterloginButton;
     }
 
     private boolean LoadDevice() {
-        SharedPreferences sharedPref = getBaseContext().getSharedPreferences("DeviceBLE", Context.MODE_PRIVATE);
-        String Nombre = sharedPref.getString("Name", "");
-        String Mac = sharedPref.getString("Mac", "");
+        SharedPreferences sharedPref = getBaseContext().getSharedPreferences("Moto", Context.MODE_PRIVATE);
+        String Nombre = sharedPref.getString("NombreBluetooth", "");
+        String Mac = sharedPref.getString("MacBluetooth", "");
         if (Nombre.equals("")) {
             return false;
         } else {
@@ -360,7 +371,12 @@ TwitterLoginButton twitterloginButton;
 
     private void SetImageViews() {
         int battPercent = ((int) ((DispositivoAsociado.DataReceived.Bateria * 100.0) / (3.8)));
-        if (battPercent < 100)
+        int battExtern = (int) ((DispositivoAsociado.DataReceived.VoltajeEntrada * 100.0) / (14.4));
+        progressBattMoto.setProgress(battExtern);
+        progressBattDispositivo.setProgress(battPercent);
+
+
+        /*if (battPercent < 100)
             imageViewBateria.setImageResource(R.drawable.bateria_100);
         if (battPercent < 90)
             imageViewBateria.setImageResource(R.drawable.bateria_87_5);
@@ -375,12 +391,12 @@ TwitterLoginButton twitterloginButton;
         if (battPercent < 12)
             imageViewBateria.setImageResource(R.drawable.bateria_12_5);
         if (battPercent < 5)
-            imageViewBateria.setImageResource(R.drawable.bateria_0);
+            imageViewBateria.setImageResource(R.drawable.bateria_0); */
 
         if (DispositivoAsociado.DataReceived.VoltajeEntrada > 0)
-            imageButtonEstado.setImageResource(R.drawable.estado_on);
+            switchEncendido.setChecked(true);
         else
-            imageButtonEstado.setImageResource(R.drawable.estado_off);
+            switchEncendido.setChecked(false);
     }
 
     private boolean IsNewUser() {
@@ -424,22 +440,12 @@ TwitterLoginButton twitterloginButton;
         }
     }
 
-    public void EnviarAlDispositivo(int IdButton) {
-        switch (IdButton) {
-            case R.id.imageButtonCandado:
-                if (bluetoothLE != null && bluetoothLE.bleGatt != null) {
-                    for (int i = 0; i < bluetoothLE.bleGatt.getConnectedDevices().size(); i++) {
-                        if (bluetoothLE.bleGatt.getConnectedDevices().get(i).getAddress().equals(DispositivoAsociado.Mac)) {
-                            if (charSerial != null) {
-                                charSerial.setValue(""); // EnviarModo parqueo
-                                bluetoothLE.bleGatt.writeCharacteristic(charSerial);
-                            }
-                        }
-                    }
-                }
-                break;
-            default:
-                break;
+    public void EnviarAlDispositivo(String comando) {
+        if (bluetoothLE != null && bluetoothLE.bleGatt != null) {
+            if (charSerial != null) {
+                charSerial.setValue(comando);
+                bluetoothLE.bleGatt.writeCharacteristic(charSerial);
+            }
         }
     }
 }

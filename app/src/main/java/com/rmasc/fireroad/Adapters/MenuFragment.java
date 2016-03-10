@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.rmasc.fireroad.MotoActivity;
 import com.rmasc.fireroad.PerfilActivity;
 import com.rmasc.fireroad.R;
+import com.rmasc.fireroad.RutasMasterActivity;
 
 /**
  * Created by ADMIN on 23/02/2016.
@@ -33,6 +34,8 @@ public class MenuFragment extends Fragment {
                     startActivity(goTo);
                     break;
                 case R.id.btnRutas:
+                    goTo = new Intent(getContext(), RutasMasterActivity.class);
+                    startActivity(goTo);
                     break;
                 case R.id.btnSettings:
                     break;

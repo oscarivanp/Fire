@@ -28,6 +28,7 @@
     <string name="RH">Rh</string>
     <string name="descriptor_Foto">Foto Perfil</string>
     <string name="next">Siguiente</string>
+    <string name="recorridos">Mis recorridos</string>
 
 
     <string-array name="GeneroItems">
@@ -46,7 +47,6 @@
         <item>O+</item>
         <item>O-</item>
     </string-array>
-
 
 
 </resources>

@@ -41,8 +41,6 @@ public class LoginFragment extends Fragment {
     public static final String PARCEL_KEY = "parcel_key";
 
     private LoginButton loginButton;
-    private ImageView imageView;
-    private Button btnRegistrar;
 
     FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
         @Override
