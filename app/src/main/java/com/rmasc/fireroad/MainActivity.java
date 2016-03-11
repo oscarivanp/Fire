@@ -398,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(getBaseContext(), MapsActivity.class);
             i.putExtra("Lat", DispositivoAsociado.DataReceived.Latitud);
             i.putExtra("Lon", DispositivoAsociado.DataReceived.Longitud);
+            i.putExtra("Fecha", DispositivoAsociado.DataReceived.Fecha);
             i.putExtra("Tipo", 1);
             startActivity(i);
         } else

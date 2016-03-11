@@ -32,16 +32,6 @@
 
             <TableRow>
                 <TextView
-                    android:text="@string/nombre"
-                    android:layout_column="1"/>
-                <EditText
-                    android:id="@+id/editTextNombreMoto"
-                    android:inputType="textPersonName"
-                    android:ems="10"/>
-            </TableRow>
-
-            <TableRow>
-                <TextView
                     android:text="@string/marca"
                     android:layout_column="1"/>
                 <EditText
@@ -52,7 +42,7 @@
 
             <TableRow>
                 <TextView
-                    android:text="@string/marca"
+                    android:text="@string/placa"
                     android:layout_column="1"/>
                 <EditText
                     android:id="@+id/editTextPlaca"
@@ -60,13 +50,37 @@
                     android:ems="10"/>
             </TableRow>
 
+            <TableRow>
+                <TextView
+                    android:text="@string/color"
+                    android:layout_column="1"/>
+                <EditText
+                    android:id="@+id/editTextColor"
+                    android:inputType="textPersonName"
+                    android:ems="10"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:text="@string/modelo"
+                    android:layout_column="1"/>
+                <EditText
+                    android:id="@+id/editTextModelo"
+                    android:inputType="textPersonName"
+                    android:ems="10"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:text="@string/macblue"
+                    android:layout_column="1"/>
+                <EditText
+                    android:id="@+id/editTextMacBlue"
+                    android:inputType="textPersonName"
+                    android:ems="10"/>
+            </TableRow>
+
         </TableLayout>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/btnScan"
-            android:text="@string/scan"/>
 
     </LinearLayout>
 

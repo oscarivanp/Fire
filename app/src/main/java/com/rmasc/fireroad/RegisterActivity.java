@@ -70,7 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private ProgressBar progressBar;
-    private static EditText editTextNombre, editTextApellido, editTextCorreo, editTextTelefono, editTextNombreMoto, editTexPassword, editTexPasswordConfirmacion;
+    private static EditText editTextNombre, editTextApellido, editTextCorreo, editTextTelefono, editTexPassword, editTexPasswordConfirmacion, editTextMarca, editTextPlaca, editTextColor, editTextModelo, editTextMacBlue;
     private static TextView textViewResumen;
     private static ImageButton imageButtonUser, imageButtonMoto;
     private static Button btnScan, btnPoliticas, btnFinish, btnFecha;
@@ -81,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static int IdUser = 0;
     SharedPreferences sharedPref;
-    String tipoLogin="";
+    String tipoLogin = "";
 
     private static String userNameTwitter;
     private static String urlTwitterProfile;
@@ -90,7 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static int RESULT_LOAD_IMAGE = 1;
     private String[] objetos = new String[6];
-    private String idUserFacebook="0";
+    private String idUserFacebook = "0";
     private String tokenNumero;
     private String urlFcebook;
     private String urlFacebookProfile;
@@ -107,48 +107,48 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-            if (imagUser) {
+        if (imagUser) {
 
 
-                switch (requestCode){
-                    case PHOTO_CODE:
-                        if(resultCode == RESULT_OK){
-                            String dir =  Environment.getExternalStorageDirectory() + File.separator
-                                    + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
-                            decodeBitmap(dir,"User");
-                        }
-                        break;
+            switch (requestCode) {
+                case PHOTO_CODE:
+                    if (resultCode == RESULT_OK) {
+                        String dir = Environment.getExternalStorageDirectory() + File.separator
+                                + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+                        decodeBitmap(dir, "User");
+                    }
+                    break;
 
-                    case SELECT_PICTURE:
-                        if(resultCode == RESULT_OK){
-                            Uri path = data.getData();
-                            imageButtonUser.setImageURI(path);
-                        }
-                        break;
-                }
-
-
-                imagUser = false;
-            } else {
-                switch (requestCode){
-                    case PHOTO_CODE:
-                        if(resultCode == RESULT_OK){
-                            String dir =  Environment.getExternalStorageDirectory() + File.separator
-                                    + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
-                            decodeBitmap(dir,"Moto");
-                        }
-                        break;
-
-                    case SELECT_PICTURE:
-                        if(resultCode == RESULT_OK){
-                            Uri path = data.getData();
-                            imageButtonMoto.setImageURI(path);
-                        }
-                        break;
-                }
-
-              imagMoto = false;
+                case SELECT_PICTURE:
+                    if (resultCode == RESULT_OK) {
+                        Uri path = data.getData();
+                        imageButtonUser.setImageURI(path);
+                    }
+                    break;
             }
+
+
+            imagUser = false;
+        } else {
+            switch (requestCode) {
+                case PHOTO_CODE:
+                    if (resultCode == RESULT_OK) {
+                        String dir = Environment.getExternalStorageDirectory() + File.separator
+                                + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+                        decodeBitmap(dir, "Moto");
+                    }
+                    break;
+
+                case SELECT_PICTURE:
+                    if (resultCode == RESULT_OK) {
+                        Uri path = data.getData();
+                        imageButtonMoto.setImageURI(path);
+                    }
+                    break;
+            }
+
+            imagMoto = false;
+        }
 
     }
 
@@ -160,7 +160,7 @@ public class RegisterActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy stream = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(stream);
 
-        if(getIntent().getExtras()!=null){
+        if (getIntent().getExtras() != null) {
 
             tipoLogin = getIntent().getExtras().getString("TipoLogin");
 
@@ -188,142 +188,142 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         }
-            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-            mViewPager = (ViewPager) findViewById(R.id.container);
-            mViewPager.setAdapter(mSectionsPagerAdapter);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
 
-            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                SetPageIndicator(position + 1);
+                if ((position + 1) == 2) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ScanBluetooth();
+                        }
+                    });
                 }
+            }
 
-                @Override
-                public void onPageSelected(int position) {
-                    SetPageIndicator(position + 1);
-                    if ((position + 1) == 2) {
-                        runOnUiThread(new Runnable() {
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        itemClickListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SaveDevice(view);
+            }
+        };
+
+        buttonClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i;
+                switch (v.getId()) {
+                    case R.id.imageButtonUser:
+                        imagUser = true;
+                        imagMoto = !imagUser;
+
+                        final CharSequence[] options = {"Tomar foto", "Elegir de galeria", "Cancelar"};
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+                        builder.setTitle("Elige una opcion");
+                        builder.setItems(options, new DialogInterface.OnClickListener() {
                             @Override
-                            public void run() {
-                                ScanBluetooth();
+                            public void onClick(DialogInterface dialog, int seleccion) {
+                                if (options[seleccion] == "Tomar foto") {
+                                    openCamera();
+                                } else if (options[seleccion] == "Elegir de galeria") {
+                                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                                } else if (options[seleccion] == "Cancelar") {
+                                    dialog.dismiss();
+                                }
                             }
                         });
-                    }
-                }
+                        builder.show();
 
-                @Override
-                public void onPageScrollStateChanged(int state) {
+                        break;
+                    case R.id.imageButtonMoto:
+                        imagMoto = true;
+                        imagUser = !imagMoto;
 
-                }
-            });
-
-            itemClickListener = new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    SaveDevice(view);
-                }
-            };
-
-            buttonClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i;
-                    switch (v.getId()) {
-                        case R.id.imageButtonUser:
-                            imagUser = true;
-                            imagMoto = !imagUser;
-
-                            final CharSequence[] options = {"Tomar foto", "Elegir de galeria", "Cancelar"};
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-                            builder.setTitle("Elige una opcion");
-                            builder.setItems(options, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int seleccion) {
-                                    if (options[seleccion] == "Tomar foto") {
-                                        openCamera();
-                                    } else if (options[seleccion] == "Elegir de galeria") {
-                                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                        intent.setType("image/*");
-                                        startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
-                                    } else if (options[seleccion] == "Cancelar") {
-                                        dialog.dismiss();
-                                    }
+                        final CharSequence[] optionsMoto = {"Tomar foto", "Elegir de galeria", "Cancelar"};
+                        final AlertDialog.Builder builderMoto = new AlertDialog.Builder(RegisterActivity.this);
+                        builderMoto.setTitle("Elige una opcion");
+                        builderMoto.setItems(optionsMoto, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int seleccion) {
+                                if (optionsMoto[seleccion] == "Tomar foto") {
+                                    openCamera();
+                                } else if (optionsMoto[seleccion] == "Elegir de galeria") {
+                                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                                } else if (optionsMoto[seleccion] == "Cancelar") {
+                                    dialog.dismiss();
                                 }
-                            });
-                            builder.show();
-
-                            break;
-                        case R.id.imageButtonMoto:
-                            imagMoto = true;
-                            imagUser = !imagMoto;
-
-                            final CharSequence[] optionsMoto = {"Tomar foto", "Elegir de galeria", "Cancelar"};
-                            final AlertDialog.Builder builderMoto = new AlertDialog.Builder(RegisterActivity.this);
-                            builderMoto.setTitle("Elige una opcion");
-                            builderMoto.setItems(optionsMoto, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int seleccion) {
-                                    if(optionsMoto[seleccion] == "Tomar foto"){
-                                        openCamera();
-                                    }else if (optionsMoto[seleccion] == "Elegir de galeria") {
-                                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                        intent.setType("image/*");
-                                        startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
-                                    }else if(optionsMoto[seleccion] == "Cancelar"){
-                                        dialog.dismiss();
-                                    }
-                                }
-                            });
-                            builderMoto.show();
-
-
-                            break;
-                        case R.id.btnScan:
-                            if (bluetoothLE != null) {
-                                if (!bluetoothLE.mScanning)
-                                    bluetoothLE.scanLeDevice(true);
                             }
-                            break;
-                        case R.id.btnFinish:
-                            imageButtonUser.buildDrawingCache();
-                            Bitmap imagen = imageButtonUser.getDrawingCache();
-                            if (ComparePassword()) {
-                                if (SaveImage("FireUser", imagen)) {
-                                    imageButtonMoto.buildDrawingCache();
-                                    imagen = imageButtonMoto.getDrawingCache();
-                                    if (SaveImage("FireMoto", imagen)) {
-                                        if (IdUser == 0) {
-                                            new CrearUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CreateUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
-                                                    spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
-                                                    idUserFacebook,  editTextNombre.getText().toString(), editTexPassword.getText().toString());
-                                        } else {
-                                            new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
-                                                    spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
-                                                    "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
-                                        }
-                                    } else
-                                        ShowMessage("Error al guardar la imagen de la moto.");
+                        });
+                        builderMoto.show();
+
+
+                        break;
+                    case R.id.btnScan:
+                        if (bluetoothLE != null) {
+                            if (!bluetoothLE.mScanning)
+                                bluetoothLE.scanLeDevice(true);
+                        }
+                        break;
+                    case R.id.btnFinish:
+                        imageButtonUser.buildDrawingCache();
+                        Bitmap imagen = imageButtonUser.getDrawingCache();
+                        if (ComparePassword()) {
+                            if (SaveImage("FireUser", imagen)) {
+                                imageButtonMoto.buildDrawingCache();
+                                imagen = imageButtonMoto.getDrawingCache();
+                                if (SaveImage("FireMoto", imagen)) {
+                                    if (IdUser == 0) {
+                                        new CrearUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CreateUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
+                                                spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
+                                                idUserFacebook, editTextNombre.getText().toString(), editTexPassword.getText().toString());
+                                    } else {
+                                        new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
+                                                spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
+                                                "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
+                                    }
                                 } else
-                                    ShowMessage("Error al guardar la imagen de usuario.");
-                            }
-                            break;
-                        case R.id.btnPoliticas:
-                            break;
-                        case R.id.btnFecha:
-                            CalendarPicker calendarioFecha = new CalendarPicker();
-                            calendarioFecha.show(getFragmentManager(), "datepicker");
-                            break;
-                        default:
-                            break;
-                    }
+                                    ShowMessage("Error al guardar la imagen de la moto.");
+                            } else
+                                ShowMessage("Error al guardar la imagen de usuario.");
+                        }
+                        break;
+                    case R.id.btnPoliticas:
+                        break;
+                    case R.id.btnFecha:
+                        CalendarPicker calendarioFecha = new CalendarPicker();
+                        calendarioFecha.show(getFragmentManager(), "datepicker");
+                        break;
+                    default:
+                        break;
                 }
-            };
+            }
+        };
 
-            AssignControls();
-
+        AssignControls();
 
 
     }
+
     private void openCamera() {
         File file = new File(Environment.getExternalStorageDirectory(), MEDIA_DIRECTORY);
         file.mkdirs();
@@ -341,79 +341,79 @@ public class RegisterActivity extends AppCompatActivity {
 
     public static class PlaceholderFragment extends Fragment {
 
-            private static final String ARG_SECTION_NUMBER = "section_number";
+        private static final String ARG_SECTION_NUMBER = "section_number";
 
-            public PlaceholderFragment() {
-            }
-
-            public static PlaceholderFragment newInstance(int sectionNumber) {
-                PlaceholderFragment fragment = new PlaceholderFragment();
-                Bundle args = new Bundle();
-                args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-                fragment.setArguments(args);
-                return fragment;
-            }
-
-            @Override
-            public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                     Bundle savedInstanceState) {
-                View rootView = null;
-
-
-                switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
-                    case 1:
-                        rootView = inflater.inflate(R.layout.register_user, container, false);
-                        AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
-                        break;
-
-
-                    case 2:
-                        rootView = inflater.inflate(R.layout.register_moto, container, false);
-                        AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
-
-                        break;
-                    case 3:
-                        rootView = inflater.inflate(R.layout.register_review, container, false);
-                        AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
-                        break;
-                    default:
-                        break;
-                }
-
-                return rootView;
-            }
+        public PlaceholderFragment() {
         }
 
-        public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-            public SectionsPagerAdapter(FragmentManager fm) {
-                super(fm);
-            }
-
-            @Override
-            public Fragment getItem(int position) {
-                return PlaceholderFragment.newInstance(position + 1);
-            }
-
-            @Override
-            public int getCount() {
-                // Show 3 total pages.
-                return 3;
-            }
-
-            @Override
-            public CharSequence getPageTitle(int position) {
-                switch (position) {
-                    case 0:
-                        return "SECTION 1";
-                    case 1:
-                        return "SECTION 2";
-                    case 2:
-                        return "SECTION 3";
-                }
-                return null;
-            }
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
         }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = null;
+
+
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
+                case 1:
+                    rootView = inflater.inflate(R.layout.register_user, container, false);
+                    AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
+                    break;
+
+
+                case 2:
+                    rootView = inflater.inflate(R.layout.register_moto, container, false);
+                    AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
+
+                    break;
+                case 3:
+                    rootView = inflater.inflate(R.layout.register_review, container, false);
+                    AssignStaticControls(getArguments().getInt(ARG_SECTION_NUMBER), rootView, getContext());
+                    break;
+                default:
+                    break;
+            }
+
+            return rootView;
+        }
+    }
+
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return PlaceholderFragment.newInstance(position + 1);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return 3;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "SECTION 1";
+                case 1:
+                    return "SECTION 2";
+                case 2:
+                    return "SECTION 3";
+            }
+            return null;
+        }
+    }
 
     public void SetPageIndicator(int position) {
         progressBar.setProgress(position);
@@ -441,17 +441,17 @@ public class RegisterActivity extends AppCompatActivity {
                 }
                 imageButtonUser.setOnClickListener(buttonClickListener);
 
-                    editTextNombre.setText(userNameTwitter);
+                editTextNombre.setText(userNameTwitter);
 
-                    try {
-                        InputStream prueba = new URL(urlTwitterProfile).openStream();
-                        Bitmap foto = BitmapFactory.decodeStream(prueba);
-                        RoundImages imaghenFace= new RoundImages(foto);
-                        Bitmap imagenProcesada= imaghenFace.RoundImages(foto, 200, 200);
-                        imageButtonUser.setImageBitmap(imagenProcesada);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    InputStream prueba = new URL(urlTwitterProfile).openStream();
+                    Bitmap foto = BitmapFactory.decodeStream(prueba);
+                    RoundImages imaghenFace = new RoundImages(foto);
+                    Bitmap imagenProcesada = imaghenFace.RoundImages(foto, 200, 200);
+                    imageButtonUser.setImageBitmap(imagenProcesada);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 spinnerSexo = (Spinner) view.findViewById(R.id.spinnerSexo);
                 spinnerRh = (Spinner) view.findViewById(R.id.spinnerRh);
@@ -460,11 +460,11 @@ public class RegisterActivity extends AppCompatActivity {
                 btnFecha.setOnClickListener(buttonClickListener);
                 break;
             case 2:
-                listVDevices = (ListView) view.findViewById(R.id.listVDevices);
-                listVDevices.setOnItemClickListener(itemClickListener);
-                btnScan = (Button) view.findViewById(R.id.btnScan);
-                btnScan.setOnClickListener(buttonClickListener);
-                editTextNombreMoto = (EditText) view.findViewById(R.id.editTextNombreMoto);
+                editTextMarca = (EditText) view.findViewById(R.id.editTextMarca);
+                editTextPlaca = (EditText) view.findViewById(R.id.editTextPlaca);
+                editTextColor = (EditText) view.findViewById(R.id.editTextColor);
+                editTextModelo = (EditText) view.findViewById(R.id.editTextModelo);
+                editTextMacBlue = (EditText) view.findViewById(R.id.editTextMacBlue);
                 imageButtonMoto = (ImageButton) view.findViewById(R.id.imageButtonMoto);
                 imageButtonMoto.setOnClickListener(buttonClickListener);
                 imageButtonMoto.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(context.getResources(), R.drawable.no_moto)));
@@ -705,9 +705,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireUser";
                 File streamImage = new File(path);
                 parametro.Valor = new ImagenData(BitmapFactory.decodeStream(new FileInputStream(streamImage))).content;
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 parametro.Valor = "No imagen";
             }
             parameters.add(parametro);
@@ -749,15 +747,16 @@ public class RegisterActivity extends AppCompatActivity {
                     editor.putInt("Id", IdUser);
                     editor.putString("Nombres", editTextNombre.getText().toString());
                     editor.putString("Apellidos", editTextApellido.getText().toString());
-                    editor.putString("Telefono",editTextTelefono.getText().toString());
-                    editor.putString("Sexo",spinnerSexo.getSelectedItem().toString());
-                    editor.putString("Correo",editTextCorreo.getText().toString());
+                    editor.putString("Telefono", editTextTelefono.getText().toString());
+                    editor.putString("Sexo", spinnerSexo.getSelectedItem().toString());
+                    editor.putString("Correo", editTextCorreo.getText().toString());
                     editor.putString("FechaNacimiento", btnFecha.getText().toString());
-                    editor.putString("RH",spinnerRh.getSelectedItem().toString());
+                    editor.putString("RH", spinnerRh.getSelectedItem().toString());
                     editor.putString("IdFacebook", idUserFacebook);
                     editor.putString("IdTwitter", "0");
                     editor.putString("UserLogin", editTextNombre.getText().toString());
                     editor.commit();
+                    new CrearVehiculo().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CrearVehiculo", editTextMarca.getText().toString(), editTextPlaca.getText().toString(), editTextColor.getText().toString(), editTextModelo.getText().toString(), editTextMacBlue.getText().toString());
                     startActivity(goToMain);
                 } else {
                     editor.putInt("Id", 0);
@@ -879,8 +878,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private boolean ComparePassword()
-    {
+    private boolean ComparePassword() {
         if (editTexPassword.getText().toString().equals(editTexPasswordConfirmacion.getText().toString()))
             return true;
         else {
@@ -889,8 +887,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    public static class CalendarPicker extends DialogFragment implements DatePickerDialog.OnDateSetListener
-    {
+    public static class CalendarPicker extends DialogFragment implements DatePickerDialog.OnDateSetListener {
         public int anio = Calendar.getInstance().get(Calendar.YEAR);
         public int mes = Calendar.getInstance().get(Calendar.MONTH);
         public int dia = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
@@ -912,14 +909,13 @@ public class RegisterActivity extends AppCompatActivity {
         Bitmap bitmap;
         bitmap = BitmapFactory.decodeFile(dir);
 
-        if(tipo.equals("User"))
-        {
+        if (tipo.equals("User")) {
             RoundImages imaghenFace = new RoundImages(bitmap);
             Bitmap imagenProcesada = imaghenFace.RoundImages(bitmap, 200, 200);
             imageButtonUser.setImageBitmap(imagenProcesada);
 
         }
-        if(tipo.equals("Moto")){
+        if (tipo.equals("Moto")) {
 
             RoundImages imaghenFace = new RoundImages(bitmap);
             Bitmap imagenProcesada = imaghenFace.RoundImages(bitmap, 200, 200);
@@ -927,6 +923,86 @@ public class RegisterActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    private class CrearVehiculo extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject jsonResponse = new JSONObject(s);
+                int isOk = jsonResponse.optInt("d");
+
+                SharedPreferences motoMain = getBaseContext().getSharedPreferences("Moto", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = motoMain.edit();
+
+                if (isOk != 0) {
+                    editor.putInt("Id", isOk);
+                    editor.putString("Marca", editTextMarca.getText().toString());
+                    editor.putString("Placa", editTextPlaca.getText().toString());
+                    editor.putString("Color", editTextColor.getText().toString());
+                    editor.putString("Modelo", editTextModelo.getText().toString());
+                    editor.putString("MacBluetooth", editTextMacBlue.getText().toString());
+                    editor.putString("NombreBluetooth", "FireRoad-RM");
+                    editor.commit();
+                }
+            } catch (Exception e) {
+
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            WebServiceParameter parametro = new WebServiceParameter();
+
+            SharedPreferences user = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
+            parametro.Nombre = "IdUser";
+            parametro.Valor = String.valueOf(user.getInt("Id", 0));
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Foto";
+            try {
+                String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
+                File streamImage = new File(path);
+                parametro.Valor = new ImagenData(BitmapFactory.decodeStream(new FileInputStream(streamImage))).content;
+            } catch (Exception e) {
+                parametro.Valor = "NA";
+                parameters.add(parametro);
+            }
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Marca";
+            parametro.Valor = params[1];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Placa";
+            parametro.Valor = params[2];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Color";
+            parametro.Valor = params[3];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Modelo";
+            parametro.Valor = params[4];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "MacAdress";
+            parametro.Valor = params[5];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "NombreBlue";
+            parametro.Valor = "FireRoad-RM";
+            parameters.add(parametro);
+
+            return WebService.ConexionWS(params[0], parameters);
+        }
     }
 
 }

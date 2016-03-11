@@ -3,45 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageButton
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:id="@+id/imageButtonMoto"
-        android:layout_gravity="center_horizontal"
-        android:scaleType="fitXY"
-        android:background="@null"
-        android:contentDescription="Foto"
-        />
-
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:layout_gravity="center_horizontal">
-
-        <TableRow>
-            <TextView
-                android:text="@string/nombre"
-                android:layout_column="1"/>
-            <EditText
-                android:id="@+id/editTextNombreMoto"
-                android:inputType="textPersonName"
-                android:ems="10"/>
-        </TableRow>
-
-    </TableLayout>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/btnScan"
-        android:text="@string/scan"/>
-
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/listVDevices" />
+   <include layout="@layout/activity_moto"/>
 
 
 </LinearLayout>

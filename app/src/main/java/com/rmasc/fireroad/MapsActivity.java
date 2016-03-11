@@ -1,5 +1,6 @@
 package com.rmasc.fireroad;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -38,7 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (intent.getIntExtra("Tipo", 1)) {
             case 1:
-                CargarUltimaPosicion(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lon", 0));
+                CargarUltimaPosicion(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lon", 0), intent.getStringExtra("Fecha"));
                 break;
             case 2:
                 CargarRecorrido(intent.getIntExtra("IdRecorrido", 0));
@@ -47,19 +48,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
         }
 
-        double latitud = intent.getDoubleExtra("Lat", 0);
-        double longitud = intent.getDoubleExtra("Lon", 0);
-        // Add a marker in Sydney and move the camera
-        LatLng rm = new LatLng(latitud, longitud);
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(latitud, longitud)).title("RM"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
-    private void CargarUltimaPosicion(double Latitud, double Longitud) {
+    private void CargarUltimaPosicion(double Latitud, double Longitud, String Fecha) {
+        SharedPreferences userP = getBaseContext().getSharedPreferences("Moto", Context.MODE_PRIVATE);
         LatLng ptoActual = new LatLng(Latitud, Longitud);
-        mMap.addMarker(new MarkerOptions().position(ptoActual).title("Moto \n fecha"));
+        mMap.addMarker(new MarkerOptions().position(ptoActual).title( userP.getString("Marca","") + " " + userP.getString("Placa","") + "\n" + Fecha));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(ptoActual));
     }
 
     private void CargarRecorrido(int IdRecorrido) {
