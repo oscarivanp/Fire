@@ -90,7 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static int RESULT_LOAD_IMAGE = 1;
     private String[] objetos = new String[6];
-    private String idUserFacebook;
+    private String idUserFacebook="0";
     private String tokenNumero;
     private String urlFcebook;
     private String urlFacebookProfile;
@@ -295,7 +295,7 @@ public class RegisterActivity extends AppCompatActivity {
                                         if (IdUser == 0) {
                                             new CrearUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CreateUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
                                                     spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
-                                                    idUserFacebook, "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
+                                                    idUserFacebook,  editTextNombre.getText().toString(), editTexPassword.getText().toString());
                                         } else {
                                             new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
                                                     spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
@@ -719,17 +719,17 @@ public class RegisterActivity extends AppCompatActivity {
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "IdTwitter";
-            parametro.Valor = params[8].toString();
+            parametro.Valor = "0";
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "UserLogin";
-            parametro.Valor = params[9].toString();
+            parametro.Valor = params[8].toString();
             parameters.add(parametro);
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "Password";
-            parametro.Valor = params[10].toString();
+            parametro.Valor = params[9].toString();
             parameters.add(parametro);
 
             return WebService.ConexionWS(params[0], parameters);

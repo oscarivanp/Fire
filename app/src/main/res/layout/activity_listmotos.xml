@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,31 +8,23 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".RutasMasterActivity">
+    tools:context=".listMotos">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30sp"
         android:textColor="@color/colorPrimary"
-        android:text="@string/recorridos"
-        android:id="@+id/textViewTitulo"
+        android:text="@string/motos"
+        android:id="@+id/textViewTituloMotos"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
     <ListView
+        android:layout_marginTop="50dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/listViewRutas"
+        android:id="@+id/listViewMotos"
         android:layout_below="@+id/textViewTitulo"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ejemplo Detalle"
-        android:id="@+id/buttonEjemploDetalle"
-        android:layout_below="@+id/textViewTitulo"
-        android:layout_alignParentStart="true"
-        />
+         />
 </RelativeLayout>

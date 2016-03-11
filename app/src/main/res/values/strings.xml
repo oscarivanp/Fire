@@ -29,6 +29,8 @@
     <string name="descriptor_Foto">Foto Perfil</string>
     <string name="next">Siguiente</string>
     <string name="recorridos">Mis recorridos</string>
+    <string name="motos">Mis motos</string>
+
 
 
     <string-array name="GeneroItems">

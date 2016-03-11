@@ -96,6 +96,10 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".RutasMasterActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".listMotos"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".DetallesActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

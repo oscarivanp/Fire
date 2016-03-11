@@ -5,12 +5,17 @@ package com.rmasc.fireroad.Entities;
  */
 public class Vehiculo {
 
-    public String Nombre, Marca, Placa;
+    public String  Marca, Placa,kilometraje;
+    public int Id;
+    public String Descripcion;
+
 
     public Vehiculo()
     {
-        Nombre = "";
+        Id = 0;
+        Descripcion = "";
         Marca = "";
         Placa = "";
+        kilometraje="";
     }
 }

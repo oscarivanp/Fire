@@ -7,14 +7,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.rmasc.fireroad.Adapters.RutasAdapter;
+import com.rmasc.fireroad.Adapters.VehiculosAdapter;
 import com.rmasc.fireroad.Adapters.ViewHolder;
-import com.rmasc.fireroad.Entities.Ruta;
+import com.rmasc.fireroad.Entities.Vehiculo;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.WebService;
 
@@ -23,61 +22,52 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class RutasMasterActivity extends AppCompatActivity {
+/**
+ * Created by rafaelmartinez on 10/03/16.
+ */
+public class listMotos extends AppCompatActivity {
 
-    public ListView listViewRutas;
-    public TextView textViewTitulo;
-    public Button btnEjemploDetalle;
-    public ArrayList<Ruta> MisRutas = new ArrayList<Ruta>();
-    Intent goToPageDetalles;
+
+    public ListView listViewMotos;
+    public TextView textViewTituloMotos;
+    public ArrayList<Vehiculo> MisMotos = new ArrayList<Vehiculo>();
+    Intent goToPageMoto;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rutas_master);
+        setContentView(R.layout.activity_listmotos);
 
         AssignViews();
-        new CargarRutas().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListarRecorridos");
-
-
-        btnEjemploDetalle = (Button) findViewById(R.id.buttonEjemploDetalle);
-        btnEjemploDetalle.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                goToPageDetalles = new Intent(getBaseContext(), DetallesActivity.class);
-                startActivity(goToPageDetalles);
-            }
-        });
+        new CargarMotos().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/obtenerVehiculos");
     }
 
     private void AssignViews()
     {
-        listViewRutas = (ListView) findViewById(R.id.listViewRutas);
-        textViewTitulo = (TextView) findViewById(R.id.textViewTitulo);
-        listViewRutas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listViewMotos = (ListView) findViewById(R.id.listViewMotos);
+        textViewTituloMotos = (TextView) findViewById(R.id.textViewTituloMotos);
+        listViewMotos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ViewHolder holder = (ViewHolder) view.getTag();
                 ShowMessage("Id del item " + holder.Id);
-                goToPageDetalles = new Intent(getBaseContext(), DetallesActivity.class);
-                startActivity(goToPageDetalles);
+
+                goToPageMoto = new Intent(getBaseContext(), RutasMasterActivity.class);
+                goToPageMoto.putExtra("IdMoto", holder.Id);
+                startActivity(goToPageMoto);
+
             }
         });
     }
 
-
-    private class CargarRutas extends AsyncTask<String, Void, String>
+    private class CargarMotos extends AsyncTask<String, Void, String>
     {
 
         @Override
         protected String doInBackground(String... params) {
             ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
             WebServiceParameter parametro = new WebServiceParameter();
-
             SharedPreferences userPref = getSharedPreferences("User", MODE_PRIVATE);
-            parametro.Nombre = "IdMoto";
-            parametro.Valor = String.valueOf(getIntent().getExtras().getInt("IdMoto"));
-            parameters.add(parametro);
+
             parametro.Nombre = "IdUser";
             parametro.Valor = String.valueOf(userPref.getInt("Id", 0));
             parameters.add(parametro);
@@ -95,14 +85,13 @@ public class RutasMasterActivity extends AppCompatActivity {
                 for (int i = 0; i < recorridos.length(); i++)
                 {
                     JSONObject recoTemp = recorridos.optJSONObject(i);
-                    Ruta rutaTemp = new Ruta();
-                    rutaTemp.Id = recoTemp.optInt("Id");
-                    rutaTemp.Descripcion = recoTemp.optString("Descripcion");
-                    rutaTemp.FechaInicio = recoTemp.optString("FechaInicio");
-                    rutaTemp.FechaInicio = recoTemp.optString("FechaFin");
-                    MisRutas.add(rutaTemp);
+                    Vehiculo moto = new Vehiculo();
+                    moto.Id = recoTemp.optInt("Id");
+                    moto.Marca = recoTemp.optString("Marca");
+                    moto.Placa = recoTemp.optString("Placa");
+                    MisMotos.add(moto);
                 }
-                listViewRutas.setAdapter(new RutasAdapter( getBaseContext(), MisRutas));
+                listViewMotos.setAdapter(new VehiculosAdapter( getBaseContext(), MisMotos));
 
             }
             catch (Exception e)
