@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView imageViewBateria, imageViewUser;
     Button btnRecorrido, btnMapa;
-    TextView txtUser, txtReporteDispositivo, txtValueProgress, txtConexion;
+    TextView txtUser, txtReporteDispositivo, txtValueProgress, txtConexion, txtBattMoto, txtBattDispositivo;
     ProgressBar tachoMeter, progressBattMoto, progressBattDispositivo, progressCombustible;
     Switch switchEncendido, switchEstacionado;
 
@@ -171,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
         txtValueProgress = (TextView) findViewById(R.id.txtValueProgress);
         txtConexion = (TextView) findViewById(R.id.txtConexion);
         txtConexion.setOnClickListener(buttonClickListener);
+        txtBattDispositivo = (TextView) findViewById(R.id.txtBattDispositivo);
+        txtBattMoto = (TextView) findViewById(R.id.txtBattMoto);
 
         tachoMeter = (ProgressBar) findViewById(R.id.tachoMeter);
         progressBattDispositivo = (ProgressBar) findViewById(R.id.progressBattDispositivo);
@@ -368,28 +370,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void SetImageViews() {
-        int battPercent = ((int) ((DispositivoAsociado.DataReceived.Bateria * 100.0) / (3.8)));
-        int battExtern = (int) ((DispositivoAsociado.DataReceived.VoltajeEntrada * 100.0) / (14.4));
+
+        int battPercent = ((int) (DispositivoAsociado.DataReceived.Bateria));
+        int battExtern = (int) (DispositivoAsociado.DataReceived.VoltajeEntrada);
         progressBattMoto.setProgress(battExtern);
         progressBattDispositivo.setProgress(battPercent);
 
-
-        /*if (battPercent < 100)
-            imageViewBateria.setImageResource(R.drawable.bateria_100);
-        if (battPercent < 90)
-            imageViewBateria.setImageResource(R.drawable.bateria_87_5);
-        if (battPercent < 78)
-            imageViewBateria.setImageResource(R.drawable.bateria_75);
-        if (battPercent < 63)
-            imageViewBateria.setImageResource(R.drawable.bateria_62_5);
-        if (battPercent < 55)
-            imageViewBateria.setImageResource(R.drawable.bateria_50);
-        if (battPercent < 37)
-            imageViewBateria.setImageResource(R.drawable.bateria_37_5);
-        if (battPercent < 12)
-            imageViewBateria.setImageResource(R.drawable.bateria_12_5);
-        if (battPercent < 5)
-            imageViewBateria.setImageResource(R.drawable.bateria_0); */
+        txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada) + "v");
+        txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria) + "v");
 
         if (DispositivoAsociado.DataReceived.VoltajeEntrada > 0)
             switchEncendido.setChecked(true);
@@ -410,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(getBaseContext(), MapsActivity.class);
             i.putExtra("Lat", DispositivoAsociado.DataReceived.Latitud);
             i.putExtra("Lon", DispositivoAsociado.DataReceived.Longitud);
+            i.putExtra("Tipo", 1);
             startActivity(i);
         } else
             ShowMessage("Sin datos para mostrar.");
