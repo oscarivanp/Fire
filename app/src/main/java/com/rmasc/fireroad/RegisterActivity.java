@@ -278,12 +278,6 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                         break;
-                    case R.id.btnScan:
-                        if (bluetoothLE != null) {
-                            if (!bluetoothLE.mScanning)
-                                bluetoothLE.scanLeDevice(true);
-                        }
-                        break;
                     case R.id.btnFinish:
                         imageButtonUser.buildDrawingCache();
                         Bitmap imagen = imageButtonUser.getDrawingCache();
@@ -758,6 +752,7 @@ public class RegisterActivity extends AppCompatActivity {
                     editor.commit();
                     new CrearVehiculo().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CrearVehiculo", editTextMarca.getText().toString(), editTextPlaca.getText().toString(), editTextColor.getText().toString(), editTextModelo.getText().toString(), editTextMacBlue.getText().toString());
                     startActivity(goToMain);
+                    finish();
                 } else {
                     editor.putInt("Id", 0);
                     editor.commit();
