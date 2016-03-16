@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -38,19 +39,20 @@ public class ObtenerVehiculo extends AsyncTask <Context, Void, String> {
     protected void onPostExecute(String s) {
         try {
             JSONObject jsonResponse = new JSONObject(s);
-            JSONObject data = jsonResponse.getJSONObject("d");
+            JSONArray data = jsonResponse.getJSONArray("d");
             SharedPreferences userP = appContext.getSharedPreferences("Moto", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = userP.edit();
 
-            if (data.optInt("Id") != 0)
+            if (data != null)
             {
-                editor.putInt("Id", data.optInt("Id"));
-                editor.putString("Marca", data.optString("Marca"));
-                editor.putString("Placa", data.optString("Placa"));
-                editor.putString("Color", data.optString("Color"));
-                editor.putString("Modelo", data.optString("Modelo"));
-                editor.putString("MacBluetooth", data.optString("MacBluetooth"));
-                editor.putString("NombreBluetooth", data.optString("NombreBluetooth"));
+                JSONObject motoMain = data.optJSONObject(0);
+                editor.putInt("Id", motoMain.optInt("Id"));
+                editor.putString("Marca", motoMain.optString("Marca"));
+                editor.putString("Placa", motoMain.optString("Placa"));
+                editor.putString("Color", motoMain.optString("Color"));
+                editor.putString("Modelo", motoMain.optString("Modelo"));
+                editor.putString("MacBluetooth", motoMain.optString("MacBluetooth"));
+                editor.putString("NombreBluetooth", motoMain.optString("NombreBluetooth"));
                 editor.commit();
             }
 
