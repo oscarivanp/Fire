@@ -20,7 +20,7 @@ public class ImagenData{
     {
         //Bitmap bm = BitmapFactory.decodeFile("/path/to/image.jpg");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imagen.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        imagen.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         return baos.toByteArray();
     }
     private String EncodeImageToString(byte[] imagen)

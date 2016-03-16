@@ -2,6 +2,7 @@ package com.rmasc.fireroad;
 
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.WebService;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +38,15 @@ public class DetallesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detallehistorico);
 
         AssignViews();
+
+        File myImageFile = new File("drawable/bateria_0.png");
+        Uri myImageUri = Uri.fromFile(myImageFile);
+
+        TweetComposer.Builder builder = new TweetComposer.Builder(this)
+                .text("just setting up my Fabric.")
+                .image(myImageUri);
+        builder.show();
+
 
     }
 

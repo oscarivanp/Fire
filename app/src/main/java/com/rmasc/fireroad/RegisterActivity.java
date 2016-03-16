@@ -122,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
                     case SELECT_PICTURE:
                         if(resultCode == RESULT_OK){
                             Uri path = data.getData();
-                            imageButtonUser.setImageURI(path);
+                            decodeBitmap(path.toString(), "User");
                         }
                         break;
                 }
@@ -141,8 +141,9 @@ public class RegisterActivity extends AppCompatActivity {
 
                     case SELECT_PICTURE:
                         if(resultCode == RESULT_OK){
-                            Uri path = data.getData();
-                            imageButtonMoto.setImageURI(path);
+                            String dir =  Environment.getExternalStorageDirectory() + File.separator
+                                    + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+                            decodeBitmap(dir, "Moto");
                         }
                         break;
                 }
