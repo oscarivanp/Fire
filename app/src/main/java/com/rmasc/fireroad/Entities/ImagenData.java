@@ -19,7 +19,7 @@ public class ImagenData{
     private byte[] ImageToByteArray(Bitmap imagen)
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imagen.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        imagen.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         return baos.toByteArray();
     }
     private String EncodeImageToString(byte[] imagen)

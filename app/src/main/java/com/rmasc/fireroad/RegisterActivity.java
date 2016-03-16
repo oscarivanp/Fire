@@ -119,36 +119,37 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                     break;
 
-                case SELECT_PICTURE:
-                    if (resultCode == RESULT_OK) {
-                        Uri path = data.getData();
-                        imageButtonUser.setImageURI(path);
-                    }
-                    break;
+                   case SELECT_PICTURE:
+                        if(resultCode == RESULT_OK){
+                            Uri path = data.getData();
+                            decodeBitmap(path.toString(), "User");
+                        }
+                        break;
+                }
+
+
+                imagUser = false;
+            } else {
+                switch (requestCode){
+                    case PHOTO_CODE:
+                        if(resultCode == RESULT_OK){
+                            String dir =  Environment.getExternalStorageDirectory() + File.separator
+                                    + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+                            decodeBitmap(dir,"Moto");
+                        }
+                        break;
+
+                    case SELECT_PICTURE:
+                        if(resultCode == RESULT_OK){
+                            String dir =  Environment.getExternalStorageDirectory() + File.separator
+                                    + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+                            decodeBitmap(dir, "Moto");
+                        }
+                        break;
+                }
+
+              imagMoto = false;
             }
-
-
-            imagUser = false;
-        } else {
-            switch (requestCode) {
-                case PHOTO_CODE:
-                    if (resultCode == RESULT_OK) {
-                        String dir = Environment.getExternalStorageDirectory() + File.separator
-                                + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
-                        decodeBitmap(dir, "Moto");
-                    }
-                    break;
-
-                case SELECT_PICTURE:
-                    if (resultCode == RESULT_OK) {
-                        Uri path = data.getData();
-                        imageButtonMoto.setImageURI(path);
-                    }
-                    break;
-            }
-
-            imagMoto = false;
-        }
 
     }
 
@@ -314,6 +315,7 @@ public class RegisterActivity extends AppCompatActivity {
         };
 
         AssignControls();
+
 
 
     }
@@ -910,7 +912,7 @@ public class RegisterActivity extends AppCompatActivity {
             imageButtonUser.setImageBitmap(imagenProcesada);
 
         }
-        if (tipo.equals("Moto")) {
+        if(tipo.equals("Moto")){
 
             RoundImages imaghenFace = new RoundImages(bitmap);
             Bitmap imagenProcesada = imaghenFace.RoundImages(bitmap, 200, 200);
