@@ -26,12 +26,4 @@
         android:layout_below="@+id/textViewTitulo"
         android:layout_alignParentStart="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ejemplo Detalle"
-        android:id="@+id/buttonEjemploDetalle"
-        android:layout_below="@+id/textViewTitulo"
-        android:layout_alignParentStart="true"
-        />
 </RelativeLayout>

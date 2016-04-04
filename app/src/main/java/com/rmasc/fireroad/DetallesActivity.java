@@ -1,5 +1,6 @@
 package com.rmasc.fireroad;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -7,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,6 +31,7 @@ public class DetallesActivity extends AppCompatActivity {
     ImageView imageViewBateria, imageViewUser;
     Button btnRecorrido, btnMapa;
     TextView txtKilometraje, txtDistancia, txtVelPro, txtVelMax;
+    int IdRecorrido = 0;
 
 
 
@@ -36,18 +39,21 @@ public class DetallesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detallehistorico);
+        IdRecorrido = getIntent().getIntExtra("IdRecorrido", 0);
 
         AssignViews();
 
-        File myImageFile = new File("drawable/bateria_0.png");
+/*        File myImageFile = new File("drawable/bateria_0.png");
         Uri myImageUri = Uri.fromFile(myImageFile);
 
         TweetComposer.Builder builder = new TweetComposer.Builder(this)
                 .text("just setting up my Fabric.")
                 .image(myImageUri);
-        builder.show();
+        builder.show(); */
 
-
+        if (IdRecorrido != 0) {
+            new CargarDetalles().execute("url");
+        }
     }
 
 
@@ -55,10 +61,20 @@ public class DetallesActivity extends AppCompatActivity {
 
     private void AssignViews() {
         imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
-
+        btnMapa = (Button) findViewById(R.id.btnMapa);
+        btnMapa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent goToMapa = new Intent(getBaseContext(), MapsActivity.class);
+                goToMapa.putExtra("Tipo", 2);
+                goToMapa.putExtra("IdRecorrido",IdRecorrido);
+                goToMapa.putExtra("IdVehiculo", getIntent().getIntExtra("IdVehiculo", 0));
+                startActivity(goToMapa);
+            }
+        });
 
         try {
-            String path = Environment.getExternalStorageDirectory().toString() + "/FireUser";
+            String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
             File streamImage = new File(path);
             imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
         } catch (Exception e) {

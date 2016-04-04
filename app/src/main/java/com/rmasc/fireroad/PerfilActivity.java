@@ -44,7 +44,7 @@ public class PerfilActivity extends AppCompatActivity {
     EditText editTextNombre, editTextCorreo, editTextTelefono, editTextApellido, editTexPassword, editTexPasswordConfirmacion;
     Spinner spinnerSexo, spinnerRh;
     ImageButton imageButtonUser;
-    public static Button btnFecha, btnSave;
+    public static Button btnFecha, btnRegistrar;
 
     private static int RESULT_LOAD_IMAGE = 1;
 
@@ -81,14 +81,10 @@ public class PerfilActivity extends AppCompatActivity {
                         i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(i, RESULT_LOAD_IMAGE);
                         break;
-                    case R.id.btnSave:
-                        //Guarda datos
+                    case R.id.btnRegistrar:
                         new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
                                 spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
                                 "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
-                        //i = new Intent(getBaseContext(), MainActivity.class);
-                        //startActivity(i);
-                        //finish();
                         break;
                     case R.id.btnFecha:
                         CalendarPicker calendarioFecha = new CalendarPicker();
@@ -117,8 +113,9 @@ public class PerfilActivity extends AppCompatActivity {
         imageButtonUser.setOnClickListener(buttonClickListener);
         btnFecha = (Button) findViewById(R.id.btnFecha);
         btnFecha.setOnClickListener(buttonClickListener);
-        btnSave = (Button) findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(buttonClickListener);
+        btnRegistrar = (Button) findViewById(R.id.btnRegistrar);
+        btnRegistrar.setText("Guardar");
+        btnRegistrar.setOnClickListener(buttonClickListener);
     }
 
     private void CargarControles() {
@@ -177,14 +174,13 @@ public class PerfilActivity extends AppCompatActivity {
         protected void onPostExecute(String params) {
             try {
                 JSONObject jsonResponse = new JSONObject(params);
-                int IdUser = jsonResponse.optInt("d");
+                String IdUser = jsonResponse.optString("d");
 
                 SharedPreferences user = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = user.edit();
                 Intent goToMain = new Intent(getBaseContext(), MainActivity.class);
 
-                if (IdUser != 0) {
-                    editor.putInt("Id", IdUser);
+                if (IdUser.equals("true")) {
                     editor.putString("Nombres", editTextNombre.getText().toString());
                     editor.putString("Apellidos", editTextApellido.getText().toString());
                     editor.putString("Telefono", editTextTelefono.getText().toString());
@@ -196,6 +192,7 @@ public class PerfilActivity extends AppCompatActivity {
                     editor.putString("UserLogin", editTextNombre.getText().toString());
                     editor.commit();
                     startActivity(goToMain);
+                    finish();
                 } else {
                     editor.putInt("Id", 0);
                     editor.commit();

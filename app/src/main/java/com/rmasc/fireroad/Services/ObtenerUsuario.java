@@ -8,7 +8,12 @@ import com.rmasc.fireroad.Entities.WebServiceParameter;
 
 import org.json.JSONObject;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by ADMIN on 04/03/2016.
@@ -16,6 +21,21 @@ import java.util.ArrayList;
 public class ObtenerUsuario extends AsyncTask <Context, Void, String> {
 
     Context appContext;
+    SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+
+    private Date parseDateTime(String lastModified) {
+        Date date = null;
+        if (lastModified != null && lastModified.length() > 0) {
+            try {
+                lastModified = lastModified.replace("/Date(","");
+                lastModified = lastModified.replace(")/", "");
+                date = new Date(Long.parseLong(lastModified));
+            } catch (Exception e) {
+                // otherwise we just leave it empty
+            }
+        }
+        return date;
+    }
 
     @Override
     protected void onPostExecute(String s) {
@@ -25,19 +45,20 @@ public class ObtenerUsuario extends AsyncTask <Context, Void, String> {
             SharedPreferences userP = appContext.getSharedPreferences("User", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = userP.edit();
 
-            if (data.optInt("Id") != 0)
-            {
+            if (data.optInt("Id") != 0) {
                 editor.putInt("Id", data.optInt("Id"));
                 editor.putString("Nombres", data.optString("Nombres"));
-                editor.putString("Apellidos", data.optString("Apellidos"));
+                //editor.putString("Apellidos", data.optString("Apellidos"));
                 editor.putString("Telefono", data.optString("Telefono"));
                 editor.putString("Sexo", data.optString("Sexo"));
                 editor.putString("Correo", data.optString("Correo"));
-                editor.putString("FechaNacimiento", data.optString("FechaNacimiento"));
+                Date fechaN = parseDateTime(data.optString("FechaNacimiento"));
+                editor.putString("FechaNacimiento", formatoFecha.format(fechaN.getTime()));
                 editor.putString("RH", data.optString("RH"));
                 editor.putString("IdTwitter", data.optString("IdTwitter"));
                 editor.putString("IdFacebook", data.optString("IdFacebook"));
                 editor.putString("UserLogin", data.optString("Login"));
+                editor.putString("FotoPath", data.optString("FotoPath"));
                 editor.commit();
 
                 new ObtenerVehiculo().execute(appContext);

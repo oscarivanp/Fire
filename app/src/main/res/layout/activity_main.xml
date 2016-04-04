@@ -133,16 +133,17 @@
                         android:textColor="@color/colorPrimary"
                         android:layout_weight="0.7"
                         android:text="Bateria Moto"/>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/txtBattMoto"
                         android:layout_weight="1"
-                        android:text="00.0v"/>
+                        android:text="0v"/>
+
                     <ProgressBar
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
-                        android:layout_weight="0.7"
+                        android:layout_weight="0.75"
                         android:id="@+id/progressBattMoto"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:max="14"
@@ -152,7 +153,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0-14v"/>
+                        android:text="14v"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/colorPrimary"
+                        android:id="@+id/txtBattMoto"
+                        android:layout_weight="1"
+                        android:text="0v"/>
 
                 </LinearLayout>
 
@@ -172,14 +182,13 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/txtBattDispositivo"
                         android:layout_weight="1"
-                        android:text="00.0v"/>
+                        android:text="0v"/>
 
                     <ProgressBar
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
-                        android:layout_weight="0.7"
+                        android:layout_weight="0.75"
                         android:id="@+id/progressBattDispositivo"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:max="4"
@@ -190,7 +199,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0-4.0"/>
+                        android:text="4v"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="textEnd"
+                        android:id="@+id/txtBattDispositivo"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_weight="1"
+                        android:text="0v"/>
 
                 </LinearLayout>
 
@@ -210,13 +228,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="1/4"/>
+                        android:text="E"/>
 
                     <ProgressBar
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
                         android:id="@+id/progressCombustible"
-                        android:layout_weight="0.7"
+                        android:layout_weight="0.75"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:max="100"
                         android:progress="0"
@@ -226,7 +244,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Gas"/>
+                        android:text="F"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:textAlignment="textEnd"
+                        android:layout_weight="1"
+                        android:text="50%"/>
 
                 </LinearLayout>
 
@@ -259,11 +285,11 @@
                         android:id="@+id/btnRecorrido"
                         android:layout_width="wrap_content"
                         android:gravity="center"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:text="@string/nuevo_recorrido" />
                     <Button
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="35dp"
                         android:gravity="center"
                         android:id="@+id/btnMapa"
                         android:text="@string/title_activity_maps"/>

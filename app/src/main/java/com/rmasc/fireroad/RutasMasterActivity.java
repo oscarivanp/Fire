@@ -27,7 +27,6 @@ public class RutasMasterActivity extends AppCompatActivity {
 
     public ListView listViewRutas;
     public TextView textViewTitulo;
-    public Button btnEjemploDetalle;
     public ArrayList<Ruta> MisRutas = new ArrayList<Ruta>();
     Intent goToPageDetalles;
     @Override
@@ -38,16 +37,6 @@ public class RutasMasterActivity extends AppCompatActivity {
         AssignViews();
         new CargarRutas().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListarRecorridos");
 
-
-        btnEjemploDetalle = (Button) findViewById(R.id.buttonEjemploDetalle);
-        btnEjemploDetalle.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                goToPageDetalles = new Intent(getBaseContext(), DetallesActivity.class);
-                startActivity(goToPageDetalles);
-            }
-        });
     }
 
     private void AssignViews()
@@ -60,6 +49,8 @@ public class RutasMasterActivity extends AppCompatActivity {
                 ViewHolder holder = (ViewHolder) view.getTag();
                 ShowMessage("Id del item " + holder.Id);
                 goToPageDetalles = new Intent(getBaseContext(), DetallesActivity.class);
+                goToPageDetalles.putExtra("IdRecorrido", holder.Id);
+                goToPageDetalles.putExtra("IdVehiculo", getIntent().getIntExtra("IdMoto", 0));
                 startActivity(goToPageDetalles);
             }
         });
@@ -75,9 +66,11 @@ public class RutasMasterActivity extends AppCompatActivity {
             WebServiceParameter parametro = new WebServiceParameter();
 
             SharedPreferences userPref = getSharedPreferences("User", MODE_PRIVATE);
-            parametro.Nombre = "IdMoto";
-            parametro.Valor = String.valueOf(getIntent().getExtras().getInt("IdMoto"));
+            parametro.Nombre = "IdVehiculo";
+            parametro.Valor = String.valueOf(getIntent().getIntExtra("IdMoto", 0));
             parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
             parametro.Nombre = "IdUser";
             parametro.Valor = String.valueOf(userPref.getInt("Id", 0));
             parameters.add(parametro);

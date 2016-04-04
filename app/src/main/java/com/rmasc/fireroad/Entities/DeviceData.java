@@ -37,6 +37,14 @@ public class DeviceData {
         Fix = TiempoReporte = false;
     }
 
+    public String FormatDate()
+    {
+        String año = Fecha.substring(0, 4);
+        String mes = Fecha.substring(4, 6);
+        String dia = Fecha.substring(6, 8);
+        return dia + "/" + mes + "/" + año;
+    }
+
     public DeviceData(String DataIn) {
         String[] DatosIn = DataIn.split(";");
 

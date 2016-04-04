@@ -1,5 +1,6 @@
 package com.rmasc.fireroad;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView btnRegistrar;
 
     public EditText editTextContrasena, editTextCorreo;
+    public ProgressDialog progressDialog;
 
     private ImageButton imgBtnFace, imgBtnTwitt;
     private static TwitterLoginButton twitterloginButton;
@@ -150,6 +152,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void IniciarLogin()
     {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
         new LoginWebService().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/Login", editTextCorreo.getText().toString(), editTextContrasena.getText().toString());
     }
 
@@ -188,6 +194,10 @@ public class LoginActivity extends AppCompatActivity {
                     editor.commit();
 
                     new ObtenerUsuario().execute(getBaseContext());
+
+                    if (progressDialog != null)
+                        progressDialog.dismiss();
+
                     ShowMessage("Bienvenido");
                     startActivity(goToMain);
                     finish();

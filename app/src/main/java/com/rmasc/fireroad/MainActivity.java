@@ -13,7 +13,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -32,12 +34,20 @@ import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 import com.rmasc.fireroad.Entities.DeviceBluetooth;
 import com.rmasc.fireroad.Entities.DeviceData;
+import com.rmasc.fireroad.Entities.WebServiceParameter;
+import com.rmasc.fireroad.Services.WebService;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -69,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private static View.OnClickListener buttonClickListener;
 
     private static boolean isRecorrido = false;
+    private static int countTramas = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,25 +111,23 @@ public class MainActivity extends AppCompatActivity {
                             VerDispositivoMapa();
                             break;
                         case R.id.btnRecorrido:
-                            //Empieza a enviar datos del recorrido
-                            isRecorrido = !isRecorrido;
-                            if (isRecorrido) { //Inicia el envio de tramas para el recorrido
-                                btnRecorrido.setText("Stop");
-                                btnRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
+                            if (!isRecorrido) {
+                                new CrearRecorrido().execute();
                             } else {
-                                //Detiene el envio de tramas del recorrido
-                                btnRecorrido.setText("Go!");
-                                btnRecorrido.setTextColor(getResources().getColor(R.color.colorOk));
+                                new FinalizarRecorrido().execute();
                             }
                             break;
                         case R.id.txtConexion:
-                            if (bluetoothLE != null && DispositivoAsociado != null)
-                                runOnUiThread(new Runnable() {
+                            if (bluetoothLE != null && DispositivoAsociado != null) {
+                                bluetoothLE.scanLeDevice(true);
+                                txtConexion.setText("Buscando...");
+                                new android.os.Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         ConnectToDevice();
                                     }
-                                });
+                                }, 5000);
+                            }
                             break;
                         default:
                             break;
@@ -149,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void AssignViews() {
+        SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
         imageViewBateria = (ImageView) findViewById(R.id.imageViewBateria);
         imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
         imageViewUser.setOnClickListener(buttonClickListener);
@@ -160,9 +170,19 @@ public class MainActivity extends AppCompatActivity {
 
 
         try {
-            String path = Environment.getExternalStorageDirectory().toString() + "/FireUser";
-            File streamImage = new File(path);
-            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
+            if(user.getString("FotoPath", "").equals("")) {
+                String path = Environment.getExternalStorageDirectory().toString() + "/FireUser";
+                File streamImage = new File(path);
+                imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
+            }
+            else
+            {
+                InputStream prueba = new URL(user.getString("FotoPath", "")).openStream();
+                Bitmap foto = BitmapFactory.decodeStream(prueba);
+                RoundImages imaghenFace = new RoundImages(foto);
+                Bitmap imagenProcesada = imaghenFace.RoundImages(foto, 200, 200);
+                imageViewUser.setImageBitmap(imagenProcesada);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
@@ -173,7 +193,6 @@ public class MainActivity extends AppCompatActivity {
         btnMapa = (Button) findViewById(R.id.btnMapa);
         btnMapa.setOnClickListener(buttonClickListener);
 
-        SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
         txtUser = (TextView) findViewById(R.id.txtUser);
         txtUser.setText(user.getString("UserLogin", ""));
         txtReporteDispositivo = (TextView) findViewById(R.id.txtReporteDispositivo);
@@ -240,8 +259,8 @@ public class MainActivity extends AppCompatActivity {
                         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                             super.onCharacteristicChanged(gatt, characteristic);
                             if (characteristic.getUuid().equals(bluetoothLE.CHARACTERISTIC_SERIAL)) {
-                                charSerial = characteristic;
-                                ProcesarTrama(charSerial.getStringValue(0));
+                                //charSerial = characteristic;
+                                ProcesarTrama(characteristic.getStringValue(0));
                             }
                         }
 
@@ -257,16 +276,13 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-                            bluetoothLE.bluetoothGattServiceList.addAll(gatt.getServices());
-                            for (BluetoothGattService servicios : bluetoothLE.bluetoothGattServiceList) {
-                                bluetoothLE.bleGattCharasteristicList.addAll(servicios.getCharacteristics());
-                                for (final BluetoothGattCharacteristic characteristic : bluetoothLE.bleGattCharasteristicList) {
-                                    if (characteristic.getUuid().equals(bluetoothLE.CHARACTERISTIC_SERIAL))
-                                        bluetoothLE.bleGatt.setCharacteristicNotification(characteristic, true);
-
-                                }
-                            }
                             super.onServicesDiscovered(gatt, status);
+                            for (BluetoothGattService servicio : gatt.getServices())
+                            {
+                                BluetoothGattCharacteristic charSerial = servicio.getCharacteristic(bluetoothLE.CHARACTERISTIC_SERIAL);
+                                if (charSerial != null)
+                                    bluetoothLE.bleGatt.setCharacteristicNotification(charSerial, true);
+                            }
                         }
 
                         @Override
@@ -332,19 +348,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void ConnectToDevice() {
+        boolean isVisible = false;
         for (int i = 0; i < bluetoothLE.bleDevices.size(); i++) {
             if (bluetoothLE.bleDevices.get(i).getAddress().equals(DispositivoAsociado.Mac)) {
                 try {
                     bluetoothLE.ConnectToGattServer(bluetoothLE.bleDevices.get(i), true);
-
-                    if (!bluetoothLE.bleGatt.discoverServices())
-                        ShowMessage("Servicios no descubiertos.");
-                    ShowMessage("Conectado a: " + DispositivoAsociado.Name);
+                    //if (!bluetoothLE.bleGatt.discoverServices())
+                      //  ShowMessage("Servicios no descubiertos.");
+                    //ShowMessage("Conectado a: " + DispositivoAsociado.Name);
+                    isVisible = true;
                 } catch (Exception e) {
                     ShowMessage("Error al conectarse a: " + DispositivoAsociado.Name);
                 }
                 break;
             }
+        }
+        if (!isVisible) {
+            ShowMessage("No se encontró el dispositivo.");
+            txtConexion.setText("Offline");
         }
     }
 
@@ -354,16 +375,74 @@ public class MainActivity extends AppCompatActivity {
             return;
         } else if (tramaIncompleta.contains("ST3") && tramaIn.endsWith("$")) {
             tramaIncompleta += tramaIn;
-            runOnUiThread(new Runnable() {
+            new TramaProcess().execute(tramaIncompleta);
+            tramaIncompleta = "";
+            /*runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    DispositivoAsociado.DataReceived = new DeviceData(tramaIncompleta);
-                    ActualizarControles();
+                    try {
+                        String tramaCompleta = tramaIncompleta;
+                        tramaIncompleta = "";
+                        DispositivoAsociado.DataReceived = new DeviceData(tramaCompleta);
+                        ActualizarControles();
+                        if (isRecorrido) {
+                            if (countTramas == 10) {
+                                ShowMessage("10 tramas");
+                                SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
+                                SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+                                new EnviarTrama().execute(String.valueOf(user.getInt("Id", 0)), String.valueOf(moto.getInt("IdRecorrido", 0)),String.valueOf(moto.getInt("Id",0)),
+                                        String.valueOf(DispositivoAsociado.DataReceived.Latitud), String.valueOf(DispositivoAsociado.DataReceived.Longitud),
+                                        DispositivoAsociado.DataReceived.FormatDate() , String.valueOf(DispositivoAsociado.DataReceived.Bateria).substring(0, 2),
+                                        String.valueOf(1), String.valueOf(((int) DispositivoAsociado.DataReceived.Velocidad)), "0");
+                                countTramas = 0;
+                            }
+                            else
+                            {
+                                countTramas ++;
+                            }
+                        }
+                    }
+                    catch (Exception e){}
+
                 }
-            });
+            }); */
             return;
         }
         tramaIncompleta += tramaIn;
+    }
+
+    private class TramaProcess extends AsyncTask<String, Void, String>
+    {
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                String tramaCompleta = params[0];
+                DispositivoAsociado.DataReceived = new DeviceData(tramaCompleta);
+                ActualizarControles();
+                if (isRecorrido) {
+                    if (countTramas == 10) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
+                                SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+                                new EnviarTrama().execute(String.valueOf(user.getInt("Id", 0)), String.valueOf(moto.getInt("IdRecorrido", 0)), String.valueOf(moto.getInt("Id", 0)),
+                                        String.valueOf(DispositivoAsociado.DataReceived.Latitud), String.valueOf(DispositivoAsociado.DataReceived.Longitud),
+                                        DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora, String.valueOf(((int) DispositivoAsociado.DataReceived.Bateria)),
+                                        String.valueOf(1), String.valueOf(((int) DispositivoAsociado.DataReceived.Velocidad)), "0");
+                            }
+                        });
+                        countTramas = 0;
+                    }
+                    else
+                    {
+                        countTramas ++;
+                    }
+                }
+            }
+            catch (Exception e){}
+            return null;
+        }
     }
 
     private void ActualizarControles() {
@@ -371,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txtReporteDispositivo.setText(DispositivoAsociado.DataReceived.Fecha + " " + DispositivoAsociado.DataReceived.Hora);
+                txtReporteDispositivo.setText(DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
                 SetImageViews();
                 UpdateWidget();
             }
@@ -385,13 +464,18 @@ public class MainActivity extends AppCompatActivity {
         progressBattMoto.setProgress(battExtern);
         progressBattDispositivo.setProgress(battPercent);
 
-        txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada) + "v");
+        txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada).substring(0,3) + "v");
         txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria) + "v");
 
         if (DispositivoAsociado.DataReceived.VoltajeEntrada > 0)
             switchEncendido.setChecked(true);
         else
             switchEncendido.setChecked(false);
+
+        if (DispositivoAsociado.DataReceived.Modo == 2)
+            switchEstacionado.setChecked(false);
+        else
+            switchEstacionado.setChecked(true);
     }
 
     private boolean IsNewUser() {
@@ -427,14 +511,21 @@ public class MainActivity extends AppCompatActivity {
         sendBroadcast(updateWidget);
     }
 
-    public void OnConnectionChanged(boolean isConnected) {
-        if (isConnected) {
-            txtConexion.setText("Online");
-            txtConexion.setTextColor(getResources().getColor(R.color.colorOk));
-        } else {
-            txtConexion.setText("Offline");
-            txtConexion.setTextColor(getResources().getColor(R.color.colorAccent));
-        }
+    public void OnConnectionChanged(final boolean isConnected) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isConnected) {
+                    bluetoothLE.bleGatt.discoverServices();
+                    txtConexion.setText("Online");
+                    txtConexion.setTextColor(getResources().getColor(R.color.colorOk));
+                    ShowMessage("Conectado a: " + DispositivoAsociado.Name);
+                } else {
+                    txtConexion.setText("Offline");
+                    txtConexion.setTextColor(getResources().getColor(R.color.colorAccent));
+                }
+            }
+        });
     }
 
     public void EnviarAlDispositivo(String comando) {
@@ -442,6 +533,177 @@ public class MainActivity extends AppCompatActivity {
             if (charSerial != null) {
                 charSerial.setValue(comando);
                 bluetoothLE.bleGatt.writeCharacteristic(charSerial);
+            }
+        }
+    }
+
+    private class CrearRecorrido extends AsyncTask<String, Void, String>
+    {
+
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            WebServiceParameter parametro = new WebServiceParameter();
+            SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
+            SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+
+            parametro.Nombre = "IdUser";
+            parametro.Valor = String.valueOf(user.getInt("Id", 0));
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdVehiculo";
+            parametro.Valor = String.valueOf(moto.getInt("Id", 0));
+            parameters.add(parametro);
+
+            return WebService.ConexionWS("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/IniciarRecorrido", parameters);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try
+            {
+                JSONObject jsonResponse = new JSONObject(s);
+                int IdRecorrido = jsonResponse.optInt("d");
+                if (IdRecorrido != 0)
+                {
+                    SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = moto.edit();
+
+                    editor.putInt("IdRecorrido", IdRecorrido);
+                    editor.commit();
+
+                    btnRecorrido.setText("Stop");
+                    btnRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
+                    isRecorrido = true;
+                }
+                else
+                    isRecorrido = false;
+            }
+            catch (Exception e){}
+        }
+    }
+
+    private class FinalizarRecorrido extends AsyncTask<String, Void, String>
+    {
+
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            WebServiceParameter parametro = new WebServiceParameter();
+            SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
+            SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+
+            parametro.Nombre = "IdUser";
+            parametro.Valor = String.valueOf(user.getInt("Id", 0));
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdRecorrido";
+            parametro.Valor = String.valueOf(moto.getInt("IdRecorrido", 0));
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdVehiculo";
+            parametro.Valor = String.valueOf(moto.getInt("Id", 0));
+            parameters.add(parametro);
+
+            return WebService.ConexionWS("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/FinRecorrido", parameters);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject jsonResponse = new JSONObject(s);
+                String result = jsonResponse.optString("d");
+                if (result.equals("true"))
+                {
+                    isRecorrido = false;
+                    btnRecorrido.setText("Go!");
+                    btnRecorrido.setTextColor(getResources().getColor(R.color.colorOk));
+                }
+                else
+                    isRecorrido = true;
+            }
+            catch (Exception e){}
+        }
+    }
+
+    private class EnviarTrama extends AsyncTask<String, Void, String>
+    {
+
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            WebServiceParameter parametro = new WebServiceParameter();
+
+            parametro.Nombre = "IdUser";
+            parametro.Valor = params[0];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdRecorrido";
+            parametro.Valor = params[1];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdVehiculo";
+            parametro.Valor = params[2];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Latitud";
+            parametro.Valor = params[3];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Longitud";
+            parametro.Valor = params[4];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Fecha";
+            parametro.Valor = params[5];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Bateria";
+            parametro.Valor = params[6];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Encendido";
+            parametro.Valor = params[7];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Velocidad";
+            parametro.Valor = params[8];
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Altitud";
+            parametro.Valor = params[9];
+            parameters.add(parametro);
+
+            return WebService.ConexionWS("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/GuardarTransmision", parameters);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject jsonResponse = new JSONObject(s);
+                String result = jsonResponse.optString("d");
+                ShowMessage(result);
+                if(!result.equals("true"))
+                {
+                    //Guardar y envias más tarde (?)
+                }
+
+            }
+            catch (Exception e)
+            {
+
             }
         }
     }

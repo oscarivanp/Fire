@@ -10,11 +10,5 @@
     tools:context="com.rmasc.fireroad.PerfilActivity">
 
     <include layout="@layout/register_user"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnSave"
-        android:text="@string/accept"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"/>
+
 </RelativeLayout>

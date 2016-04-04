@@ -122,7 +122,7 @@ public class BluetoothLE extends Activity {
     public void ConnectToGattServer(BluetoothDevice device, boolean autoConnect)
     {
         bleGatt = device.connectGatt(this, autoConnect, bleGattCallback);
-        bleGatt.discoverServices();
+        //bleGatt.discoverServices();
     }
 
 }

@@ -737,7 +737,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                 SharedPreferences user = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = user.edit();
-                Intent goToMain = new Intent(getBaseContext(), MainActivity.class);
 
                 if (IdUser != 0) {
                     editor.putInt("Id", IdUser);
@@ -753,8 +752,6 @@ public class RegisterActivity extends AppCompatActivity {
                     editor.putString("UserLogin", editTextNombre.getText().toString());
                     editor.commit();
                     new CrearVehiculo().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CrearVehiculo", editTextMarca.getText().toString(), editTextPlaca.getText().toString(), editTextColor.getText().toString(), editTextModelo.getText().toString(), editTextMacBlue.getText().toString());
-                    startActivity(goToMain);
-                    finish();
                 } else {
                     editor.putInt("Id", 0);
                     editor.commit();
@@ -789,6 +786,7 @@ public class RegisterActivity extends AppCompatActivity {
                     editor.putString("UserLogin", editTextNombre.getText().toString());
                     editor.commit();
                     startActivity(goToMain);
+                    finish();
                 } else {
                     ShowMessage("Error al editar, intente más tarde.");
                 }
@@ -931,6 +929,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 SharedPreferences motoMain = getBaseContext().getSharedPreferences("Moto", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = motoMain.edit();
+                Intent goToMain = new Intent(getBaseContext(), MainActivity.class);
 
                 if (isOk != 0) {
                     editor.putInt("Id", isOk);
@@ -941,6 +940,8 @@ public class RegisterActivity extends AppCompatActivity {
                     editor.putString("MacBluetooth", editTextMacBlue.getText().toString());
                     editor.putString("NombreBluetooth", "FireRoad-RM");
                     editor.commit();
+                    startActivity(goToMain);
+                    finish();
                 }
             } catch (Exception e) {
 
@@ -963,6 +964,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
                 File streamImage = new File(path);
                 parametro.Valor = new ImagenData(BitmapFactory.decodeStream(new FileInputStream(streamImage))).content;
+                parameters.add(parametro);
             } catch (Exception e) {
                 parametro.Valor = "NA";
                 parameters.add(parametro);

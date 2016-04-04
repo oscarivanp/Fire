@@ -32,7 +32,7 @@ public class ObtenerVehiculo extends AsyncTask <Context, Void, String> {
         parameters.add(parametro);
         appContext = params[0];
 
-        return WebService.ConexionWS("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ObtenerVehiculo", parameters);
+        return WebService.ConexionWS("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ObtenerVehiculos", parameters);
     }
 
     @Override
