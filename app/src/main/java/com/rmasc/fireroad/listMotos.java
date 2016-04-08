@@ -36,7 +36,6 @@ public class listMotos extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listmotos);
-
         AssignViews();
         new CargarMotos().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/obtenerVehiculos");
     }
@@ -88,6 +87,7 @@ public class listMotos extends AppCompatActivity {
                     Vehiculo moto = new Vehiculo();
                     moto.Id = recoTemp.optInt("Id");
                     moto.Marca = recoTemp.optString("Marca");
+                    moto.FotoPath=recoTemp.optString("FotoPath");
                     moto.Placa = recoTemp.optString("Placa");
                     MisMotos.add(moto);
                 }

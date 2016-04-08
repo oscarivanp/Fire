@@ -33,18 +33,16 @@ public class RutasAdapter extends ArrayAdapter<Ruta> {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.array_item, parent, false);
             viewHolder.Titulo = (TextView) convertView.findViewById(R.id.txtTitulo);
-            viewHolder.Descripcion = (TextView) convertView.findViewById(R.id.txtDescripcion);
-            convertView.setTag(viewHolder);
+
         }
         else
         {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.Titulo.setText(ruta.Descripcion);
-        viewHolder.Descripcion.setText(ruta.FechaInicio + " " + ruta.FechaFin);
+        viewHolder.Titulo.setText(ruta.Descripcion+ ruta.FechaInicio + " " + ruta.FechaFin);
         viewHolder.Id = ruta.Id;
-
+        convertView.setTag(viewHolder);
         return convertView;
     }
 }

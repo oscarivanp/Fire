@@ -55,6 +55,7 @@
             android:theme="@style/AppTheme.NoActionBar"
            />
         <activity android:name=".MotoActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".MainActivity"
