@@ -18,10 +18,20 @@
             android:orientation="horizontal"
             android:layout_height="wrap_content">
 
+
             <ImageButton
                 android:layout_width="50sp"
                 android:layout_height="50sp"
                 android:layout_marginLeft="10sp"
+                android:id="@+id/btnHome"
+                android:background="@drawable/home"
+                android:scaleType="fitXY"
+                />
+
+            <ImageButton
+                android:layout_width="50sp"
+                android:layout_height="50sp"
+                android:layout_marginLeft="@dimen/iconosmargen"
                 android:id="@+id/btnPerfil"
                 android:background="@drawable/perfil"
                 android:scaleType="fitXY"

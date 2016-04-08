@@ -11,6 +11,7 @@ public class Ruta {
     public SimpleDateFormat formatoFecha;
     public String FechaInicio;
     public String FechaFin;
+    public String Distancia;
 
     public  Ruta()
     {
@@ -19,5 +20,6 @@ public class Ruta {
         formatoFecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         FechaInicio = "";
         FechaFin = "";
+        Distancia="";
     }
 }

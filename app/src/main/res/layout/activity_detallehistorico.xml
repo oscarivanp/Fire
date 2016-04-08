@@ -52,12 +52,13 @@
 
 
                     <TextView
-                        android:layout_marginTop="50dp"
+                        android:layout_marginTop="20dp"
                         android:id="@+id/txtKilometros"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimary"
                         android:layout_marginBottom="10dp"
+                        android:gravity="center_horizontal"
                         android:text="Kms" />
 
                     <TextView
@@ -69,11 +70,13 @@
                         android:layout_gravity="center_horizontal" />
 
                     <TextView
+                        android:layout_marginTop="20dp"
                         android:id="@+id/txtDuracion"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimary"
                         android:layout_marginBottom="10dp"
+                        android:gravity="center_horizontal"
                         android:text="Duracion" />
 
 
@@ -86,6 +89,7 @@
                         android:layout_gravity="center_horizontal" />
 
                     <Button
+                        android:layout_marginTop="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/btnMapa"

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.rmasc.fireroad.MainActivity;
 import com.rmasc.fireroad.MotoActivity;
 import com.rmasc.fireroad.PerfilActivity;
 import com.rmasc.fireroad.R;
@@ -25,6 +26,11 @@ public class MenuFragment extends Fragment {
             Intent goTo;
             switch (v.getId())
             {
+                case R.id.btnHome:
+
+                    goTo = new Intent(getContext(), MainActivity.class);
+                    startActivity(goTo);
+                    break;
                 case R.id.btnPerfil:
                     goTo = new Intent(getContext(), PerfilActivity.class);
                     startActivity(goTo);
@@ -62,6 +68,10 @@ public class MenuFragment extends Fragment {
                 case R.id.btnSettings:
                     ShowMessage("Ajustes");
                     break;
+                case R.id.btnHome:
+                    ShowMessage("Home");
+                    break;
+
                 default:
                     break;
             }
@@ -77,6 +87,10 @@ public class MenuFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View menu = inflater.inflate(R.layout.menu_bar, container, false);
+
+        ImageButton btnHome = (ImageButton) menu.findViewById(R.id.btnHome);
+        btnHome.setOnClickListener(buttonListener);
+        btnHome.setOnLongClickListener(buttonInfo);
 
         ImageButton btnPerfil = (ImageButton) menu.findViewById(R.id.btnPerfil);
         btnPerfil.setOnClickListener(buttonListener);

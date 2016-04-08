@@ -7,7 +7,10 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.rmasc.fireroad.MotoActivity">
+    tools:context="com.rmasc.fireroad.MotoActivity"
+    android:windowSoftInputMode="adjustPan"
+    android:clickable="true"
+    android:onClick="CambiarFoto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,20 +23,21 @@
             android:layout_margin="10dp"
             android:id="@+id/imageButtonMoto"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/no_moto"
+            android:src="@drawable/no_moto"
+            android:background="@null"
             android:scaleType="fitXY"
-            android:contentDescription="Foto" />
+            android:contentDescription="Foto"
+            android:onClick="CambiarFoto" />
 
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:layout_gravity="center_horizontal">
+            android:layout_height="match_parent"
+         >
 
             <TableRow>
                 <TextView
                     android:text="@string/marca"
-                    android:layout_column="1"/>
+                    android:layout_column="0"/>
                 <EditText
                     android:id="@+id/editTextMarca"
                     android:inputType="textPersonName"
@@ -43,7 +47,7 @@
             <TableRow>
                 <TextView
                     android:text="@string/placa"
-                    android:layout_column="1"/>
+                    android:layout_column="0"/>
                 <EditText
                     android:id="@+id/editTextPlaca"
                     android:inputType="textPersonName"
@@ -53,7 +57,7 @@
             <TableRow>
                 <TextView
                     android:text="@string/color"
-                    android:layout_column="1"/>
+                    android:layout_column="0"/>
                 <EditText
                     android:id="@+id/editTextColor"
                     android:inputType="textPersonName"
@@ -63,7 +67,7 @@
             <TableRow>
                 <TextView
                     android:text="@string/modelo"
-                    android:layout_column="1"/>
+                    android:layout_column="0"/>
                 <EditText
                     android:id="@+id/editTextModelo"
                     android:inputType="textPersonName"
@@ -73,11 +77,25 @@
             <TableRow>
                 <TextView
                     android:text="@string/macblue"
-                    android:layout_column="1"/>
+                    android:layout_column="0"/>
                 <EditText
                     android:id="@+id/editTextMacBlue"
                     android:inputType="textPersonName"
                     android:ems="10"/>
+            </TableRow>
+
+
+            <TableRow
+                android:layout_marginTop="20dp"
+                android:gravity="center_horizontal">
+                <Button
+                 android:id="@+id/btnGuardarMoto"
+                    android:width="20sp"
+                    android:height="10sp"
+                    android:background="@color/dgts__default_accent"
+                    android:textColor="@color/colorBackground"
+                    android:text="Guardar"
+                    android:onClick="guardar"></Button>
             </TableRow>
 
         </TableLayout>

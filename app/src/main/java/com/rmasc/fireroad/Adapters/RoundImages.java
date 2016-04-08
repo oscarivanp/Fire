@@ -5,6 +5,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
@@ -26,12 +27,23 @@ public class RoundImages extends Drawable {
 
     public Bitmap RoundImages(Bitmap bitmap, int mWidth, int mHeight) {
 
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        float scaleWidth = ((float) 500) / width;
+        float scaleHeight = ((float) 500) / height;
+// CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+// RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+// RECREATE THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+
+        final Bitmap output = Bitmap.createBitmap(resizedBitmap.getWidth(), resizedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(output);
 
         final int color = Color.RED;
         final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final Rect rect = new Rect(0, 0, resizedBitmap.getWidth(), resizedBitmap.getHeight());
         final RectF rectF = new RectF(rect);
 
         paint.setAntiAlias(true);
@@ -40,9 +52,9 @@ public class RoundImages extends Drawable {
         canvas.drawOval(rectF, paint);
 
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
+        canvas.drawBitmap(resizedBitmap, rect, rect, paint);
 
-        bitmap.recycle();
+        resizedBitmap.recycle();
 
         return output;
 

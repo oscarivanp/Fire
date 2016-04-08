@@ -121,12 +121,18 @@ public class RegisterActivity extends AppCompatActivity {
 
                    case SELECT_PICTURE:
                         if(resultCode == RESULT_OK){
-                            Uri path = data.getData();
-                            decodeBitmap(path.toString(), "User");
+
+                            Uri imageUri = data.getData();
+                            try {
+                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                                decodeBitmap(bitmap, "User");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                         }
                         break;
                 }
-
 
                 imagUser = false;
             } else {
@@ -141,9 +147,16 @@ public class RegisterActivity extends AppCompatActivity {
 
                     case SELECT_PICTURE:
                         if(resultCode == RESULT_OK){
-                            String dir =  Environment.getExternalStorageDirectory() + File.separator
-                                    + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
-                            decodeBitmap(dir, "Moto");
+                                Uri imageUri = data.getData();
+                            try {
+
+
+                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                                decodeBitmap(bitmap, "Moto");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                         }
                         break;
                 }
@@ -919,6 +932,25 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
     }
+    private void decodeBitmap(Bitmap dir, String tipo) {
+
+
+        if (tipo.equals("User")) {
+            RoundImages imaghenFace = new RoundImages(dir);
+            Bitmap imagenProcesada = imaghenFace.RoundImages(dir, 200, 200);
+            imageButtonUser.setImageBitmap(imagenProcesada);
+
+        }
+        if(tipo.equals("Moto")){
+
+            RoundImages imaghenFace = new RoundImages(dir);
+            Bitmap imagenProcesada = imaghenFace.RoundImages(dir, 200, 200);
+            imageButtonMoto.setImageBitmap(imagenProcesada);
+
+        }
+
+    }
+
 
     private class CrearVehiculo extends AsyncTask<String, Void, String> {
         @Override

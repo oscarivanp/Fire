@@ -51,11 +51,12 @@
         <activity
             android:name=".RegisterActivity"
             android:label="@string/title_activity_register"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".MotoActivity"
-            android:windowSoftInputMode="adjustResize" />
+           />
+        <activity android:name=".MotoActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
@@ -98,23 +99,19 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.facebook.FacebookActivity"
+            android:windowSoftInputMode="adjustResize"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".RutasMasterActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".listMotos"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".DetallesActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
-
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:name=".RutasMasterActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".listMotos"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".DetallesActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

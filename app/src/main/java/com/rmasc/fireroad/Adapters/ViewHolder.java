@@ -1,5 +1,6 @@
 package com.rmasc.fireroad.Adapters;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -8,5 +9,6 @@ import android.widget.TextView;
 public class ViewHolder {
         public TextView Titulo;
         public TextView Descripcion;
+        public ImageView ImagenMoto;
         public int Id;
 }

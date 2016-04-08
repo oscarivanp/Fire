@@ -7,7 +7,7 @@ public class Vehiculo {
 
     public String  Marca, Placa,kilometraje;
     public int Id;
-    public String Descripcion;
+    public String Descripcion,FotoPath;
 
 
     public Vehiculo()
