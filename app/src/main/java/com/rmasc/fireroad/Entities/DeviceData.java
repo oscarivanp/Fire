@@ -26,6 +26,9 @@ public class DeviceData {
     public float Bateria;
     public boolean TiempoReporte;
 
+    public int ReporteId;
+    public int VehiculoId;
+
     public int TamañoMsj;
     public String Mensaje;
     public String ChkSum;
