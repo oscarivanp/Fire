@@ -49,7 +49,7 @@ public class BluetoothLE extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        bleDevices = new ArrayList<BluetoothDevice>();
+                        //bleDevices = new ArrayList<BluetoothDevice>();
                         bleDevices.add(device);
                         //mAdapter.clear();
                         mAdapter.add(device.getName());
@@ -110,13 +110,16 @@ public class BluetoothLE extends Activity {
                     bleAdapter.stopLeScan(bleScanCallback);
                 }
             }, 5000);
-
             mScanning = true;
             bleAdapter.startLeScan(bleScanCallback);
         } else {
             mScanning = false;
             bleAdapter.stopLeScan(bleScanCallback);
         }
+    }
+
+    public void  scanLeDevice()
+    {
     }
 
     public void ConnectToGattServer(BluetoothDevice device, boolean autoConnect)

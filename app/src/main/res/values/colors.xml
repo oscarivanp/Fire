@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#333344</color>
-    <color name="colorPrimaryDark">#AAAAAA</color>
-    <color name="colorAccent">#FF2233</color>
-    <color name="colorBackground">#FFFFFF</color>
-    <color name="colorBackLight">#DDDDDD</color>
-    <color name="colorLink">#0062ff</color>
+    <color name="colorPrimary">#343434</color>
+    <color name="colorPrimaryDark">#62A388</color>
+    <color name="colorAccent">#62A388</color>
+    <color name="colorButton">#055E58</color>
+    <color name="colorBackground">#055E58</color>
+    <color name="colorBackLight">#B9D2D2</color>
+    <color name="colorLink">#00ADB5</color>
     <color name="colorWaiting">#ffd91a</color>
     <color name="colorOk">#3dff33</color>
+    <color name="navigationBarColor">#EEEEEE</color>
+    <color name="windowBackground">#B9D2D2</color>
 </resources>

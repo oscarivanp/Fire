@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rotate android:fromDegrees="0" android:toDegrees="45" xmlns:android="http://schemas.android.com/apk/res/android">
+        <shape android:innerRadiusRatio="2.6"
+            android:shape="ring"
+            android:thicknessRatio="999.0"
+            android:useLevel="false"
+            android:visible="true">
+            <stroke android:width="2dp" android:color="@color/colorPrimary" android:dashGap="200dp" android:dashWidth="200dp"/>
+        </shape>
+</rotate>

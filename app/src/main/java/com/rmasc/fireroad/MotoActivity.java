@@ -190,16 +190,11 @@ public class MotoActivity extends AppCompatActivity {
 
     public void guardar(View view){
 
-        new CrearMoto().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditarVehiculo", editTextMarca.getText().toString(), editTextPlaca.getText().toString(), editTextColor.getText().toString(), editTextModelo.getText().toString(), editTextMacBlue.getText().toString());
+        new EditarMoto().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditarVehiculo", editTextMarca.getText().toString(), editTextPlaca.getText().toString(), editTextColor.getText().toString(), editTextModelo.getText().toString(), editTextMacBlue.getText().toString());
 
     }
 
-
-
-    private class CrearMoto extends AsyncTask<String, Void, String> {
-
-
-
+    private class EditarMoto extends AsyncTask<String, Void, String> {
         @Override
         protected void onPostExecute(String s) {
             try {
@@ -218,14 +213,9 @@ public class MotoActivity extends AppCompatActivity {
                     editor.putString("Modelo", editTextModelo.getText().toString());
                     editor.putString("MacBluetooth", editTextMacBlue.getText().toString());
                     editor.putString("NombreBluetooth", "FireRoad-RM");
-                    editor.commit();
+                    editor.apply();
                     startActivity(goToMain);
                     finish();
-                }
-                else {
-                    editor.putInt("Id", 0);
-                    editor.commit();
-                    ShowMessage("Error al editar, intente más tarde.");
                 }
             } catch (Exception e) {
 

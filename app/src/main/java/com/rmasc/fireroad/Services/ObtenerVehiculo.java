@@ -54,7 +54,7 @@ public class ObtenerVehiculo extends AsyncTask <Context, Void, String> {
                 editor.putString("Modelo", motoMain.optString("Modelo"));
                 editor.putString("MacBluetooth", motoMain.optString("MacBluetooth"));
                 editor.putString("NombreBluetooth", motoMain.optString("NombreBluetooth"));
-                editor.commit();
+                editor.apply();
             }
 
         }

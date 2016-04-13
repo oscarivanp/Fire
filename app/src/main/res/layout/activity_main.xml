@@ -87,17 +87,6 @@
                     android:layout_marginBottom="10dp"
                     android:text="Encendido" />
 
-                <Switch
-                    android:id="@+id/switchEstacionado"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:textColor="@color/colorPrimary"
-                    android:layout_marginTop="10dp"
-                    android:text="Estacionado" />
-
-
-
                 <TextView
                     android:id="@+id/txtConexion"
                     android:layout_width="match_parent"
@@ -252,7 +241,7 @@
                         android:textColor="@color/colorPrimary"
                         android:textAlignment="textEnd"
                         android:layout_weight="1"
-                        android:text="50%"/>
+                        android:text="0%"/>
 
                 </LinearLayout>
 
@@ -273,7 +262,7 @@
                     android:id="@+id/txtKilometraje"
                     android:layout_width="match_parent"
                     android:textAlignment="center"
-                    android:text="0 Kms"
+                    android:text="00:00:00"
                     android:layout_height="25dp" />
 
                 <LinearLayout
@@ -284,12 +273,14 @@
                     <Button
                         android:id="@+id/btnRecorrido"
                         android:layout_width="wrap_content"
+                        android:layout_marginRight="@dimen/activity_horizontal_margin"
                         android:gravity="center"
                         android:layout_height="35dp"
                         android:text="@string/nuevo_recorrido" />
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:gravity="center"
                         android:id="@+id/btnMapa"
                         android:text="@string/title_activity_maps"/>

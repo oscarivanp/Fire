@@ -11,7 +11,6 @@
         android:textColor="@color/colorPrimary"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/inicio"
-        android:id="@+id/textViewResumen"
         android:layout_gravity="center" />
     <TextView
         android:layout_width="wrap_content"
@@ -20,7 +19,7 @@
         android:gravity="center"
         android:layout_gravity="center"
         android:ems="10"
-        android:id="@+id/txtUser"/>
+        android:id="@+id/textViewResumen"/>
 
     <Button
         android:layout_width="wrap_content"

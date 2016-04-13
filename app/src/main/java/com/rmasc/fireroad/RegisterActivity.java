@@ -70,7 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private ProgressBar progressBar;
-    private static EditText editTextNombre, editTextApellido, editTextCorreo, editTextTelefono, editTexPassword, editTexPasswordConfirmacion, editTextMarca, editTextPlaca, editTextColor, editTextModelo, editTextMacBlue;
+    private static EditText editTextNombre, editTextCorreo, editTextTelefono, editTexPassword, editTexPasswordConfirmacion, editTextMarca, editTextPlaca, editTextColor, editTextModelo, editTextMacBlue;
     private static TextView textViewResumen;
     private static ImageButton imageButtonUser, imageButtonMoto;
     private static Button btnScan, btnPoliticas, btnFinish, btnFecha;
@@ -215,13 +215,13 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 SetPageIndicator(position + 1);
-                if ((position + 1) == 2) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ScanBluetooth();
-                        }
-                    });
+                if(position == 2)
+                {
+                    textViewResumen.setText("Por favor revisa que tus datos sean correctos" + "\r\n Nombre: " + editTextModelo.getText().toString() + " \r\n Fecha Naciemiento: " +
+                     btnFecha.getText().toString() + "\r\n eMail: " + editTextCorreo.getText().toString() + "\r\n RH: " + spinnerRh.getSelectedItem().toString() + "\r\n Teléfono: " +
+                    editTextTelefono.getText().toString() + "\r\n Género: " + spinnerSexo.getSelectedItem().toString() + "\r\n \r\n \r\n Placa: " +
+                    editTextPlaca.getText().toString() + "\r\n Marca: " + editTextMarca.getText().toString() + "\r\n Modelo: " + editTextModelo.getText().toString() +
+                    "\r\n Color: " + editTextColor.getText().toString());
                 }
             }
 
@@ -301,11 +301,11 @@ public class RegisterActivity extends AppCompatActivity {
                                 imagen = imageButtonMoto.getDrawingCache();
                                 if (SaveImage("FireMoto", imagen)) {
                                     if (IdUser == 0) {
-                                        new CrearUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CreateUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
+                                        new CrearUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CreateUser", editTextNombre.getText().toString(), editTextTelefono.getText().toString(),
                                                 spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
                                                 idUserFacebook, editTextNombre.getText().toString(), editTexPassword.getText().toString());
                                     } else {
-                                        new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
+                                        new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString(), editTextTelefono.getText().toString(),
                                                 spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
                                                 "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
                                     }
@@ -437,7 +437,6 @@ public class RegisterActivity extends AppCompatActivity {
         switch (position) {
             case 1:
                 editTextNombre = (EditText) view.findViewById(R.id.editTextNombre);
-                editTextApellido = (EditText) view.findViewById(R.id.editTextApellido);
                 editTextCorreo = (EditText) view.findViewById(R.id.editTextCorreo);
                 editTextTelefono = (EditText) view.findViewById(R.id.editTextTelefono);
                 imageButtonUser = (ImageButton) view.findViewById(R.id.imageButtonUser);
@@ -631,7 +630,6 @@ public class RegisterActivity extends AppCompatActivity {
         protected void onPostExecute(String[] stringFromDoInBackground) {
 
             editTextNombre = (EditText) findViewById(R.id.editTextNombre);
-            editTextApellido = (EditText) findViewById(R.id.editTextApellido);
             editTextCorreo = (EditText) findViewById(R.id.editTextCorreo);
             imageButtonUser = (ImageButton) findViewById(R.id.imageButtonUser);
             btnFecha = (Button) findViewById(R.id.btnFecha);
@@ -649,8 +647,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
 
-            editTextNombre.setText(stringFromDoInBackground[0]);
-            editTextApellido.setText(stringFromDoInBackground[1]);
+            editTextNombre.setText(stringFromDoInBackground[0] + stringFromDoInBackground[1]);
             editTextCorreo.setText(stringFromDoInBackground[2]);
 
             if (stringFromDoInBackground[4] != null) {
@@ -754,7 +751,6 @@ public class RegisterActivity extends AppCompatActivity {
                 if (IdUser != 0) {
                     editor.putInt("Id", IdUser);
                     editor.putString("Nombres", editTextNombre.getText().toString());
-                    editor.putString("Apellidos", editTextApellido.getText().toString());
                     editor.putString("Telefono", editTextTelefono.getText().toString());
                     editor.putString("Sexo", spinnerSexo.getSelectedItem().toString());
                     editor.putString("Correo", editTextCorreo.getText().toString());
@@ -762,12 +758,13 @@ public class RegisterActivity extends AppCompatActivity {
                     editor.putString("RH", spinnerRh.getSelectedItem().toString());
                     editor.putString("IdFacebook", idUserFacebook);
                     editor.putString("IdTwitter", "0");
+                    editor.putString("Contraseña", editTexPassword.getText().toString());
                     editor.putString("UserLogin", editTextNombre.getText().toString());
-                    editor.commit();
+                    editor.apply();
                     new CrearVehiculo().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/CrearVehiculo", editTextMarca.getText().toString(), editTextPlaca.getText().toString(), editTextColor.getText().toString(), editTextModelo.getText().toString(), editTextMacBlue.getText().toString());
                 } else {
                     editor.putInt("Id", 0);
-                    editor.commit();
+                    editor.apply();
                     ShowMessage("Error al registrar, intente más tarde.");
                 }
 
@@ -789,15 +786,15 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if (isOk.equals("True")) {
                     editor.putString("Nombres", editTextNombre.getText().toString());
-                    editor.putString("Apellidos", editTextApellido.getText().toString());
                     editor.putString("Telefono", editTextTelefono.getText().toString());
                     editor.putString("Sexo", spinnerSexo.getSelectedItem().toString());
                     editor.putString("Correo", editTextCorreo.getText().toString());
                     editor.putString("FechaNacimiento", btnFecha.getText().toString());
                     editor.putString("RH", spinnerRh.getSelectedItem().toString());
                     editor.putString("IdTwitter", "0");
+                    editor.putString("Contraseña", editTexPassword.getText().toString());
                     editor.putString("UserLogin", editTextNombre.getText().toString());
-                    editor.commit();
+                    editor.apply();
                     startActivity(goToMain);
                     finish();
                 } else {
@@ -970,8 +967,8 @@ public class RegisterActivity extends AppCompatActivity {
                     editor.putString("Color", editTextColor.getText().toString());
                     editor.putString("Modelo", editTextModelo.getText().toString());
                     editor.putString("MacBluetooth", editTextMacBlue.getText().toString());
-                    editor.putString("NombreBluetooth", "FireRoad-RM");
-                    editor.commit();
+                    editor.putString("NombreBluetooth", "FR");
+                    editor.apply();
                     startActivity(goToMain);
                     finish();
                 }

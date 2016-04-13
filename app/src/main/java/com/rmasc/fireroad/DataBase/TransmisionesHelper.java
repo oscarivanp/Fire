@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.rmasc.fireroad.Entities.DeviceData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by ADMIN on 06/04/2016.
  */
@@ -27,7 +30,8 @@ public class TransmisionesHelper extends SQLiteOpenHelper {
             "Rumbo INTEGER, " +
             "Satelites INTEGER, " +
             "VIn INTEGER, " +
-            "TiempoReporte BIT" +
+            "TiempoReporte BIT," +
+            "Fix BIT," +
             "ReporteId INTEGER, " +
             "VehiculoId INTEGER )";
 
@@ -40,12 +44,13 @@ public class TransmisionesHelper extends SQLiteOpenHelper {
         ContentValues parametros = new ContentValues();
         parametros.put("Latitud", transmision.Latitud);
         parametros.put("Longitud", transmision.Longitud);
+        parametros.put("Fix", transmision.Fix);
         parametros.put("Fecha", transmision.FormatDate() + " " + transmision.Hora);
         parametros.put("Bateria", transmision.Bateria);
         parametros.put("Encendido", transmision.Modo);
-        parametros.put("Velocidad", transmision.Velocidad);
+        parametros.put("Velocidad", ((int) transmision.Velocidad));
         parametros.put("LocationCode", transmision.LocationCode);
-        parametros.put("Rumbo", transmision.Rumbo);
+        parametros.put("Rumbo", ((int) transmision.Rumbo));
         parametros.put("Satelites", transmision.Satelites);
         parametros.put("VIn", transmision.VoltajeEntrada);
         parametros.put("TiempoReporte", transmision.TiempoReporte);
@@ -53,6 +58,27 @@ public class TransmisionesHelper extends SQLiteOpenHelper {
         parametros.put("VehiculoId", transmision.VehiculoId);
 
         db.insert(TABLE_TRANSMISION, null, parametros);
+    }
+
+    public ArrayList<DeviceData> ArrayTransmision (SQLiteDatabase db, String where, String Orderby)
+    {
+        ArrayList<DeviceData> listToReturn = new ArrayList<DeviceData>();
+        Cursor cursor = db.query(TABLE_TRANSMISION, null, where, null, Orderby, null, null);
+        if (cursor != null) {
+            if (cursor.getCount() > 0 && cursor.moveToFirst()) {
+                do {
+                    DeviceData transmision = new DeviceData();
+                    transmision.Latitud = cursor.getFloat(0);
+                    transmision.Longitud = cursor.getFloat(1);
+                    transmision.Fecha = cursor.getString(2);
+                    transmision.Bateria = cursor.getInt(3);
+                    transmision.Velocidad = cursor.getInt(5);
+                    transmision.Fix = cursor.getInt(11) > 0;
+                    listToReturn.add(transmision);
+                } while (cursor.moveToNext());
+            }
+        }
+        return listToReturn;
     }
 
     public String SelectTransmision(SQLiteDatabase db, String where, String Orderby)
@@ -64,8 +90,8 @@ public class TransmisionesHelper extends SQLiteOpenHelper {
                 String transmision = "";
                 do {
                     transmision += cursor.getString(0) + ";" + cursor.getString(1) + ";" + cursor.getString(2) + ";" + cursor.getString(3) + ";" + cursor.getString(4)
-                            + ";" + cursor.getString(5) + ";" + cursor.getString(6) + ";0;" + cursor.getString(7) + ";" + cursor.getString(8) + ";" + cursor.getString(9)
-                            + ";" + cursor.getString(10) + ",";
+                            + ";" + cursor.getString(5) + ";0;" + cursor.getString(6) + ";" + cursor.getString(7) + ";" + cursor.getString(8) + ";" + cursor.getString(9)
+                            + ";" + cursor.getString(10) + ";" + cursor.getString(11) + ",";
                 } while (cursor.moveToNext());
                 return transmision;
             }

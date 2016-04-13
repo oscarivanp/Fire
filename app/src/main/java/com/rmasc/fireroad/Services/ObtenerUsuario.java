@@ -59,7 +59,7 @@ public class ObtenerUsuario extends AsyncTask <Context, Void, String> {
                 editor.putString("IdFacebook", data.optString("IdFacebook"));
                 editor.putString("UserLogin", data.optString("Login"));
                 editor.putString("FotoPath", data.optString("FotoPath"));
-                editor.commit();
+                editor.apply();
 
                 new ObtenerVehiculo().execute(appContext);
             }

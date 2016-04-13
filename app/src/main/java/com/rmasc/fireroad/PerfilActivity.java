@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rmasc.fireroad.Adapters.RoundImages;
@@ -41,10 +42,13 @@ import java.util.Calendar;
 public class PerfilActivity extends AppCompatActivity {
 
     View.OnClickListener buttonClickListener;
-    EditText editTextNombre, editTextCorreo, editTextTelefono, editTextApellido, editTexPassword, editTexPasswordConfirmacion;
+    EditText editTextNombre, editTextCorreo, editTextTelefono, editTexPassword, editTexPasswordConfirmacion, editTexPasswordAntigua;
     Spinner spinnerSexo, spinnerRh;
     ImageButton imageButtonUser;
-    public static Button btnFecha, btnRegistrar;
+    TextView textViewContra, textViewTitulo, pass1, pass2;
+    public static Button btnFecha, btnRegistrar, btnCambiarContraseña;
+
+    public  static String contraseña = "";
 
     private static int RESULT_LOAD_IMAGE = 1;
 
@@ -82,13 +86,36 @@ public class PerfilActivity extends AppCompatActivity {
                         startActivityForResult(i, RESULT_LOAD_IMAGE);
                         break;
                     case R.id.btnRegistrar:
-                        new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString() + " " + editTextApellido.getText().toString(), editTextTelefono.getText().toString(),
-                                spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
-                                "0", editTextNombre.getText().toString(), editTexPassword.getText().toString());
+                        if (editTexPasswordAntigua.getVisibility() == View.VISIBLE)
+                        {
+                            if (VerificarPass(editTexPassword.getText().toString(), editTexPasswordConfirmacion.getText().toString()) && VerificarPass(editTexPasswordAntigua.getText().toString(), contraseña) )
+                            {
+                                contraseña = editTexPassword.getText().toString();
+                                new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString(), editTextTelefono.getText().toString(),
+                                        spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
+                                        "0", editTextNombre.getText().toString());
+                            }
+                            ShowMessage("Las contraseñas no coinciden.");
+                        }
+                        else
+                        {
+                            new EditarUsuario().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/EditUser", editTextNombre.getText().toString(), editTextTelefono.getText().toString(),
+                                    spinnerSexo.getSelectedItem().toString(), editTextCorreo.getText().toString(), btnFecha.getText().toString(), spinnerRh.getSelectedItem().toString(),
+                                    "0", editTextNombre.getText().toString());
+                        }
+
                         break;
                     case R.id.btnFecha:
                         CalendarPicker calendarioFecha = new CalendarPicker();
                         calendarioFecha.show(getFragmentManager(), "datepicker");
+                        break;
+                    case R.id.btnCambiarContraseña:
+                        textViewContra.setVisibility(View.VISIBLE);
+                        pass1.setVisibility(View.VISIBLE);
+                        pass2.setVisibility(View.VISIBLE);
+                        editTexPassword.setVisibility(View.VISIBLE);
+                        editTexPasswordConfirmacion.setVisibility(View.VISIBLE);
+                        editTexPasswordAntigua.setVisibility(View.VISIBLE);
                         break;
                     default:
                         break;
@@ -100,11 +127,28 @@ public class PerfilActivity extends AppCompatActivity {
         CargarControles();
     }
 
+    private boolean VerificarPass(String pass1, String pass2)
+    {
+        if (pass1.equals(pass2))
+            return true;
+        else
+            return false;
+    }
+
     private void AssignViews() {
         editTextNombre = (EditText) findViewById(R.id.editTextNombre);
-        editTextApellido = (EditText) findViewById(R.id.editTextApellido);
         editTexPassword = (EditText) findViewById(R.id.editTexPassword);
+        editTexPassword.setVisibility(View.GONE);
         editTexPasswordConfirmacion = (EditText) findViewById(R.id.editTexPasswordConfirmacion);
+        editTexPasswordConfirmacion.setVisibility(View.GONE);
+        editTexPasswordAntigua = (EditText) findViewById(R.id.editTexPasswordAntigua);
+        pass1 = (TextView) findViewById(R.id.pass1);
+        pass1.setVisibility(View.GONE);
+        pass2 = (TextView) findViewById(R.id.pass2);
+        pass2.setVisibility(View.GONE);
+        textViewContra = (TextView) findViewById(R.id.textViewContra);
+        textViewTitulo = (TextView) findViewById(R.id.textViewTitulo);
+        textViewTitulo.setText("Editar Perfil");
         spinnerRh = (Spinner) findViewById(R.id.spinnerRh);
         spinnerSexo = (Spinner) findViewById(R.id.spinnerSexo);
         editTextCorreo = (EditText) findViewById(R.id.editTextCorreo);
@@ -116,12 +160,14 @@ public class PerfilActivity extends AppCompatActivity {
         btnRegistrar = (Button) findViewById(R.id.btnRegistrar);
         btnRegistrar.setText("Guardar");
         btnRegistrar.setOnClickListener(buttonClickListener);
+        btnCambiarContraseña = (Button) findViewById(R.id.btnCambiarContraseña);
+        btnCambiarContraseña.setVisibility(View.VISIBLE);
+        btnCambiarContraseña.setOnClickListener(buttonClickListener);
     }
 
     private void CargarControles() {
         SharedPreferences userPreferences = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
         editTextNombre.setText(userPreferences.getString("Nombres", ""));
-        editTextApellido.setText(userPreferences.getString("Apellidos", ""));
         editTextCorreo.setText(userPreferences.getString("Correo", ""));
         editTextTelefono.setText(userPreferences.getString("Telefono", ""));
         ArrayAdapter adapterRh = ArrayAdapter.createFromResource(getBaseContext(), R.array.RhItems, R.layout.activity_perfil);
@@ -129,6 +175,7 @@ public class PerfilActivity extends AppCompatActivity {
         adapterRh = ArrayAdapter.createFromResource(getBaseContext(), R.array.GeneroItems, R.layout.activity_perfil);
         spinnerSexo.setSelection(adapterRh.getPosition(userPreferences.getString("Sexo", "Masculino")));
         btnFecha.setText(userPreferences.getString("FechaNacimiento", "Ingresa tu cumpleaños"));
+        contraseña = userPreferences.getString("Contraseña", "");
         try {
             String path = Environment.getExternalStorageDirectory().toString() + "/FireUser";
             File streamImage = new File(path);
@@ -182,21 +229,17 @@ public class PerfilActivity extends AppCompatActivity {
 
                 if (IdUser.equals("true")) {
                     editor.putString("Nombres", editTextNombre.getText().toString());
-                    editor.putString("Apellidos", editTextApellido.getText().toString());
                     editor.putString("Telefono", editTextTelefono.getText().toString());
                     editor.putString("Sexo", spinnerSexo.getSelectedItem().toString());
                     editor.putString("Correo", editTextCorreo.getText().toString());
                     editor.putString("FechaNacimiento", btnFecha.getText().toString());
                     editor.putString("RH", spinnerRh.getSelectedItem().toString());
+                    editor.putString("Contraseña", editTexPassword.getText().toString());
                     editor.putString("IdTwitter", "0");
                     editor.putString("UserLogin", editTextNombre.getText().toString());
-                    editor.commit();
+                    editor.apply();
                     startActivity(goToMain);
                     finish();
-                } else {
-                    editor.putInt("Id", 0);
-                    editor.commit();
-                    ShowMessage("Error al registrar, intente más tarde.");
                 }
 
             } catch (Exception e) {
@@ -274,7 +317,7 @@ public class PerfilActivity extends AppCompatActivity {
 
             parametro = new WebServiceParameter();
             parametro.Nombre = "Password";
-            parametro.Valor = params[9];
+            parametro.Valor = contraseña;
             parameters.add(parametro);
 
             return WebService.ConexionWS(params[0], parameters);

@@ -87,6 +87,17 @@
                 android:layout_gravity="center_horizontal"
                 android:clickable="true" />
 
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Recuperar Contraseña"
+                android:textColor="@color/com_facebook_button_send_background_color"
+                android:id="@+id/btnRecuperarContrasena"
+                android:layout_gravity="center_horizontal"
+                android:clickable="true" />
+
 
             <RelativeLayout
                 android:id="@+id/twitter_login_layout"

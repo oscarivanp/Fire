@@ -3,6 +3,7 @@ package com.rmasc.fireroad;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.rmasc.fireroad.DataBase.TransmisionesHelper;
 import com.rmasc.fireroad.Entities.DeviceData;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.WebService;
@@ -30,6 +32,7 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private TransmisionesHelper transmisionesHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +76,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void CargarRecorrido(int IdRecorrido, int IdVehiculo) {
         SharedPreferences userPref = getSharedPreferences("User", MODE_PRIVATE);
-
+        if (transmisionesHelper == null) {
+            transmisionesHelper = new TransmisionesHelper(this);
+            ArrayList<DeviceData> deviceDataArrayList = transmisionesHelper.ArrayTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + IdVehiculo + " AND ReporteId = " + IdRecorrido, null);
+            if (deviceDataArrayList.size() > 0) {
+                PintarRecorrido(deviceDataArrayList);
+                return;
+            }
+        }
         new ObtenerPuntosRecorrido().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListTransmision", String.valueOf(userPref.getInt("Id", 0)), String.valueOf(IdVehiculo), String.valueOf((IdRecorrido)));
     }
 
@@ -99,7 +109,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .title("Velocidad: " + Puntos.get(i).Velocidad + "Km/h \r\n Fecha:" + Puntos.get(i).Fecha));
             puntosLinea.add(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
         }
-        mMap.addPolyline(new PolylineOptions().addAll(puntosLinea).color(52945).width(4).visible(true));
+        mMap.addPolyline(new PolylineOptions().addAll(puntosLinea).color(Color.RED).width(5).geodesic(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntosLinea.get(0), 10));
     }
 
     private class ObtenerUltimaTransmision extends AsyncTask<String, Void, String> {

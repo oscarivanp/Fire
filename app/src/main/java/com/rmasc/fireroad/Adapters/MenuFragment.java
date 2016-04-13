@@ -1,8 +1,10 @@
 package com.rmasc.fireroad.Adapters;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +30,14 @@ public class MenuFragment extends Fragment {
             {
                 case R.id.btnHome:
 
-                    goTo = new Intent(getContext(), MainActivity.class);
-                    startActivity(goTo);
+                    //goTo = new Intent(getContext(), MainActivity.class);
+                    //NavUtils.navigateUpFromSameTask(getActivity());
+                    //startActivity(goTo);
+
+                    Intent openMainActivity= new Intent(getContext(), MainActivity.class);
+                    openMainActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    //openMainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(openMainActivity);
                     break;
                 case R.id.btnPerfil:
                     goTo = new Intent(getContext(), PerfilActivity.class);

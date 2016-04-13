@@ -3,99 +3,118 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:onClick="CambiarFoto"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.rmasc.fireroad.MotoActivity"
     android:windowSoftInputMode="adjustPan"
-    android:clickable="true"
-    android:onClick="CambiarFoto">
+    tools:context="com.rmasc.fireroad.MotoActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="Información de tu moto"
+            android:textAlignment="center"
+            android:textSize="30sp" />
+
         <ImageButton
+            android:id="@+id/imageButtonMoto"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_margin="10dp"
-            android:id="@+id/imageButtonMoto"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/no_moto"
+            android:layout_margin="10dp"
             android:background="@null"
-            android:scaleType="fitXY"
             android:contentDescription="Foto"
-            android:onClick="CambiarFoto" />
+            android:onClick="CambiarFoto"
+            android:scaleType="fitXY"
+            android:src="@drawable/no_moto" />
 
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-         >
+            android:layout_height="match_parent">
 
             <TableRow>
-                <TextView
-                    android:text="@string/marca"
-                    android:layout_column="0"/>
-                <EditText
-                    android:id="@+id/editTextMarca"
-                    android:inputType="textPersonName"
-                    android:ems="10"/>
-            </TableRow>
 
-            <TableRow>
                 <TextView
-                    android:text="@string/placa"
-                    android:layout_column="0"/>
+                    android:layout_column="0"
+                    android:text="@string/placa" />
+
                 <EditText
                     android:id="@+id/editTextPlaca"
-                    android:inputType="textPersonName"
-                    android:ems="10"/>
+                    android:ems="10"
+                    android:inputType="textPersonName" />
             </TableRow>
 
             <TableRow>
+
                 <TextView
-                    android:text="@string/color"
-                    android:layout_column="0"/>
+                    android:layout_column="0"
+                    android:text="@string/marca" />
+
                 <EditText
-                    android:id="@+id/editTextColor"
-                    android:inputType="textPersonName"
-                    android:ems="10"/>
+                    android:id="@+id/editTextMarca"
+                    android:ems="10"
+                    android:inputType="textPersonName" />
             </TableRow>
 
             <TableRow>
+
                 <TextView
-                    android:text="@string/modelo"
-                    android:layout_column="0"/>
+                    android:layout_column="0"
+                    android:text="@string/modelo" />
+
                 <EditText
                     android:id="@+id/editTextModelo"
-                    android:inputType="textPersonName"
-                    android:ems="10"/>
+                    android:ems="10"
+                    android:inputType="textPersonName" />
             </TableRow>
 
             <TableRow>
+
                 <TextView
-                    android:text="@string/macblue"
-                    android:layout_column="0"/>
+                    android:layout_column="0"
+                    android:text="@string/color" />
+
+                <EditText
+                    android:id="@+id/editTextColor"
+                    android:ems="10"
+                    android:inputType="textPersonName" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_column="0"
+                    android:text="@string/macblue" />
+
                 <EditText
                     android:id="@+id/editTextMacBlue"
-                    android:inputType="textPersonName"
-                    android:ems="10"/>
+                    android:ems="10"
+                    android:inputType="textPersonName" />
             </TableRow>
 
 
             <TableRow
                 android:layout_marginTop="20dp"
                 android:gravity="center_horizontal">
+
                 <Button
-                 android:id="@+id/btnGuardarMoto"
+                    android:id="@+id/btnGuardarMoto"
                     android:width="20sp"
                     android:height="10sp"
                     android:background="@color/dgts__default_accent"
-                    android:textColor="@color/colorBackground"
+                    android:onClick="guardar"
                     android:text="Guardar"
-                    android:onClick="guardar"></Button>
+                    android:textColor="@color/colorBackground"></Button>
             </TableRow>
 
         </TableLayout>

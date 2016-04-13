@@ -7,6 +7,8 @@
         android:shape="ring"
         android:thicknessRatio="7.0"
         android:useLevel="true">
-        <solid android:color="@color/colorAccent"/>
+        <!--<solid android:color="@color/colorAccent"/>-->
+        <gradient android:startColor="@color/colorOk"
+            android:endColor="@color/colorAccent" />
     </shape>
 </rotate>
