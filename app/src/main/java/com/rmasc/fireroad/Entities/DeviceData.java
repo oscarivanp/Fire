@@ -45,7 +45,7 @@ public class DeviceData {
         String año = Fecha.substring(0, 4);
         String mes = Fecha.substring(4, 6);
         String dia = Fecha.substring(6, 8);
-        return dia + "/" + mes + "/" + año;
+        return año + "/" + mes + "/" + dia;
     }
 
     public DeviceData(String DataIn) {

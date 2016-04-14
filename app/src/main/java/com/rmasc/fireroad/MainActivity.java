@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                             if (!isRecorrido) {
                                 new CrearRecorrido().execute();
                             } else {
-                                new EnviarRecorrido().execute(transmisionesHelper.SelectTransmision(transmisionesHelper.getWritableDatabase(), "VehiculoId = " + DispositivoAsociado.DataReceived.VehiculoId + " AND ReporteId = " + DispositivoAsociado.DataReceived.ReporteId, null));
+                                new EnviarRecorrido().execute(transmisionesHelper.SelectTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + DispositivoAsociado.DataReceived.VehiculoId + " AND ReporteId = " + DispositivoAsociado.DataReceived.ReporteId, null));
                             }
                             break;
                         case R.id.txtConexion:
@@ -344,13 +344,14 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getBaseContext().getSharedPreferences("Moto", Context.MODE_PRIVATE);
         String Nombre = sharedPref.getString("NombreBluetooth", "");
         String Mac = sharedPref.getString("MacBluetooth", "");
-        if (Nombre.equals("")) {
+        if (sharedPref.getInt("Id", 0) == 0) {
             return false;
         } else {
             DispositivoAsociado = new DeviceBluetooth();
             DispositivoAsociado.Name = Nombre;
             DispositivoAsociado.Mac = Mac;
             DispositivoAsociado.DataReceived.VehiculoId = sharedPref.getInt("Id", 0);
+            DispositivoAsociado.DataReceived.ReporteId = sharedPref.getInt("IdRecorrido", 0);
             return true;
         }
     }
@@ -424,11 +425,11 @@ public class MainActivity extends AppCompatActivity {
                 String tramaCompleta = params[0];
                 DispositivoAsociado.DataReceived = new DeviceData(tramaCompleta);
                 ActualizarControles();
+                sendBroadcast(setIntentToMap(true));
                 if (isRecorrido) {
                     //SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
                     //SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
                     GuardarTransmision(DispositivoAsociado.DataReceived);
-                    sendBroadcast(setIntentToMap());
                     if (countTramas == 10) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -487,8 +488,15 @@ public class MainActivity extends AppCompatActivity {
             return false;
     }
 
-    private Intent setIntentToMap() {
-        Intent i = new Intent(getBaseContext(), MapsActivity.class);
+    private Intent setIntentToMap(boolean isUpdate) {
+        Intent i;
+        if (isUpdate)
+        {
+            i = new Intent("UPDATE_MAP");
+        }
+        else {
+            i = new Intent(getBaseContext(), MapsActivity.class);
+        }
         i.putExtra("Lat", DispositivoAsociado.DataReceived.Latitud);
         i.putExtra("Lon", DispositivoAsociado.DataReceived.Longitud);
         i.putExtra("Fecha", DispositivoAsociado.DataReceived.Fecha);
@@ -500,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
         if (DispositivoAsociado != null && DispositivoAsociado.DataReceived != null) {
             if (bluetoothLE != null) {
                 if (bluetoothLE.DeviceStatus.equals("Connected"))
-                    startActivity(setIntentToMap());
+                    startActivity(setIntentToMap(false));
             } else {
                 Intent i = new Intent(getBaseContext(), MapsActivity.class);
                 i.putExtra("Tipo", 3);
@@ -584,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
 
                     editor.putInt("IdRecorrido", IdRecorrido);
                     editor.apply();
-
+                    DispositivoAsociado.DataReceived.ReporteId = IdRecorrido;
                     btnRecorrido.setText("Stop");
                     btnRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
                     isRecorrido = true;

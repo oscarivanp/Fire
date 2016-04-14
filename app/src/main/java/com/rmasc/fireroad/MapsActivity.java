@@ -1,7 +1,9 @@
 package com.rmasc.fireroad;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -32,7 +34,15 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private PolylineOptions polyOptionsUpdate = new PolylineOptions().color(Color.RED).geodesic(true).width(5);
     private TransmisionesHelper transmisionesHelper;
+    private BroadcastReceiver broadcastReceiver;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +52,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (intent.getIntExtra("Tipo", 1)) {
+                    case 1:
+                        ShowMessage("Nuevo reporte bluetooth");
+                        CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
     }
 
     @Override
@@ -51,6 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (intent.getIntExtra("Tipo", 1)) {
             case 1:
+                mMap.addPolyline(polyOptionsUpdate);
+                registerReceiver(broadcastReceiver, new IntentFilter("UPDATE_MAP"));
                 CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
                 break;
             case 2:
@@ -70,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void CargarUltimaPosicionBle(double Latitud, double Longitud, String Fecha) {
         SharedPreferences userP = getBaseContext().getSharedPreferences("Moto", Context.MODE_PRIVATE);
         LatLng ptoActual = new LatLng(Latitud, Longitud);
+        polyOptionsUpdate.add(ptoActual);
         mMap.addMarker(new MarkerOptions().position(ptoActual).title(userP.getString("Marca", "") + " " + userP.getString("Placa", "") + "\n" + Fecha));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(ptoActual));
     }
@@ -87,20 +114,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new ObtenerPuntosRecorrido().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListTransmision", String.valueOf(userPref.getInt("Id", 0)), String.valueOf(IdVehiculo), String.valueOf((IdRecorrido)));
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-
-        switch (intent.getIntExtra("Tipo", 1)) {
-            case 1:
-                ShowMessage("Nuevo reporte bluetooth");
-                CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
-                break;
-            default:
-                break;
-        }
-    }
 
     private void PintarRecorrido(ArrayList<DeviceData> Puntos) {
         ArrayList<LatLng> puntosLinea = new ArrayList<>();
