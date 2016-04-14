@@ -8,10 +8,11 @@
         <ProgressBar
             android:id="@+id/tachoMeter"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:maxWidth="5dp"
             android:max="230"
             android:progress="0"
             android:progressDrawable="@drawable/circle" />

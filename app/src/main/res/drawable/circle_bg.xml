@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rotate android:fromDegrees="0" android:toDegrees="45" xmlns:android="http://schemas.android.com/apk/res/android">
+<rotate android:fromDegrees="270" android:toDegrees="45" xmlns:android="http://schemas.android.com/apk/res/android">
         <shape android:innerRadiusRatio="2.6"
             android:shape="ring"
             android:thicknessRatio="999.0"

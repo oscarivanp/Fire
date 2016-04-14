@@ -70,6 +70,13 @@ public class DeviceData {
                 VoltajeEntrada = Float.parseFloat(DatosIn[14]);
                 Entradas = DatosIn[15];
 
+                Modo = Integer.parseInt(DatosIn[16]);
+                NumeroReporte = Integer.parseInt(DatosIn[17]);
+                Horometro = DatosIn[18];
+                Bateria = Float.parseFloat(DatosIn[19]);
+                TiempoReporte = Boolean.parseBoolean(DatosIn[20]);
+
+                /*
                 switch (Modelo) {
                     case 3:
                         Modo = Integer.parseInt(DatosIn[16]);
@@ -88,7 +95,7 @@ public class DeviceData {
                         break;
                     default:
                         break;
-                }
+                }*/
 
             }
         }

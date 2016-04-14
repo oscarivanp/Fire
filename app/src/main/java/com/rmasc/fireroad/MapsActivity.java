@@ -11,12 +11,14 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.mediation.MediationAdRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -34,14 +36,20 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private PolylineOptions polyOptionsUpdate = new PolylineOptions().color(Color.RED).geodesic(true).width(5);
+    private Polyline polyOptionsUpdate;
+    private Marker markerOptionsUpdate;
     private TransmisionesHelper transmisionesHelper;
     private BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onDestroy() {
+        if (broadcastReceiver != null) {
+            try {
+                unregisterReceiver(broadcastReceiver);
+            } catch (Exception e) {
+            }
+        }
         super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -75,7 +83,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (intent.getIntExtra("Tipo", 1)) {
             case 1:
-                mMap.addPolyline(polyOptionsUpdate);
+                if (intent.getBooleanExtra("IsRecorrido", true)) {
+                    polyOptionsUpdate = mMap.addPolyline(new PolylineOptions().color(Color.RED).geodesic(true).width(5));
+                }
+                markerOptionsUpdate = mMap.addMarker(new MarkerOptions().visible(false).position(new LatLng(0, 0)));
                 registerReceiver(broadcastReceiver, new IntentFilter("UPDATE_MAP"));
                 CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
                 break;
@@ -96,8 +107,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void CargarUltimaPosicionBle(double Latitud, double Longitud, String Fecha) {
         SharedPreferences userP = getBaseContext().getSharedPreferences("Moto", Context.MODE_PRIVATE);
         LatLng ptoActual = new LatLng(Latitud, Longitud);
-        polyOptionsUpdate.add(ptoActual);
-        mMap.addMarker(new MarkerOptions().position(ptoActual).title(userP.getString("Marca", "") + " " + userP.getString("Placa", "") + "\n" + Fecha));
+        if (polyOptionsUpdate != null)
+        {
+            List<LatLng> ptosLinea = polyOptionsUpdate.getPoints();
+            ptosLinea.add(ptoActual);
+            polyOptionsUpdate.setPoints(ptosLinea);
+        }
+        //markerOptionsUpdate = new MarkerOptions().position(ptoActual).title(userP.getString("Marca", "") + " " + userP.getString("Placa", "") + "\n" + Fecha).visible(true);
+        markerOptionsUpdate.setPosition(ptoActual);
+        markerOptionsUpdate.setVisible(true);
+        markerOptionsUpdate.setTitle(userP.getString("Placa", ""));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(ptoActual));
     }
 
@@ -105,7 +124,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SharedPreferences userPref = getSharedPreferences("User", MODE_PRIVATE);
         if (transmisionesHelper == null) {
             transmisionesHelper = new TransmisionesHelper(this);
-            ArrayList<DeviceData> deviceDataArrayList = transmisionesHelper.ArrayTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + IdVehiculo + " AND ReporteId = " + IdRecorrido, null);
+            ArrayList<DeviceData> deviceDataArrayList = transmisionesHelper.ArrayTransmision(transmisionesHelper.getWritableDatabase(), "VehiculoId = " + IdVehiculo + " AND ReporteId = " + IdRecorrido, null);
             if (deviceDataArrayList.size() > 0) {
                 PintarRecorrido(deviceDataArrayList);
                 return;
