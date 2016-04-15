@@ -23,6 +23,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -57,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
     TwitterLoginButton twitterloginButton;
 
     ImageView imageViewBateria, imageViewGps;
-    Button btnRecorrido, btnMapa;
+    Button btnRecorrido;
+
+    ImageButton btnMapa;
     TextView txtUser, txtReporteDispositivo, txtBattMoto, txtBattDispositivo;
 //    ProgressBar tachoMeter, progressBattMoto, progressBattDispositivo, progressCombustible;
     Switch switchEncendido;
@@ -81,11 +84,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
-        //circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
+       // circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
 
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -156,11 +158,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void AssignViews() {
         SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
-        //imageViewBateria = (ImageView) findViewById(R.id.imgBateria);
-        //imageViewGps = (ImageView) findViewById(R.id.imgGps);
+     //   imageViewBateria = (ImageView) findViewById(R.id.imgBateria);
+     //   imageViewGps = (ImageView) findViewById(R.id.imgGps);
 
 
-      //  circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
+     //   circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
      //   circularImageView.setOnClickListener(buttonClickListener);
 
         switchEncendido = (Switch) findViewById(R.id.switchEncendido);
@@ -184,14 +186,14 @@ public class MainActivity extends AppCompatActivity {
 
         btnRecorrido = (Button) findViewById(R.id.btnRecorrido);
         btnRecorrido.setOnClickListener(buttonClickListener);
-        btnMapa = (Button) findViewById(R.id.btnMapa);
+        btnMapa = (ImageButton) findViewById(R.id.btnMapa);
         btnMapa.setOnClickListener(buttonClickListener);
 
         txtUser = (TextView) findViewById(R.id.txtUser);
         txtUser.setText(user.getString("UserLogin", ""));
         txtReporteDispositivo = (TextView) findViewById(R.id.txtReporteDispositivo);
-       // txtBattDispositivo = (TextView) findViewById(R.id.txtbatGps);
-       // txtBattMoto = (TextView) findViewById(R.id.txtbatMoto);
+      //  txtBattDispositivo = (TextView) findViewById(R.id.txtbatGps);
+      //  txtBattMoto = (TextView) findViewById(R.id.txtbatMoto);
 
     }
 
@@ -581,7 +583,7 @@ public class MainActivity extends AppCompatActivity {
         if (DispositivoAsociado.DataReceived.Modo == 2) {
             switchEncendido.setChecked(true);
             switchEncendido.setText("Conectado");
-            circularImageView.setBorderColor(R.color.darkgreen);
+           // circularImageView.setBorderColor(R.color.darkgreen);
         }
         else {
             switchEncendido.setChecked(false);

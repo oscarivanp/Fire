@@ -1,26 +1,20 @@
 package com.rmasc.fireroad;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.mediation.MediationAdRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.rmasc.fireroad.DataBase.TransmisionesHelper;
 import com.rmasc.fireroad.Entities.DeviceData;
@@ -31,26 +25,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private Polyline polyOptionsUpdate;
-    private Marker markerOptionsUpdate;
     private TransmisionesHelper transmisionesHelper;
-    private BroadcastReceiver broadcastReceiver;
-
-    @Override
-    protected void onDestroy() {
-        if (broadcastReceiver != null) {
-            try {
-                unregisterReceiver(broadcastReceiver);
-            } catch (Exception e) {
-            }
-        }
-        super.onDestroy();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,20 +39,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                switch (intent.getIntExtra("Tipo", 1)) {
-                    case 1:
-                        ShowMessage("Nuevo reporte bluetooth");
-                        CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
     }
 
     @Override
@@ -83,11 +48,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (intent.getIntExtra("Tipo", 1)) {
             case 1:
-                if (intent.getBooleanExtra("IsRecorrido", true)) {
-                    polyOptionsUpdate = mMap.addPolyline(new PolylineOptions().color(Color.RED).geodesic(true).width(5));
-                }
-                markerOptionsUpdate = mMap.addMarker(new MarkerOptions().visible(false).position(new LatLng(0, 0)));
-                registerReceiver(broadcastReceiver, new IntentFilter("UPDATE_MAP"));
                 CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
                 break;
             case 2:
@@ -107,16 +67,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void CargarUltimaPosicionBle(double Latitud, double Longitud, String Fecha) {
         SharedPreferences userP = getBaseContext().getSharedPreferences("Moto", Context.MODE_PRIVATE);
         LatLng ptoActual = new LatLng(Latitud, Longitud);
-        if (polyOptionsUpdate != null)
-        {
-            List<LatLng> ptosLinea = polyOptionsUpdate.getPoints();
-            ptosLinea.add(ptoActual);
-            polyOptionsUpdate.setPoints(ptosLinea);
-        }
-        //markerOptionsUpdate = new MarkerOptions().position(ptoActual).title(userP.getString("Marca", "") + " " + userP.getString("Placa", "") + "\n" + Fecha).visible(true);
-        markerOptionsUpdate.setPosition(ptoActual);
-        markerOptionsUpdate.setVisible(true);
-        markerOptionsUpdate.setTitle(userP.getString("Placa", ""));
+        mMap.addMarker(new MarkerOptions().position(ptoActual).title(userP.getString("Marca", "") + " " + userP.getString("Placa", "") + "\n" + Fecha));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(ptoActual));
     }
 
@@ -124,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SharedPreferences userPref = getSharedPreferences("User", MODE_PRIVATE);
         if (transmisionesHelper == null) {
             transmisionesHelper = new TransmisionesHelper(this);
-            ArrayList<DeviceData> deviceDataArrayList = transmisionesHelper.ArrayTransmision(transmisionesHelper.getWritableDatabase(), "VehiculoId = " + IdVehiculo + " AND ReporteId = " + IdRecorrido, null);
+            ArrayList<DeviceData> deviceDataArrayList = transmisionesHelper.ArrayTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + IdVehiculo + " AND ReporteId = " + IdRecorrido, null);
             if (deviceDataArrayList.size() > 0) {
                 PintarRecorrido(deviceDataArrayList);
                 return;
@@ -133,6 +84,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new ObtenerPuntosRecorrido().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListTransmision", String.valueOf(userPref.getInt("Id", 0)), String.valueOf(IdVehiculo), String.valueOf((IdRecorrido)));
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+
+        switch (intent.getIntExtra("Tipo", 1)) {
+            case 1:
+                ShowMessage("Nuevo reporte bluetooth");
+                CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
+                break;
+            default:
+                break;
+        }
+    }
 
     private void PintarRecorrido(ArrayList<DeviceData> Puntos) {
         ArrayList<LatLng> puntosLinea = new ArrayList<>();

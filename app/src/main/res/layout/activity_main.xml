@@ -18,38 +18,38 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorBackLight"
+            android:padding="3dp"
             android:gravity="center"
-            android:orientation="vertical"
-            android:padding="3dp">
+            android:background="@color/colorBackLight"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/txtUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="User Name"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimary"
+                android:layout_weight="1"
+                android:text="User Name"
                 android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/txtReporteDispositivo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
                 android:layout_weight="1"
-                android:text="dd/mm/aaaa HH:mm"
-                android:textAlignment="center" />
+                android:text="dd/mm/aaaa HH:mm" />
 
         </LinearLayout>
 
 
         <LinearLayout
+            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:layout_marginTop="20dp"
             android:layout_weight="0.78"
             android:orientation="horizontal">
 
@@ -59,13 +59,14 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <!--<com.rmasc.fireroad.Adapters.CircularImageView xmlns:app="http://schemas.android.com/apk/res-auto"-->
-                    <!--android:id="@+id/CircularImageViewUser"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:src="@drawable/no_user"-->
-                    <!--app:civ_border_width="5dp" />-->
+                <com.rmasc.fireroad.Adapters.CircularImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/CircularImageViewUser"
+                    android:layout_width="match_parent"
+                    app:civ_border_width="5dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                   android:src="@drawable/no_user" />
 
             </LinearLayout>
 
@@ -75,47 +76,47 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:paddingLeft="10dp">
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+    <TextView
+        android:id="@+id/txtTituloBluetooth"
+        android:layout_width="wrap_content"
+        android:layout_marginRight="30dp"
+        android:layout_height="wrap_content"
+        android:text="Bluetooth"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent" />
+<LinearLayout
+    android:layout_marginTop="10dp"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
 
-                    <TextView
-                        android:id="@+id/txtTituloBluetooth"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginRight="30dp"
-                        android:gravity="center_horizontal"
-                        android:text="Bluetooth"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorAccent" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="10dp"
-                        android:orientation="horizontal">
-
-                        <Switch
-                            android:id="@+id/switchEncendido"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_marginBottom="5dp"
-                            android:text="Conectado"
-                            android:textColor="@color/colorPrimary" />
+    <Switch
+        android:id="@+id/switchEncendido"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginBottom="5dp"
+        android:text="Conectado"
+        />
 
 
-                    </LinearLayout>
+</LinearLayout>
 
-                    <!--<ImageButton-->
-                        <!--android:id="@+id/btnMapa"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_gravity="center_horizontal"-->
-                        <!--android:background="@drawable/mapagoogle" />-->
-                </LinearLayout>
+    <ImageButton
+        android:id="@+id/btnMapa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+
+        />
+</LinearLayout>
 
             </LinearLayout>
 
@@ -123,89 +124,92 @@
 
         <LinearLayout
 
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
+            android:padding="5dp"
             android:layout_weight="0.5"
-            android:orientation="vertical"
-            android:padding="5dp">
+            android:orientation="vertical">
 
-            <!--<LinearLayout-->
-
-
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:orientation="vertical">-->
-
-                <!--<LinearLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:orientation="horizontal">-->
-
-                    <!--<ImageView-->
-                        <!--android:id="@+id/imgBateria"-->
-                        <!--android:layout_width="40dp"-->
-                        <!--android:layout_height="40dp"-->
-                        <!--android:layout_weight="0.7"-->
-                        <!--android:src="@drawable/bateria_25"-->
-                        <!--android:textColor="@color/colorPrimary" />-->
-
-                    <!--<ImageView-->
-                        <!--android:id="@+id/imgGasolina"-->
-                        <!--android:layout_width="40dp"-->
-                        <!--android:layout_height="40dp"-->
-                        <!--android:layout_weight="0.7"-->
-                        <!--android:src="@drawable/bateria_25"-->
-                        <!--android:textColor="@color/colorPrimary" />-->
-
-                    <!--<ImageView-->
-
-                        <!--android:id="@+id/imgGps"-->
-                        <!--android:layout_width="40dp"-->
-                        <!--android:layout_height="40dp"-->
-                        <!--android:layout_weight="0.7"-->
-                        <!--android:src="@drawable/bateria_25" />-->
-
-                <!--</LinearLayout>-->
+            <LinearLayout
 
 
-                <!--<LinearLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="20dp"-->
-                    <!--android:orientation="horizontal">-->
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                    <!--<TextView-->
-                        <!--android:id="@+id/txtbatMoto"-->
-                        <!--android:layout_width="50dp"-->
-                        <!--android:layout_height="50dp"-->
-                        <!--android:layout_weight="0.7"-->
-                        <!--android:gravity="center_horizontal"-->
-                        <!--android:src="@drawable/bateria_25"-->
-                        <!--android:text="Bateria Moto"-->
-                        <!--android:textColor="@color/colorPrimary" />-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                    <!--<TextView-->
-                        <!--android:layout_width="50dp"-->
-                        <!--android:layout_height="50dp"-->
-                        <!--android:layout_weight="0.7"-->
-                        <!--android:gravity="center_horizontal"-->
-                        <!--android:src="@drawable/bateria_25"-->
-                        <!--android:text="gasolina"-->
-                        <!--android:textColor="@color/colorPrimary" />-->
+                    <ImageView
+                        android:id="@+id/imgBateria"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_weight="0.7"
+                        android:src="@drawable/bateria_25"
+                        />
 
-                    <!--<TextView-->
-                        <!--android:id="@+id/txtbatGps"-->
-                        <!--android:layout_width="50dp"-->
-                        <!--android:layout_height="50dp"-->
-                        <!--android:layout_weight="0.7"-->
-                        <!--android:gravity="center_horizontal"-->
-                        <!--android:src="@drawable/bateria_25"-->
-                        <!--android:text="Bateria Gps" />-->
+                    <ImageView
+                        android:id="@+id/imgGasolina"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_weight="0.7"
+                        android:src="@drawable/bateria_25"
+                        />
 
-                <!--</LinearLayout>-->
+                    <ImageView
+
+                        android:id="@+id/imgGps"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="0.7"
+                        android:src="@drawable/bateria_25"
+                        />
+
+                </LinearLayout>
 
 
-            <!--</LinearLayout>-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtbatMoto"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_weight="0.7"
+                        android:gravity="center_horizontal"
+                        android:src="@drawable/bateria_25"
+                        android:text="Bateria Moto"/>
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_weight="0.7"
+                        android:gravity="center_horizontal"
+                        android:src="@drawable/bateria_25"
+                        android:text="gasolina"/>
+
+                    <TextView
+                        android:id="@+id/txtbatGps"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="0.7"
+                        android:gravity="center_horizontal"
+                        android:src="@drawable/bateria_25"
+                        android:text="Bateria Gps"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -221,22 +225,21 @@
                 <TextView
                     android:id="@+id/txtKilometraje"
                     android:layout_width="match_parent"
-                    android:layout_height="25dp"
+                    android:textAlignment="center"
                     android:text="00:00:00"
-                    android:textAlignment="center" />
+                    android:layout_height="25dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal">
-
                     <Button
                         android:id="@+id/btnRecorrido"
                         android:layout_width="wrap_content"
-                        android:layout_height="35dp"
                         android:layout_marginRight="@dimen/activity_horizontal_margin"
                         android:gravity="center"
+                        android:layout_height="35dp"
                         android:text="@string/nuevo_recorrido" />
 
                 </LinearLayout>
