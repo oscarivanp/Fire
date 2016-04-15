@@ -1,6 +1,5 @@
 package com.rmasc.fireroad;
 
-import android.animation.ObjectAnimator;
 import android.appwidget.AppWidgetManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -13,9 +12,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,15 +22,13 @@ import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.rmasc.fireroad.Adapters.RoundImages;
+import com.rmasc.fireroad.Adapters.CircularImageView;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 import com.rmasc.fireroad.DataBase.TransmisionesHelper;
 import com.rmasc.fireroad.Entities.DeviceBluetooth;
@@ -44,12 +41,9 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -62,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
 
     TwitterLoginButton twitterloginButton;
 
-    ImageView imageViewBateria, imageViewUser;
+    ImageView imageViewBateria, imageViewGps;
     Button btnRecorrido, btnMapa;
-    TextView txtUser, txtReporteDispositivo, txtValueProgress, txtConexion, txtBattMoto, txtBattDispositivo;
-    ProgressBar tachoMeter, progressBattMoto, progressBattDispositivo, progressCombustible;
+    TextView txtUser, txtReporteDispositivo, txtBattMoto, txtBattDispositivo;
+//    ProgressBar tachoMeter, progressBattMoto, progressBattDispositivo, progressCombustible;
     Switch switchEncendido;
 
     BluetoothLE bluetoothLE;
@@ -78,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     IntentFilter filter2 = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
 
     private static View.OnClickListener buttonClickListener;
-
+    private CircularImageView circularImageView;
     private static boolean isRecorrido = false;
     private static int countTramas = 0;
 
@@ -87,9 +81,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
+        //circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
+
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -122,19 +119,7 @@ public class MainActivity extends AppCompatActivity {
                                 new EnviarRecorrido().execute(transmisionesHelper.SelectTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + DispositivoAsociado.DataReceived.VehiculoId + " AND ReporteId = " + DispositivoAsociado.DataReceived.ReporteId, null));
                             }
                             break;
-                        case R.id.txtConexion:
-                            if (bluetoothLE != null && DispositivoAsociado != null) {
-                                bluetoothLE.bleDevices = new ArrayList<BluetoothDevice>();
-                                bluetoothLE.scanLeDevice(true);
-                                txtConexion.setText("Buscando...");
-                                new android.os.Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                            ConnectToDevice();
-                                    }
-                                }, 5000);
-                            }
-                            break;
+
                         default:
                             break;
                     }
@@ -171,9 +156,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void AssignViews() {
         SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
-        imageViewBateria = (ImageView) findViewById(R.id.imageViewBateria);
-        imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
-        imageViewUser.setOnClickListener(buttonClickListener);
+        //imageViewBateria = (ImageView) findViewById(R.id.imgBateria);
+        //imageViewGps = (ImageView) findViewById(R.id.imgGps);
+
+
+      //  circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
+     //   circularImageView.setOnClickListener(buttonClickListener);
 
         switchEncendido = (Switch) findViewById(R.id.switchEncendido);
         switchEncendido.setEnabled(false);
@@ -181,18 +169,17 @@ public class MainActivity extends AppCompatActivity {
         try {
             if (user.getString("FotoPath", "").equals("")) {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
-                File streamImage = new File(path);
-                imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
+                InputStream prueba = new URL(path).openStream();
+                Bitmap foto = BitmapFactory.decodeStream(prueba);
+             //   circularImageView.setImageBitmap(foto);
             } else {
                 InputStream prueba = new URL(user.getString("FotoPath", "")).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-                RoundImages imaghenFace = new RoundImages(foto);
-                Bitmap imagenProcesada = imaghenFace.RoundImages(foto, 200, 200);
-                imageViewUser.setImageBitmap(imagenProcesada);
+            //    circularImageView.setImageBitmap(foto);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
+           // circularImageView.setImageResource(R.drawable.no_user);
         }
 
         btnRecorrido = (Button) findViewById(R.id.btnRecorrido);
@@ -203,18 +190,9 @@ public class MainActivity extends AppCompatActivity {
         txtUser = (TextView) findViewById(R.id.txtUser);
         txtUser.setText(user.getString("UserLogin", ""));
         txtReporteDispositivo = (TextView) findViewById(R.id.txtReporteDispositivo);
-        txtValueProgress = (TextView) findViewById(R.id.txtValueProgress);
-        txtConexion = (TextView) findViewById(R.id.txtConexion);
-        txtConexion.setOnClickListener(buttonClickListener);
-        txtBattDispositivo = (TextView) findViewById(R.id.txtBattDispositivo);
-        txtBattMoto = (TextView) findViewById(R.id.txtBattMoto);
+       // txtBattDispositivo = (TextView) findViewById(R.id.txtbatGps);
+       // txtBattMoto = (TextView) findViewById(R.id.txtbatMoto);
 
-        tachoMeter = (ProgressBar) findViewById(R.id.tachoMeter);
-        progressBattDispositivo = (ProgressBar) findViewById(R.id.progressBattDispositivo);
-        progressBattMoto = (ProgressBar) findViewById(R.id.progressBattMoto);
-        progressCombustible = (ProgressBar) findViewById(R.id.progressCombustible);
-
-        SetProgressBar(0);
     }
 
     private void ShowMessage(final String message) {
@@ -235,18 +213,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void SetProgressBar(final int value) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ObjectAnimator animation = ObjectAnimator.ofInt(tachoMeter, "progress", tachoMeter.getProgress(), value); //Desde un valor hasta otro valor
-                animation.setDuration(3000);
-                animation.setInterpolator(new DecelerateInterpolator());
-                animation.start();
-                txtValueProgress.setText(value + "\n Km/h");
-            }
-        });
-    }
+
 
     public boolean ManagerBluetooth() {
         try {
@@ -300,8 +267,6 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 case 1:
                                     ShowSnackMessage("Connecting");
-                                    txtConexion.setText("Conectando");
-                                    txtConexion.setTextColor(getResources().getColor(R.color.colorWaiting));
                                     break;
                                 case 4:
                                     ShowSnackMessage("Connection closed");
@@ -373,8 +338,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (!isVisible) {
             ShowMessage("No se encontró el dispositivo.");
-            txtConexion.setText("Offline");
-        }
+                   }
     }
 
     public void ProcesarTrama(String tramaIn) {
@@ -454,11 +418,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void ActualizarControles() {
-        SetProgressBar(((int) DispositivoAsociado.DataReceived.Velocidad));
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txtReporteDispositivo.setText(DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
+                txtReporteDispositivo.setText("ùlt. vez "+DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
                 SetImageViews();
                 UpdateWidget();
             }
@@ -469,16 +433,161 @@ public class MainActivity extends AppCompatActivity {
 
         int battPercent = ((int) (DispositivoAsociado.DataReceived.Bateria));
         int battExtern = (int) (DispositivoAsociado.DataReceived.VoltajeEntrada);
-        progressBattMoto.setProgress(battExtern);
-        progressBattDispositivo.setProgress(battPercent);
+
+
+        if(battPercent<=13) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_0);
+
+        }
+        if(battPercent<=26 && battPercent>13) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_12_5);
+
+        }
+        if(battPercent<=39 && battPercent >26) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_25);
+
+        }
+        if(battPercent<=52 && battPercent >39) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_37_5);
+
+        }
+
+        if(battPercent<=65 && battPercent >52) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_50);
+
+        }
+
+        if(battPercent<=79 && battPercent >65) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_62_5);
+
+        }
+
+        if(battPercent<=92 && battPercent >79) {
+
+
+            imageViewBateria.setImageResource(R.drawable.bateria_75);
+        }
+
+        if(battPercent<=100&& battPercent >92) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_100);
+
+        }
+
+        if(battPercent<=13) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_0);
+
+        }
+        if(battPercent<=26 && battPercent>13) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_12_5);
+
+        }
+        if(battPercent<=39 && battPercent >26) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_25);
+
+        }
+        if(battPercent<=52 && battPercent >39) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_37_5);
+
+        }
+
+        if(battPercent<=65 && battPercent >52) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_50);
+
+        }
+
+        if(battPercent<=79 && battPercent >65) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_62_5);
+
+        }
+
+        if(battPercent<=92 && battPercent >79) {
+
+
+            imageViewBateria.setImageResource(R.drawable.bateria_75);
+        }
+
+        if(battPercent<=100&& battPercent >92) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_100);
+
+        }
+
+
+        if(battExtern<=13) {
+
+            imageViewGps.setImageResource(R.drawable.bateria_0);
+
+        }
+        if(battExtern<=26 && battExtern>13) {
+
+            imageViewGps.setImageResource(R.drawable.bateria_12_5);
+
+        }
+        if(battExtern<=39 && battExtern >26) {
+
+            imageViewGps.setImageResource(R.drawable.bateria_25);
+
+        }
+        if(battExtern<=52 && battExtern >39) {
+
+            imageViewGps.setImageResource(R.drawable.bateria_37_5);
+
+        }
+
+        if(battExtern<=65 && battExtern >52) {
+
+            imageViewGps.setImageResource(R.drawable.bateria_50);
+
+        }
+
+        if(battExtern<=79 && battExtern >65) {
+
+            imageViewGps.setImageResource(R.drawable.bateria_62_5);
+
+        }
+
+        if(battExtern<=92 && battExtern >79) {
+
+
+            imageViewGps.setImageResource(R.drawable.bateria_75);
+        }
+
+        if(battExtern<=100&& battExtern >92) {
+
+            imageViewGps.setImageResource(R.drawable.bateria_100);
+
+        }
+
+
+
+
 
         txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada).substring(0, 3) + "v");
         txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria) + "v");
 
-        if (DispositivoAsociado.DataReceived.Modo == 2)
+        if (DispositivoAsociado.DataReceived.Modo == 2) {
             switchEncendido.setChecked(true);
-        else
+            switchEncendido.setText("Conectado");
+            circularImageView.setBorderColor(R.color.darkgreen);
+        }
+        else {
             switchEncendido.setChecked(false);
+            switchEncendido.setText("DesConectado");
+            circularImageView.setBorderColor(Color.RED);
+        }
     }
 
     private boolean IsNewUser() {
@@ -542,12 +651,12 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 if (isConnected) {
                     bluetoothLE.bleGatt.discoverServices();
-                    txtConexion.setText("Online");
-                    txtConexion.setTextColor(getResources().getColor(R.color.colorOk));
+                  //  txtConexion.setText("Online");
+                //    txtConexion.setTextColor(getResources().getColor(R.color.colorOk));
                     ShowMessage("Conectado a: " + DispositivoAsociado.Name);
                 } else {
-                    txtConexion.setText("Offline");
-                    txtConexion.setTextColor(getResources().getColor(R.color.colorAccent));
+                 //   txtConexion.setText("Offline");
+                  //  txtConexion.setTextColor(getResources().getColor(R.color.colorAccent));
                 }
             }
         });

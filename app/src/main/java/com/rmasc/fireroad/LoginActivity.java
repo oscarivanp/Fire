@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
+import com.facebook.login.widget.LoginButton;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.ObtenerUsuario;
 import com.rmasc.fireroad.Services.WebService;
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     public EditText editTextContrasena, editTextCorreo;
     public ProgressDialog progressDialog;
 
+
     private ImageButton imgBtnFace, imgBtnTwitt;
     private static TwitterLoginButton twitterloginButton;
     private View.OnClickListener buttonClickListener;
@@ -53,10 +55,16 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_login);
+        final LoginButton button = (LoginButton) findViewById(R.id.login_button);
+        button.setBackgroundResource(R.drawable.facebook_redondo);
+        button.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
         twitterloginButton = (TwitterLoginButton) findViewById(R.id.btnTwitter);
         twitterloginButton.setCallback(new Callback<TwitterSession>() {
 

@@ -111,6 +111,8 @@
                     android:layout_width="50dp"
                     android:layout_height="30dp"
                     android:id="@+id/btnTwitter"
+                    android:enabled="false"
+                    android:visibility="invisible"
                     android:text="twitter"/>
 
             </RelativeLayout>

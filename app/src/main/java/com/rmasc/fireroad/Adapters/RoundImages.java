@@ -46,6 +46,15 @@ public class RoundImages extends Drawable {
         final Rect rect = new Rect(0, 0, resizedBitmap.getWidth(), resizedBitmap.getHeight());
         final RectF rectF = new RectF(rect);
 
+
+        paint.setColor(Color.RED);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setAntiAlias(true);
+        paint.setStrokeWidth(2);
+        canvas.drawCircle((resizedBitmap.getWidth() - 12)/2, (resizedBitmap.getHeight() - 12)/2, 24-2, paint);
+
+
+
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);

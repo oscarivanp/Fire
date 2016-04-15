@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_gravity="center"
     android:layout_height="match_parent">
 
     <com.facebook.login.widget.LoginButton
+        xmlns:fb="http://schemas.android.com/apk/res-auto"
         android:id="@+id/login_button"
         android:layout_width="30dp"
         android:layout_height="150dp"
         android:gravity="left"
-
-
-        />
-
-
+        android:background="@drawable/facebook_redondo"
+        fb:com_facebook_logout_text=""
+        fb:com_facebook_login_text=""
+/>
 </RelativeLayout>
