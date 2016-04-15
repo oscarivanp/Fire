@@ -52,6 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
+                android:background="@color/com_facebook_button_login_silver_background_color_pressed"
                 android:hint="Email"
                 android:ems="10"
                 android:id="@+id/editTextCorreo" />
@@ -63,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:hint="Contraseña"
+                android:background="@color/com_facebook_button_login_silver_background_color_pressed"
                 android:ems="10"
                 android:id="@+id/editTextContrasena" />
 
