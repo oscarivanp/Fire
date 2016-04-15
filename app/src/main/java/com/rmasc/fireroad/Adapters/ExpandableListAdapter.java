@@ -56,7 +56,7 @@ import java.util.List;
             convertView.setTag(viewHolder);
             TextView expandedListTextView = (TextView) convertView
                     .findViewById(R.id.listViewRutas);
-            expandedListTextView.setText(rutaId[0]+"                   "+rutaId[2]+" kms                    "+rutaId[3]);
+            expandedListTextView.setText(rutaId[0]+"                "+rutaId[2]+" kms                "+rutaId[3]);
             return convertView;
         }
 

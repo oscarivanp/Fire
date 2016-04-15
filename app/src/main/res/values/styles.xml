@@ -9,6 +9,7 @@
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="android:buttonStyle">@style/ButtonStyle</item>
         <item name="android:textViewStyle">@style/TextViewStyle</item>
+        <item name="android:editTextStyle">@style/EditTextstyle</item>
 
     </style>
 
@@ -23,6 +24,13 @@
 
     <style name="TextViewStyle" parent="MyAppTheme">
         <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+
+    <style name="EditTextstyle">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColorHint">@color/colorPrimary</item>
+
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
