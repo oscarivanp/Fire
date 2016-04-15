@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
-       // circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
+       circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
 
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -161,12 +161,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void AssignViews() {
         SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
-     //   imageViewBateria = (ImageView) findViewById(R.id.imgBateria);
-     //   imageViewGps = (ImageView) findViewById(R.id.imgGps);
+        imageViewBateria = (ImageView) findViewById(R.id.imgBateria);
+        imageViewGps = (ImageView) findViewById(R.id.imgGps);
 
 
-     //   circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
-     //   circularImageView.setOnClickListener(buttonClickListener);
+        circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
+        circularImageView.setOnClickListener(buttonClickListener);
 
         switchEncendido = (Switch) findViewById(R.id.switchEncendido);
         switchEncendido.setEnabled(true);
@@ -202,15 +202,15 @@ public class MainActivity extends AppCompatActivity {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
                 InputStream prueba = new URL(path).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-             //   circularImageView.setImageBitmap(foto);
+                circularImageView.setImageBitmap(foto);
             } else {
                 InputStream prueba = new URL(user.getString("FotoPath", "")).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-            //    circularImageView.setImageBitmap(foto);
+                circularImageView.setImageBitmap(foto);
             }
         } catch (Exception e) {
             e.printStackTrace();
-           // circularImageView.setImageResource(R.drawable.no_user);
+            circularImageView.setImageResource(R.drawable.no_user);
         }
 
         btnRecorrido = (Button) findViewById(R.id.btnRecorrido);
@@ -221,8 +221,8 @@ public class MainActivity extends AppCompatActivity {
         txtUser = (TextView) findViewById(R.id.txtUser);
         txtUser.setText(user.getString("UserLogin", ""));
         txtReporteDispositivo = (TextView) findViewById(R.id.txtReporteDispositivo);
-      //  txtBattDispositivo = (TextView) findViewById(R.id.txtbatGps);
-      //  txtBattMoto = (TextView) findViewById(R.id.txtbatMoto);
+        txtBattDispositivo = (TextView) findViewById(R.id.txtbatGps);
+        txtBattMoto = (TextView) findViewById(R.id.txtbatMoto);
 
         tachoMeter = (ProgressBar) findViewById(R.id.tachoMeter);
         txtValueProgress = (TextView) findViewById(R.id.txtValueProgress);
@@ -628,10 +628,10 @@ public class MainActivity extends AppCompatActivity {
         txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria) + "v");
 
         if (DispositivoAsociado.DataReceived.Modo == 2) {
-            //circularImageView.setBorderColor(R.color.darkgreen);
+            circularImageView.setBorderColor(Color.GREEN);
         }
         else {
-            //circularImageView.setBorderColor(Color.RED);
+            circularImageView.setBorderColor(Color.RED);
         }
     }
 
