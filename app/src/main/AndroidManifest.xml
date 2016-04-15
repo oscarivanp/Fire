@@ -35,33 +35,32 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:persistent="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/MyAppTheme">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
         <activity
             android:name=".IntroActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/MyAppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/MyAppTheme.NoActionBar" />
         <activity
             android:name=".RegisterActivity"
             android:label="@string/title_activity_register"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/MyAppTheme.NoActionBar"
            />
         <activity android:name=".MotoActivity"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/MyAppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/MyAppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -91,13 +90,13 @@
 
         <activity
             android:name=".MapsActivity"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/title_activity_maps"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:theme="@style/MyAppTheme.NoActionBar" />
         <activity
             android:name=".PerfilActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/MyAppTheme.NoActionBar" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:windowSoftInputMode="adjustResize"
@@ -106,18 +105,13 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".RutasMasterActivity"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/MyAppTheme.NoActionBar"/>
         <activity android:name=".listMotos"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/MyAppTheme.NoActionBar"/>
         <activity android:name=".DetallesActivity"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.rmasc.fireroad.MainActivity"
-                />
-            </activity>
+            android:theme="@style/MyAppTheme.NoActionBar"/>
     </application>
 
 </manifest>

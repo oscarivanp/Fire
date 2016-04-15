@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="MyAppTheme" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -11,12 +11,12 @@
 
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="MyAppTheme.NoActionBar" parent="MyAppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="ButtonStyle">
+    <style name="ButtonStyle" parent="MyAppTheme">
         <item name="android:background">@color/colorButton</item>
     </style>
 

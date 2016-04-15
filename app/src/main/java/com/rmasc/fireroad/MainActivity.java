@@ -1,5 +1,6 @@
 package com.rmasc.fireroad;
 
+import android.animation.ObjectAnimator;
 import android.appwidget.AppWidgetManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -22,9 +23,12 @@ import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,10 +63,9 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView imageViewBateria, imageViewGps;
     Button btnRecorrido;
-
     ImageButton btnMapa;
-    TextView txtUser, txtReporteDispositivo, txtBattMoto, txtBattDispositivo;
-//    ProgressBar tachoMeter, progressBattMoto, progressBattDispositivo, progressCombustible;
+    TextView txtUser, txtReporteDispositivo, txtBattMoto, txtBattDispositivo, txtValueProgress;
+    ProgressBar tachoMeter;
     Switch switchEncendido;
 
     BluetoothLE bluetoothLE;
@@ -84,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
@@ -121,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
                                 new EnviarRecorrido().execute(transmisionesHelper.SelectTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + DispositivoAsociado.DataReceived.VehiculoId + " AND ReporteId = " + DispositivoAsociado.DataReceived.ReporteId, null));
                             }
                             break;
-
                         default:
                             break;
                     }
@@ -166,8 +169,34 @@ public class MainActivity extends AppCompatActivity {
      //   circularImageView.setOnClickListener(buttonClickListener);
 
         switchEncendido = (Switch) findViewById(R.id.switchEncendido);
-        switchEncendido.setEnabled(false);
+        switchEncendido.setEnabled(true);
+        switchEncendido.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (bluetoothLE != null && DispositivoAsociado != null) {
+                        bluetoothLE.bleDevices = new ArrayList<BluetoothDevice>();
+                        bluetoothLE.scanLeDevice(isChecked);
+                        switchEncendido.setText("Buscando");
+                        switchEncendido.setEnabled(false);
 
+                        new android.os.Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ConnectToDevice();
+                            }
+                        }, 5000);
+                    }
+                } else {
+                    switchEncendido.setText("Desconectado");
+                    if (bluetoothLE != null && bluetoothLE.bleGatt != null) {
+                        //bluetoothLE.bleGatt.disconnect();
+                        bluetoothLE.bleGatt.close();
+                        bluetoothLE.bleGatt = null;
+                    }
+                }
+            }
+        });
         try {
             if (user.getString("FotoPath", "").equals("")) {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
@@ -195,6 +224,9 @@ public class MainActivity extends AppCompatActivity {
       //  txtBattDispositivo = (TextView) findViewById(R.id.txtbatGps);
       //  txtBattMoto = (TextView) findViewById(R.id.txtbatMoto);
 
+        tachoMeter = (ProgressBar) findViewById(R.id.tachoMeter);
+        txtValueProgress = (TextView) findViewById(R.id.txtValueProgress);
+        SetProgressBar(0);
     }
 
     private void ShowMessage(final String message) {
@@ -215,7 +247,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    private void SetProgressBar(final int value) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ObjectAnimator animation = ObjectAnimator.ofInt(tachoMeter, "progress", tachoMeter.getProgress(), value); //Desde un valor hasta otro valor
+                animation.setDuration(3000);
+                animation.setInterpolator(new DecelerateInterpolator());
+                animation.start();
+                txtValueProgress.setText(value + "\n Km/h");
+            }
+        });
+    }
 
     public boolean ManagerBluetooth() {
         try {
@@ -269,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 case 1:
                                     ShowSnackMessage("Connecting");
+                                    switchEncendido.setText("Conectando");
                                     break;
                                 case 4:
                                     ShowSnackMessage("Connection closed");
@@ -328,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < bluetoothLE.bleDevices.size(); i++) {
             //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:AF:8A:67")) {
             if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
-            //if (bluetoothLE.bleDevices.get(i).getName().equals(DispositivoAsociado.Name)) {
+                //if (bluetoothLE.bleDevices.get(i).getName().equals(DispositivoAsociado.Name)) {
                 try {
                     bluetoothLE.ConnectToGattServer(bluetoothLE.bleDevices.get(i), true);
                     isVisible = true;
@@ -340,7 +384,10 @@ public class MainActivity extends AppCompatActivity {
         }
         if (!isVisible) {
             ShowMessage("No se encontró el dispositivo.");
-                   }
+            switchEncendido.setEnabled(true);
+            switchEncendido.setChecked(false);
+            switchEncendido.setText("Desconectado");
+        }
     }
 
     public void ProcesarTrama(String tramaIn) {
@@ -420,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void ActualizarControles() {
-
+        SetProgressBar(((int) DispositivoAsociado.DataReceived.Velocidad));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -581,14 +628,10 @@ public class MainActivity extends AppCompatActivity {
         txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria) + "v");
 
         if (DispositivoAsociado.DataReceived.Modo == 2) {
-            switchEncendido.setChecked(true);
-            switchEncendido.setText("Conectado");
-           // circularImageView.setBorderColor(R.color.darkgreen);
+            //circularImageView.setBorderColor(R.color.darkgreen);
         }
         else {
-            switchEncendido.setChecked(false);
-            switchEncendido.setText("DesConectado");
-            circularImageView.setBorderColor(Color.RED);
+            //circularImageView.setBorderColor(Color.RED);
         }
     }
 
@@ -602,11 +645,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Intent setIntentToMap(boolean isUpdate) {
         Intent i;
-        if (isUpdate)
-        {
+        if (isUpdate) {
             i = new Intent("UPDATE_MAP");
-        }
-        else {
+        } else {
             i = new Intent(getBaseContext(), MapsActivity.class);
         }
         i.putExtra("Lat", DispositivoAsociado.DataReceived.Latitud);
@@ -653,13 +694,14 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 if (isConnected) {
                     bluetoothLE.bleGatt.discoverServices();
-                  //  txtConexion.setText("Online");
-                //    txtConexion.setTextColor(getResources().getColor(R.color.colorOk));
+                    switchEncendido.setChecked(true);
+                    switchEncendido.setText("Conectado");
                     ShowMessage("Conectado a: " + DispositivoAsociado.Name);
                 } else {
-                 //   txtConexion.setText("Offline");
-                  //  txtConexion.setTextColor(getResources().getColor(R.color.colorAccent));
+                    switchEncendido.setChecked(false);
+                    switchEncendido.setText("Desconectado");
                 }
+                switchEncendido.setEnabled(true);
             }
         });
     }

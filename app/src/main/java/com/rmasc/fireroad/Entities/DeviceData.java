@@ -42,10 +42,16 @@ public class DeviceData {
 
     public String FormatDate()
     {
-        String año = Fecha.substring(0, 4);
-        String mes = Fecha.substring(4, 6);
-        String dia = Fecha.substring(6, 8);
-        return dia + "/" + mes + "/" + año;
+        try {
+            String año = Fecha.substring(0, 4);
+            String mes = Fecha.substring(4, 6);
+            String dia = Fecha.substring(6, 8);
+            return año + "/" + mes + "/" + dia;
+        }
+        catch (Exception e)
+        {
+        }
+        return "0001/01/01";
     }
 
     public DeviceData(String DataIn) {
@@ -70,6 +76,13 @@ public class DeviceData {
                 VoltajeEntrada = Float.parseFloat(DatosIn[14]);
                 Entradas = DatosIn[15];
 
+                Modo = Integer.parseInt(DatosIn[16]);
+                NumeroReporte = Integer.parseInt(DatosIn[17]);
+                Horometro = DatosIn[18];
+                Bateria = Float.parseFloat(DatosIn[19]);
+                TiempoReporte = Boolean.parseBoolean(DatosIn[20]);
+
+                /*
                 switch (Modelo) {
                     case 3:
                         Modo = Integer.parseInt(DatosIn[16]);
@@ -88,7 +101,7 @@ public class DeviceData {
                         break;
                     default:
                         break;
-                }
+                }*/
 
             }
         }
