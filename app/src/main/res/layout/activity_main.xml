@@ -79,7 +79,7 @@
                 android:paddingLeft="10dp">
 <LinearLayout
     android:orientation="vertical"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
     <TextView
@@ -101,7 +101,7 @@
     <Switch
         android:id="@+id/switchEncendido"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="5dp"
         android:textColor="@color/colorPrimary"
         android:layout_marginBottom="5dp"
         android:text="Conectado"
@@ -111,11 +111,13 @@
 </LinearLayout>
 
     <ImageButton
+        android:layout_marginTop="5dp"
         android:id="@+id/btnMapa"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:scaleType="fitXY"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/mapagoogle"
+        android:src="@drawable/maps"
         />
 </LinearLayout>
 
@@ -250,20 +252,20 @@
 
         </LinearLayout>
 
-        <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="vertical">-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
 
-            <!--<fragment-->
-                <!--android:id="@+id/fragmentMenu"-->
-                <!--android:name="com.rmasc.fireroad.Adapters.MenuFragment"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--tools:layout="@layout/menu_bar" />-->
+            <fragment
+                android:id="@+id/fragmentMenu"
+                android:name="com.rmasc.fireroad.Adapters.MenuFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@layout/menu_bar" />
 
-        <!--</LinearLayout>-->
+        </LinearLayout>
 
 </LinearLayout>
 
