@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageViewBateria, imageViewGps;
     Button btnRecorrido;
 
-    ImageButton btnMapa;
+     ImageButton btnMapa;
     TextView txtUser, txtReporteDispositivo, txtBattMoto, txtBattDispositivo;
 //    ProgressBar tachoMeter, progressBattMoto, progressBattDispositivo, progressCombustible;
     Switch switchEncendido;
