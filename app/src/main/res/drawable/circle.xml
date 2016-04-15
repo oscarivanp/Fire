@@ -5,10 +5,10 @@
     <shape
         android:innerRadiusRatio="3"
         android:shape="ring"
-        android:thicknessRatio="7.0"
+        android:thicknessRatio="8.0"
         android:useLevel="true">
         <!--<solid android:color="@color/colorAccent"/>-->
-        <gradient android:startColor="@color/colorOk"
+        <gradient android:type="sweep" android:startColor="@color/colorOk"
             android:endColor="@color/colorAccent" />
     </shape>
 </rotate>

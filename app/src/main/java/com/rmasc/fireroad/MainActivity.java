@@ -483,145 +483,96 @@ public class MainActivity extends AppCompatActivity {
         int battPercent = ((int) (DispositivoAsociado.DataReceived.Bateria));
         int battExtern = (int) (DispositivoAsociado.DataReceived.VoltajeEntrada);
 
-
         if(battPercent<=13) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_0);
-
-        }
-        if(battPercent<=26 && battPercent>13) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_12_5);
-
-        }
-        if(battPercent<=39 && battPercent >26) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_25);
-
-        }
-        if(battPercent<=52 && battPercent >39) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_37_5);
-
-        }
-
-        if(battPercent<=65 && battPercent >52) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_50);
-
-        }
-
-        if(battPercent<=79 && battPercent >65) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_62_5);
-
-        }
-
-        if(battPercent<=92 && battPercent >79) {
-
-
-            imageViewBateria.setImageResource(R.drawable.bateria_75);
-        }
-
-        if(battPercent<=100&& battPercent >92) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_100);
-
-        }
-
-        if(battPercent<=13) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_0);
-
-        }
-        if(battPercent<=26 && battPercent>13) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_12_5);
-
-        }
-        if(battPercent<=39 && battPercent >26) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_25);
-
-        }
-        if(battPercent<=52 && battPercent >39) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_37_5);
-
-        }
-
-        if(battPercent<=65 && battPercent >52) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_50);
-
-        }
-
-        if(battPercent<=79 && battPercent >65) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_62_5);
-
-        }
-
-        if(battPercent<=92 && battPercent >79) {
-
-
-            imageViewBateria.setImageResource(R.drawable.bateria_75);
-        }
-
-        if(battPercent<=100&& battPercent >92) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_100);
-
-        }
-
-
-        if(battExtern<=13) {
 
             imageViewGps.setImageResource(R.drawable.bateria_0);
 
         }
-        if(battExtern<=26 && battExtern>13) {
+        if(battPercent<=26 && battPercent>13) {
 
             imageViewGps.setImageResource(R.drawable.bateria_12_5);
 
         }
-        if(battExtern<=39 && battExtern >26) {
+        if(battPercent<=39 && battPercent >26) {
 
             imageViewGps.setImageResource(R.drawable.bateria_25);
 
         }
-        if(battExtern<=52 && battExtern >39) {
+        if(battPercent<=52 && battPercent >39) {
 
             imageViewGps.setImageResource(R.drawable.bateria_37_5);
 
         }
 
-        if(battExtern<=65 && battExtern >52) {
+        if(battPercent<=65 && battPercent >52) {
 
             imageViewGps.setImageResource(R.drawable.bateria_50);
 
         }
 
-        if(battExtern<=79 && battExtern >65) {
+        if(battPercent<=79 && battPercent >65) {
 
             imageViewGps.setImageResource(R.drawable.bateria_62_5);
 
         }
 
-        if(battExtern<=92 && battExtern >79) {
+        if(battPercent<=92 && battPercent >79) {
 
 
             imageViewGps.setImageResource(R.drawable.bateria_75);
         }
 
-        if(battExtern<=100&& battExtern >92) {
+        if(battPercent<=100&& battPercent >92) {
 
             imageViewGps.setImageResource(R.drawable.bateria_100);
 
         }
 
 
+        if(battExtern<=13) {
 
+            imageViewBateria.setImageResource(R.drawable.bateria_0);
+
+        }
+        if(battExtern<=26 && battExtern>13) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_12_5);
+
+        }
+        if(battExtern<=39 && battExtern >26) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_25);
+
+        }
+        if(battExtern<=52 && battExtern >39) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_37_5);
+
+        }
+
+        if(battExtern<=65 && battExtern >52) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_50);
+
+        }
+
+        if(battExtern<=79 && battExtern >65) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_62_5);
+
+        }
+
+        if(battExtern<=92 && battExtern >79) {
+
+
+            imageViewBateria.setImageResource(R.drawable.bateria_75);
+        }
+
+        if(battExtern<=100&& battExtern >92) {
+
+            imageViewBateria.setImageResource(R.drawable.bateria_100);
+
+        }
 
 
         txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada).substring(0, 3) + "v");

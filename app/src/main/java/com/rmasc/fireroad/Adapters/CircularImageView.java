@@ -67,7 +67,7 @@ public class CircularImageView extends ImageView {
         if (attributes.getBoolean(R.styleable.CircularImageView_civ_border, true)) {
             float defaultBorderSize = DEFAULT_BORDER_WIDTH * getContext().getResources().getDisplayMetrics().density;
             setBorderWidth(attributes.getDimension(R.styleable.CircularImageView_civ_border_width, defaultBorderSize));
-            setBorderColor(attributes.getColor(R.styleable.CircularImageView_civ_border_color,getResources().getColor(R.color.colorOk)));
+            setBorderColor(attributes.getColor(R.styleable.CircularImageView_civ_border_color,Color.RED));
         }
 
         // Init Shadow
