@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="android:buttonStyle">@style/ButtonStyle</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
 
     </style>
 
@@ -18,6 +19,10 @@
 
     <style name="ButtonStyle" parent="MyAppTheme">
         <item name="android:background">@color/colorButton</item>
+    </style>
+
+    <style name="TextViewStyle" parent="MyAppTheme">
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
