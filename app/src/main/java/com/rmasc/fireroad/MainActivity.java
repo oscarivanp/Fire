@@ -442,6 +442,53 @@ public class MainActivity extends AppCompatActivity {
         tramaIncompleta += tramaIn;
     }
 
+    private class ActualizarDeweb extends AsyncTask<String, Void, String>
+    {
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
+            SharedPreferences userPref = getSharedPreferences("User", MODE_PRIVATE);
+            SharedPreferences motoPref = getSharedPreferences("Moto", MODE_PRIVATE);
+            WebServiceParameter paramTemp = new WebServiceParameter();
+
+            paramTemp.Nombre = "IdUser";
+            paramTemp.Valor = String.valueOf(userPref.getInt("Id", 0));
+            parameters.add(paramTemp);
+
+            paramTemp = new WebServiceParameter();
+            paramTemp.Nombre = "IdVehiculo";
+            paramTemp.Valor = String.valueOf(motoPref.getInt("Id", 0));
+            parameters.add(paramTemp);
+
+            return WebService.ConexionWS(params[0], parameters);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try
+            {
+                JSONObject dataRe = new JSONObject(s);
+                JSONObject puntosMapa = dataRe.optJSONObject("d");
+                ArrayList<DeviceData> Puntos = new ArrayList<DeviceData>();
+                DeviceData punto = new DeviceData();
+
+                punto.Id = puntosMapa.optInt("Id");
+                punto.Latitud = Float.valueOf(puntosMapa.optString("Latitud"));
+                punto.Longitud = Float.valueOf(puntosMapa.optString("Longitud"));
+                punto.Fecha = puntosMapa.optString("FechaTransmision");
+                punto.Bateria = puntosMapa.optInt("Bateria");
+                punto.Velocidad = puntosMapa.optInt("Velocidad");
+                DispositivoAsociado.DataReceived = punto;
+
+                ActualizarControles(false);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+    }
+
     private class TramaProcess extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {

@@ -66,7 +66,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onReceive(Context context, Intent intent) {
                 switch (intent.getIntExtra("Tipo", 1)) {
                     case 1:
-                        ShowMessage("Nuevo reporte bluetooth");
                         CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
                         break;
                     default:
@@ -112,7 +111,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ptosLinea.add(ptoActual);
             polyOptionsUpdate.setPoints(ptosLinea);
         }
-        //markerOptionsUpdate = new MarkerOptions().position(ptoActual).title(userP.getString("Marca", "") + " " + userP.getString("Placa", "") + "\n" + Fecha).visible(true);
         markerOptionsUpdate.setPosition(ptoActual);
         markerOptionsUpdate.setVisible(true);
         markerOptionsUpdate.setTitle(userP.getString("Placa", ""));
@@ -123,7 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SharedPreferences userPref = getSharedPreferences("User", MODE_PRIVATE);
         if (transmisionesHelper == null) {
             transmisionesHelper = new TransmisionesHelper(this);
-            ArrayList<DeviceData> deviceDataArrayList = transmisionesHelper.ArrayTransmision(transmisionesHelper.getWritableDatabase(), "VehiculoId = " + IdVehiculo + " AND ReporteId = " + IdRecorrido, null);
+            ArrayList<DeviceData> deviceDataArrayList = transmisionesHelper.ArrayTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + IdVehiculo + " AND ReporteId = " + IdRecorrido, null);
             if (deviceDataArrayList.size() > 0) {
                 PintarRecorrido(deviceDataArrayList);
                 return;
@@ -179,6 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Puntos.add(punto);
 
                 PintarRecorrido(Puntos);
+
 
             } catch (Exception e) {
 
