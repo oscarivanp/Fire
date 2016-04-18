@@ -31,11 +31,11 @@ public class RoundImages extends Drawable {
         int height = bitmap.getHeight();
         float scaleWidth = ((float) 500) / width;
         float scaleHeight = ((float) 500) / height;
-// CREATE A MATRIX FOR THE MANIPULATION
+        // CREATE A MATRIX FOR THE MANIPULATION
         Matrix matrix = new Matrix();
-// RESIZE THE BIT MAP
+        // RESIZE THE BIT MAP
         matrix.postScale(scaleWidth, scaleHeight);
-// RECREATE THE NEW BITMAP
+        // RECREATE THE NEW BITMAP
         Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
 
         final Bitmap output = Bitmap.createBitmap(resizedBitmap.getWidth(), resizedBitmap.getHeight(), Bitmap.Config.ARGB_8888);

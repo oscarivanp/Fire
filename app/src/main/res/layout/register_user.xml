@@ -22,7 +22,7 @@
         android:layout_gravity="center_horizontal"
         android:background="@null"
         android:contentDescription="@string/descriptor_Foto"
-        android:scaleType="fitXY" />
+        />
 
 
     <ScrollView

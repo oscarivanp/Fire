@@ -1,27 +1,27 @@
 package com.rmasc.fireroad;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +35,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.lang.reflect.Array;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -47,6 +47,12 @@ public class PerfilActivity extends AppCompatActivity {
     ImageButton imageButtonUser;
     TextView textViewContra, textViewTitulo, pass1, pass2;
     public static Button btnFecha, btnRegistrar, btnCambiarContraseña;
+    private String APP_DIRECTORY = "myPictureApp/";
+    private String MEDIA_DIRECTORY = APP_DIRECTORY + "media";
+    private String TEMPORAL_PICTURE_NAME = "temporal.jpg";
+    private final int PHOTO_CODE = 100;
+    private final int SELECT_PICTURE = 200;
+
 
     public  static String contraseña = "";
 
@@ -56,20 +62,31 @@ public class PerfilActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
 
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
+        switch (requestCode) {
+            case PHOTO_CODE:
+                if (resultCode == RESULT_OK) {
+                    String dir = Environment.getExternalStorageDirectory() + File.separator
+                            + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+                    decodeBitmap(dir, "User");
+                }
+                break;
 
-            imageButtonUser.setImageDrawable(new RoundImages(ReSizeImage(BitmapFactory.decodeFile(picturePath))));
-            imageButtonUser.setScaleType(ImageView.ScaleType.FIT_XY);
+            case SELECT_PICTURE:
+                if(resultCode == RESULT_OK){
+
+                    Uri imageUri = data.getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                        decodeBitmap(bitmap, "User");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                break;
         }
-    }
+      }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +99,26 @@ public class PerfilActivity extends AppCompatActivity {
                 Intent i;
                 switch (v.getId()) {
                     case R.id.imageButtonUser:
-                        i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(i, RESULT_LOAD_IMAGE);
+
+                        final CharSequence[] options = {"Tomar foto", "Elegir de galeria", "Cancelar"};
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(PerfilActivity.this);
+                        builder.setTitle("Elige una opcion");
+                        builder.setItems(options, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int seleccion) {
+                                if (options[seleccion] == "Tomar foto") {
+                                    openCamera();
+                                } else if (options[seleccion] == "Elegir de galeria") {
+                                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                                } else if (options[seleccion] == "Cancelar") {
+                                    dialog.dismiss();
+                                }
+                            }
+                        });
+                        builder.show();
+
                         break;
                     case R.id.btnRegistrar:
                         if (editTexPasswordAntigua.getVisibility() == View.VISIBLE)
@@ -134,6 +169,48 @@ public class PerfilActivity extends AppCompatActivity {
         else
             return false;
     }
+
+
+
+    private void decodeBitmap(String dir, String tipo) {
+        Bitmap bitmap;
+        bitmap = BitmapFactory.decodeFile(dir);
+
+        if (tipo.equals("User")) {
+            RoundImages imaghenFace = new RoundImages(bitmap);
+            Bitmap imagenProcesada = imaghenFace.RoundImages(bitmap, 200, 200);
+            imageButtonUser.setImageBitmap(imagenProcesada);
+
+        }
+
+    }
+
+    private void openCamera() {
+        File file = new File(Environment.getExternalStorageDirectory(), MEDIA_DIRECTORY);
+        file.mkdirs();
+
+        String path = Environment.getExternalStorageDirectory() + File.separator
+                + MEDIA_DIRECTORY + File.separator + TEMPORAL_PICTURE_NAME;
+
+        File newFile = new File(path);
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(newFile));
+        startActivityForResult(intent, PHOTO_CODE);
+    }
+
+
+    private void decodeBitmap(Bitmap dir, String tipo) {
+
+
+        if (tipo.equals("User")) {
+            RoundImages imaghenFace = new RoundImages(dir);
+            Bitmap imagenProcesada = imaghenFace.RoundImages(dir, 200, 200);
+            imageButtonUser.setImageBitmap(imagenProcesada);
+
+        }
+    }
+
 
     private void AssignViews() {
         editTextNombre = (EditText) findViewById(R.id.editTextNombre);

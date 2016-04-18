@@ -1,4 +1,15 @@
 <resources>
+    <style name="Color1SwitchStyle">
+        <item name="colorControlActivated">@color/colorPrimaryDark</item>
+    </style>
+    <style name="Buscar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginBottom">25dp</item>
+        <item name="android:layout_marginRight">25dp</item>
+    </style>
 
     <!-- Base application theme. -->
     <style name="MyAppTheme" parent="Theme.AppCompat">

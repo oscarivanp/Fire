@@ -15,7 +15,15 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,14 +34,12 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.rmasc.fireroad.Adapters.CircularImageView;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 import com.rmasc.fireroad.DataBase.TransmisionesHelper;
 import com.rmasc.fireroad.Entities.DeviceBluetooth;
@@ -46,6 +52,7 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -63,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView imageViewBateria, imageViewGps;
     Button btnRecorrido;
-    ImageButton btnMapa;
+    ImageView btnMapa;
     TextView txtUser, txtReporteDispositivo, txtBattMoto, txtBattDispositivo, txtValueProgress;
     ProgressBar tachoMeter;
     Switch switchEncendido;
@@ -78,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     IntentFilter filter2 = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
 
     private static View.OnClickListener buttonClickListener;
-    private CircularImageView circularImageView;
+    private ImageView circularImageView;
     private static boolean isRecorrido = false;
     private static int countTramas = 0;
 
@@ -91,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
-       circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
+
+        ImageView imageView = (ImageView) findViewById(R.id.CircularImageViewUser);
 
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -165,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewGps = (ImageView) findViewById(R.id.imgGps);
 
 
-        circularImageView = (CircularImageView) findViewById(R.id.CircularImageViewUser);
+        circularImageView =(ImageView) findViewById(R.id.CircularImageViewUser);
         circularImageView.setOnClickListener(buttonClickListener);
 
         switchEncendido = (Switch) findViewById(R.id.switchEncendido);
@@ -202,20 +210,23 @@ public class MainActivity extends AppCompatActivity {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
                 InputStream prueba = new URL(path).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-                circularImageView.setImageBitmap(foto);
+               // circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,getResources().getColor(R.color.colorPrimaryDark)));
+
             } else {
                 InputStream prueba = new URL(user.getString("FotoPath", "")).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-                circularImageView.setImageBitmap(foto);
+               // circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,getResources().getColor(R.color.colorPrimaryDark)));
+
             }
         } catch (Exception e) {
             e.printStackTrace();
-            circularImageView.setImageResource(R.drawable.no_user);
+         //   circularImageView.setImageBitmap(getRoundedCornerBitmap(getResources().getDrawable(R.drawable.no_user), true,Color.RED));
+
         }
 
         btnRecorrido = (Button) findViewById(R.id.btnRecorrido);
         btnRecorrido.setOnClickListener(buttonClickListener);
-        btnMapa = (ImageButton) findViewById(R.id.btnMapa);
+        btnMapa = (ImageView) findViewById(R.id.btnMapa);
         btnMapa.setOnClickListener(buttonClickListener);
 
         txtUser = (TextView) findViewById(R.id.txtUser);
@@ -466,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void ActualizarControles() {
+    private void ActualizarControles() throws IOException {
         SetProgressBar(((int) DispositivoAsociado.DataReceived.Velocidad));
         runOnUiThread(new Runnable() {
             @Override
@@ -480,53 +491,38 @@ public class MainActivity extends AppCompatActivity {
 
     private void SetImageViews() {
 
-        int battPercent = ((int) (DispositivoAsociado.DataReceived.Bateria));
-        int battExtern = (int) (DispositivoAsociado.DataReceived.VoltajeEntrada);
+        double battPercent = ((double) (DispositivoAsociado.DataReceived.Bateria));
+        double battExtern = (double) (DispositivoAsociado.DataReceived.VoltajeEntrada);
 
-        if(battPercent<=13) {
+        if(battPercent==0) {
 
             imageViewGps.setImageResource(R.drawable.bateria_0);
 
         }
-        if(battPercent<=26 && battPercent>13) {
+
+        if(battPercent<=10 && battPercent>1) {
 
             imageViewGps.setImageResource(R.drawable.bateria_12_5);
 
         }
-        if(battPercent<=39 && battPercent >26) {
+        if(battPercent<=12 && battPercent >10) {
 
             imageViewGps.setImageResource(R.drawable.bateria_25);
 
         }
-        if(battPercent<=52 && battPercent >39) {
+        if(battPercent<=12.8 && battPercent >12) {
 
             imageViewGps.setImageResource(R.drawable.bateria_37_5);
 
         }
 
-        if(battPercent<=65 && battPercent >52) {
-
-            imageViewGps.setImageResource(R.drawable.bateria_50);
-
-        }
-
-        if(battPercent<=79 && battPercent >65) {
-
-            imageViewGps.setImageResource(R.drawable.bateria_62_5);
-
-        }
-
-        if(battPercent<=92 && battPercent >79) {
-
-
-            imageViewGps.setImageResource(R.drawable.bateria_75);
-        }
-
-        if(battPercent<=100&& battPercent >92) {
+        if(battPercent<=15 && battPercent >12.8) {
 
             imageViewGps.setImageResource(R.drawable.bateria_100);
 
         }
+
+
 
 
         if(battExtern<=13) {
@@ -574,15 +570,62 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-
         txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada).substring(0, 3) + "v");
-        txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria) + "v");
-
+        txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria).substring(0, 3) + "v");
+        SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
         if (DispositivoAsociado.DataReceived.Modo == 2) {
-            circularImageView.setBorderColor(Color.GREEN);
+            if (user.getString("FotoPath", "").equals("")) {
+                String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
+
+                InputStream prueba = null;
+                try {
+                    prueba = new URL(path).openStream();
+                    Bitmap foto = BitmapFactory.decodeStream(prueba);
+                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,getResources().getColor(R.color.colorPrimaryDark)));
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            } else {
+                InputStream prueba = null;
+                try {
+                    prueba = new URL(user.getString("FotoPath", "")).openStream();
+                    Bitmap foto = BitmapFactory.decodeStream(prueba);
+                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,getResources().getColor(R.color.colorPrimaryDark)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
         }
         else {
-            circularImageView.setBorderColor(Color.RED);
+            if (user.getString("FotoPath", "").equals("")) {
+                String path2 = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
+                InputStream prueba2 = null;
+                try {
+                    prueba2 = new URL(path2).openStream();
+                    Bitmap foto = BitmapFactory.decodeStream(prueba2);
+                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,Color.RED));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            } else {
+                InputStream prueba = null;
+                try {
+                    prueba = new URL(user.getString("FotoPath", "")).openStream();
+                    Bitmap foto = BitmapFactory.decodeStream(prueba);
+                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,Color.RED));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
         }
     }
 
@@ -593,6 +636,109 @@ public class MainActivity extends AppCompatActivity {
         else
             return false;
     }
+
+    public static Bitmap getRoundedCornerBitmap(Bitmap drawable, boolean square, int colorMargen) {
+        int width = 0;
+        int height = 0;
+
+        Bitmap bitmap = drawable ;
+
+        if(square){
+            if(bitmap.getWidth() < bitmap.getHeight()){
+                width = bitmap.getWidth();
+                height = bitmap.getWidth();
+            } else {
+                width = bitmap.getHeight();
+                height = bitmap.getHeight();
+            }
+        } else {
+            height = bitmap.getHeight();
+            width = bitmap.getWidth();
+        }
+
+        Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+
+        Canvas canvas = new Canvas(output);
+
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, width, height);
+        final RectF rectF = new RectF(rect);
+        final float roundPx = 90;
+
+        paint.setStrokeWidth(5);
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+
+
+        paint.setColor(color);
+
+
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+       paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(colorMargen);
+        paint.setStrokeWidth(25);
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        return output;
+    }
+
+
+
+    public static Bitmap getRoundedCornerBitmap(Drawable drawable, boolean square,int colorMargen) {
+        int width = 0;
+        int height = 0;
+        Paint mBorderPaint;
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap() ;
+
+        if(square){
+            if(bitmap.getWidth() < bitmap.getHeight()){
+                width = bitmap.getWidth();
+                height = bitmap.getWidth();
+            } else {
+                width = bitmap.getHeight();
+                height = bitmap.getHeight();
+            }
+        } else {
+            height = bitmap.getHeight();
+            width = bitmap.getWidth();
+        }
+
+        Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+
+        Canvas canvas = new Canvas(output);
+
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, width, height);
+        final RectF rectF = new RectF(rect);
+        final float roundPx = 90;
+
+        paint.setStrokeWidth(5);
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+
+
+        paint.setColor(color);
+
+
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(colorMargen);
+        paint.setStrokeWidth(20);
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        return output;
+    }
+
+
+
 
     private Intent setIntentToMap(boolean isUpdate) {
         Intent i;

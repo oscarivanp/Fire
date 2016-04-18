@@ -33,6 +33,12 @@
                 android:text="User Name"
                 android:textSize="18sp" />
 
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
             <TextView
                 android:id="@+id/txtReporteDispositivo"
                 android:layout_width="match_parent"
@@ -42,6 +48,17 @@
                 android:layout_weight="1"
                 android:text="dd/mm/aaaa HH:mm" />
 
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="right"
+                    android:src="@drawable/bluetoothlogo"
+                    android:scaleType="fitXY"
+                    android:id="@+id/modoTransmision"
+                    />
+
+
+            </LinearLayout>
         </LinearLayout>
 
 
@@ -60,14 +77,13 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.rmasc.fireroad.Adapters.CircularImageView
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/CircularImageViewUser"
+               <ImageView
+                   android:id="@+id/CircularImageViewUser"
+                    android:src="@drawable/no_user"
                     android:layout_width="match_parent"
-                    app:civ_border_width="5dp"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
-                   android:src="@drawable/no_user" />
+
+                          />
 
             </LinearLayout>
 
@@ -92,16 +108,19 @@
         android:layout_gravity="center_horizontal"
         android:textAlignment="center"
         android:textColor="@color/colorAccent" />
-<LinearLayout
-    android:layout_marginTop="10dp"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="50dp">
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
 
    <Switch
+
         android:id="@+id/switchEncendido"
         android:layout_width="match_parent"
         android:layout_height="5dp"
+        android:theme="@style/Color1SwitchStyle"
         android:textColor="@color/colorPrimary"
         android:layout_marginBottom="5dp"
         android:text="Conectado"></Switch>
@@ -110,14 +129,14 @@
 
 </LinearLayout>
 
-    <ImageButton
+    <ImageView
         android:layout_marginTop="5dp"
         android:id="@+id/btnMapa"
         android:layout_width="wrap_content"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:scaleType="fitXY"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/maps"
+        android:src="@drawable/mapa"
         />
 </LinearLayout>
 
@@ -231,18 +250,20 @@
                     android:textColor="@color/colorPrimary"
                     android:textAlignment="center"
                     android:text="00:00:00"
+                    android:textSize="18dp"
                     android:layout_height="25dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="horizontal">
                     <Button
                         android:id="@+id/btnRecorrido"
                         android:layout_width="match_parent"
                         android:gravity="center"
-                        android:layout_height="35dp"
+                        android:background="@color/colorPrimaryDark"
+                        android:layout_height="70dp"
                         android:text="@string/nuevo_recorrido" />
 
                 </LinearLayout>
