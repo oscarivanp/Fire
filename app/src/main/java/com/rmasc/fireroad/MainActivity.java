@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     TwitterLoginButton twitterloginButton;
 
-    ImageView imageViewBateria, imageViewGps;
+    ImageView imageViewBateria, imageViewGps,tipoTransmisionImagen;
     Button btnRecorrido;
     ImageView btnMapa;
     TextView txtUser, txtReporteDispositivo, txtBattMoto, txtBattDispositivo, txtValueProgress;
@@ -98,8 +98,7 @@ public class MainActivity extends AppCompatActivity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
-
-        ImageView imageView = (ImageView) findViewById(R.id.CircularImageViewUser);
+        ImageView tipoTransmisionImagen =(ImageView) findViewById(R.id.modoTransmision) ;
 
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -449,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 String tramaCompleta = params[0];
                 DispositivoAsociado.DataReceived = new DeviceData(tramaCompleta);
-                ActualizarControles();
+                ActualizarControles(true);
                 sendBroadcast(setIntentToMap(true));
                 if (isRecorrido) {
                     //SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
@@ -477,7 +476,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void ActualizarControles() throws IOException {
+    private void ActualizarControles(boolean tipoTransmision) throws IOException {
         SetProgressBar(((int) DispositivoAsociado.DataReceived.Velocidad));
         runOnUiThread(new Runnable() {
             @Override
@@ -487,6 +486,17 @@ public class MainActivity extends AppCompatActivity {
                 UpdateWidget();
             }
         });
+
+        if(tipoTransmision){
+            tipoTransmisionImagen.setImageResource(R.drawable.bluetoothlogo);
+        }
+        else
+        {
+            tipoTransmisionImagen.setImageResource(R.drawable.web);
+        }
+
+
+
     }
 
     private void SetImageViews() {
