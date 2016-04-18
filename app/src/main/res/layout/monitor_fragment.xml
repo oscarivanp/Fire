@@ -12,7 +12,7 @@
             android:layout_height="180dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:max="230"
+            android:max="250"
             android:progress="0"
             android:progressDrawable="@drawable/circle" />
         <TextView

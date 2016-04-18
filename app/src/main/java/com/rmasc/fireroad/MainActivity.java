@@ -370,8 +370,8 @@ public class MainActivity extends AppCompatActivity {
     private void ConnectToDevice() {
         boolean isVisible = false;
         for (int i = 0; i < bluetoothLE.bleDevices.size(); i++) {
-            //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:AF:8A:67")) {
-            if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
+            if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:AF:8A:67")) {
+            //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
                 //if (bluetoothLE.bleDevices.get(i).getName().equals(DispositivoAsociado.Name)) {
                 try {
                     bluetoothLE.ConnectToGattServer(bluetoothLE.bleDevices.get(i), true);

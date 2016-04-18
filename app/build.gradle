@@ -17,10 +17,10 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion "23.0.2"
 
     dexOptions {
-        javaMaxHeapSize "4g"
+        javaMaxHeapSize "3g"
     }
 
     defaultConfig {

@@ -98,14 +98,14 @@
     android:layout_width="match_parent"
     android:layout_height="50dp">
 
-    <Switch
+   <Switch
         android:id="@+id/switchEncendido"
         android:layout_width="match_parent"
         android:layout_height="5dp"
         android:textColor="@color/colorPrimary"
         android:layout_marginBottom="5dp"
-        android:text="Conectado"
-        />
+        android:text="Conectado"></Switch>
+
 
 
 </LinearLayout>
@@ -161,7 +161,7 @@
                         android:layout_height="40dp"
                         android:textColor="@color/colorPrimary"
                         android:layout_weight="0.7"
-                        android:src="@drawable/bateria_0"
+                        android:src="@drawable/gass_0"
                         />
 
                     <ImageView
@@ -240,8 +240,7 @@
                     android:orientation="horizontal">
                     <Button
                         android:id="@+id/btnRecorrido"
-                        android:layout_width="wrap_content"
-                        android:layout_marginRight="@dimen/activity_horizontal_margin"
+                        android:layout_width="match_parent"
                         android:gravity="center"
                         android:layout_height="35dp"
                         android:text="@string/nuevo_recorrido" />
