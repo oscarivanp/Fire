@@ -43,6 +43,7 @@ public class BluetoothLE extends Activity {
         this.bleAdapter = BluetoothAdapter.getDefaultAdapter();
         this.mAdapter = new ArrayAdapter(context, android.R.layout.simple_selectable_list_item);
         this.bleDevices = new ArrayList<BluetoothDevice>();
+        this.DeviceStatus = "Disconnected";
         this.bleScanCallback = new BluetoothAdapter.LeScanCallback() {
             @Override
             public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {

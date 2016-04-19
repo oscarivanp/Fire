@@ -209,17 +209,17 @@ public class MainActivity extends AppCompatActivity {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
                 InputStream prueba = new URL(path).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-               // circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,getResources().getColor(R.color.colorPrimaryDark)));
+                circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,Color.RED));
 
             } else {
                 InputStream prueba = new URL(user.getString("FotoPath", "")).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-               // circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,getResources().getColor(R.color.colorPrimaryDark)));
+                circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,Color.RED));
 
             }
         } catch (Exception e) {
             e.printStackTrace();
-         //   circularImageView.setImageBitmap(getRoundedCornerBitmap(getResources().getDrawable(R.drawable.no_user), true,Color.RED));
+            circularImageView.setImageBitmap(getRoundedCornerBitmap(getResources().getDrawable(R.drawable.no_user), true,Color.RED));
 
         }
 
@@ -815,24 +815,28 @@ public class MainActivity extends AppCompatActivity {
     private void VerDispositivoMapa() {
         if (DispositivoAsociado != null && DispositivoAsociado.DataReceived != null) {
             if (bluetoothLE != null) {
-                if (bluetoothLE.DeviceStatus.equals("Connected"))
+                if (bluetoothLE.DeviceStatus.equals("Connected")) {
                     startActivity(setIntentToMap(false));
-            } else {
-                Intent i = new Intent(getBaseContext(), MapsActivity.class);
-                i.putExtra("Tipo", 3);
-                startActivity(i);
+                } else {
+                    Intent i = new Intent(getBaseContext(), MapsActivity.class);
+                    i.putExtra("Tipo", 3);
+                    startActivity(i);
+                }
             }
         } else {
             Intent i = new Intent(getBaseContext(), MapsActivity.class);
             i.putExtra("Tipo", 3);
             startActivity(i);
         }
+        Intent i = new Intent(getBaseContext(), MapsActivity.class);
+        i.putExtra("Tipo", 3);
+        startActivity(i);
     }
 
     public void UpdateWidget() {
         SharedPreferences sharedPref = getBaseContext().getSharedPreferences("DeviceBLE", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("Speed", ((int) DispositivoAsociado.DataReceived.Velocidad));
+         editor.putInt("Speed", ((int) DispositivoAsociado.DataReceived.Velocidad));
         editor.commit();
 
         Intent updateWidget = new Intent(getBaseContext(), VelocityWidget.class);

@@ -7,22 +7,23 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.mediation.MediationAdRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.rmasc.fireroad.DataBase.TransmisionesHelper;
+import com.rmasc.fireroad.Entities.DeviceBluetooth;
 import com.rmasc.fireroad.Entities.DeviceData;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.WebService;
@@ -40,6 +41,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker markerOptionsUpdate;
     private TransmisionesHelper transmisionesHelper;
     private BroadcastReceiver broadcastReceiver;
+    private Button btnSatelite = null;
+    private Button btnHibrido = null;
+    private Button btnStreetMap = null;
+    DeviceBluetooth DispositivoAsociado;
+    private static boolean isRecorrido = false;
+
+    private Button btnIniciarRecorrido;
 
     @Override
     protected void onDestroy() {
@@ -56,7 +64,97 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        btnSatelite = (Button)findViewById(R.id.btnMapaSatelital);
+        btnHibrido = (Button)findViewById(R.id.btnMapaHibrido);
+        btnStreetMap = (Button)findViewById(R.id.btnMapaStreetView);
+        btnIniciarRecorrido=(Button)findViewById(R.id.btnIniciarRecorrido);
+
+        if(LoadDevice()) {
+
+            btnIniciarRecorrido.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+                    if (!isRecorrido) {
+                        new CrearRecorrido().execute();
+                    } else {
+                        new EnviarRecorrido().execute(transmisionesHelper.SelectTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + DispositivoAsociado.DataReceived.VehiculoId + " AND ReporteId = " + DispositivoAsociado.DataReceived.ReporteId, null));
+                    }
+
+                }
+            });
+        }
+        else {
+            btnIniciarRecorrido.setText("Sin Dispositivo");
+        }
+
+
+        btnSatelite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if (mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE) {
+                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                    btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                    btnHibrido.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnStreetMap.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnStreetMap.setTextColor(getResources().getColor(R.color.tw__transparent));
+                    btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                    btnSatelite.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                 } else {
+                    mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                    btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                    btnHibrido.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnStreetMap.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                    btnStreetMap.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnSatelite.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnSatelite.setTextColor(getResources().getColor(R.color.tw__transparent));
+
+
+                }
+            }
+        });
+
+
+
+        btnHibrido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if( mMap.getMapType()==GoogleMap.MAP_TYPE_HYBRID) {
+                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                    btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                    btnHibrido.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnStreetMap.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnStreetMap.setTextColor(getResources().getColor(R.color.tw__transparent));
+                    btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                    btnSatelite.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                }
+                else {
+                    mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                    btnHibrido.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnHibrido.setTextColor(getResources().getColor(R.color.tw__transparent));
+                    btnStreetMap.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                    btnStreetMap.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnSatelite.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnSatelite.setTextColor(getResources().getColor(R.color.tw__transparent));
+                }
+                }
+        });
+
+
+        btnStreetMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                btnHibrido.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                btnStreetMap.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
+                btnStreetMap.setTextColor(getResources().getColor(R.color.tw__transparent));
+                btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                btnSatelite.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+            }
+        });
+
+                // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -101,6 +199,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
         }
 
+    }
+
+
+    private boolean LoadDevice() {
+        SharedPreferences sharedPref = getBaseContext().getSharedPreferences("Moto", Context.MODE_PRIVATE);
+        String Nombre = sharedPref.getString("NombreBluetooth", "");
+        String Mac = sharedPref.getString("MacBluetooth", "");
+        if (sharedPref.getInt("Id", 0) == 0) {
+            return false;
+        } else {
+            DispositivoAsociado = new DeviceBluetooth();
+            DispositivoAsociado.Name = Nombre;
+            DispositivoAsociado.Mac = Mac;
+            DispositivoAsociado.DataReceived.VehiculoId = sharedPref.getInt("Id", 0);
+            DispositivoAsociado.DataReceived.ReporteId = sharedPref.getInt("IdRecorrido", 0);
+            return true;
+        }
     }
 
     private void CargarUltimaPosicionBle(double Latitud, double Longitud, String Fecha) {
@@ -184,6 +299,98 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+
+    private class CrearRecorrido extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            WebServiceParameter parametro = new WebServiceParameter();
+            SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
+            SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+
+            parametro.Nombre = "IdUser";
+            parametro.Valor = String.valueOf(user.getInt("Id", 0));
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdVehiculo";
+            parametro.Valor = String.valueOf(moto.getInt("Id", 0));
+            parameters.add(parametro);
+
+            return WebService.ConexionWS("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/IniciarRecorrido", parameters);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject jsonResponse = new JSONObject(s);
+                int IdRecorrido = jsonResponse.optInt("d");
+                if (IdRecorrido != 0) {
+                    SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = moto.edit();
+
+                    editor.putInt("IdRecorrido", IdRecorrido);
+                    editor.apply();
+                    DispositivoAsociado.DataReceived.ReporteId = IdRecorrido;
+                    btnIniciarRecorrido.setText("Stop");
+                    btnIniciarRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
+                    isRecorrido = true;
+                } else
+                    isRecorrido = false;
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    private class EnviarRecorrido extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
+            SharedPreferences moto = getBaseContext().getSharedPreferences("Moto", MODE_PRIVATE);
+            WebServiceParameter parametro = new WebServiceParameter();
+
+            parametro.Nombre = "IdUser";
+            parametro.Valor = String.valueOf(user.getInt("Id", 0));
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdVehiculo";
+            parametro.Valor = String.valueOf(moto.getInt("Id", 0));
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "IdRecorrido";
+            parametro.Valor = String.valueOf(moto.getInt("IdRecorrido", 0));
+            parameters.add(parametro);
+
+            parametro = new WebServiceParameter();
+            parametro.Nombre = "Tramas";
+            parametro.Valor = params[0];
+            parameters.add(parametro);
+
+            return WebService.ConexionWS("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/GuardarPuntosRecorrido", parameters);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject jsonResponse = new JSONObject(s);
+                String result = jsonResponse.optString("d");
+                ShowMessage(result);
+                if (result.equals("true")) {
+                    isRecorrido = false;
+                    btnIniciarRecorrido.setText("IniciarRecorrido");
+                    btnIniciarRecorrido.setTextColor(getResources().getColor(R.color.colorOk));
+                }
+
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
 
     private class ObtenerPuntosRecorrido extends AsyncTask<String, Void, String> {
         @Override
