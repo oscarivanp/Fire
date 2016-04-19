@@ -94,19 +94,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE) {
                     mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                     btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
-                    btnHibrido.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
-                    btnStreetMap.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
-                    btnStreetMap.setTextColor(getResources().getColor(R.color.tw__transparent));
+                    btnHibrido.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
+                    btnStreetMap.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
+                    btnStreetMap.setTextColor(getResources().getColor(R.color.windowBackground));
                     btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
-                    btnSatelite.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnSatelite.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
                  } else {
                     mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                     btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
-                    btnHibrido.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnHibrido.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
                     btnStreetMap.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
-                    btnStreetMap.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
-                    btnSatelite.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
-                    btnSatelite.setTextColor(getResources().getColor(R.color.tw__transparent));
+                    btnStreetMap.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
+                    btnSatelite.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
+                    btnSatelite.setTextColor(getResources().getColor(R.color.windowBackground));
 
 
                 }
@@ -121,20 +121,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if( mMap.getMapType()==GoogleMap.MAP_TYPE_HYBRID) {
                     mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                     btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
-                    btnHibrido.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
-                    btnStreetMap.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
-                    btnStreetMap.setTextColor(getResources().getColor(R.color.tw__transparent));
+                    btnHibrido.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
+                    btnStreetMap.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
+                    btnStreetMap.setTextColor(getResources().getColor(R.color.windowBackground));
                     btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
-                    btnSatelite.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                    btnSatelite.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
                 }
                 else {
                     mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                    btnHibrido.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
-                    btnHibrido.setTextColor(getResources().getColor(R.color.tw__transparent));
+                    btnHibrido.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
+                    btnHibrido.setTextColor(getResources().getColor(R.color.windowBackground));
                     btnStreetMap.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
-                    btnStreetMap.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
-                    btnSatelite.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
-                    btnSatelite.setTextColor(getResources().getColor(R.color.tw__transparent));
+                    btnStreetMap.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
+                    btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
+                    btnSatelite.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
                 }
                 }
         });
@@ -146,11 +146,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
-                btnHibrido.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
-                btnStreetMap.setBackgroundColor(getResources().getColor(R.color.wallet_link_text_light));
-                btnStreetMap.setTextColor(getResources().getColor(R.color.tw__transparent));
+                btnHibrido.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
+                btnStreetMap.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
+                btnStreetMap.setTextColor(getResources().getColor(R.color.windowBackground));
                 btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
-                btnSatelite.setTextColor(getResources().getColor(R.color.wallet_link_text_light));
+                btnSatelite.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
             }
         });
 
