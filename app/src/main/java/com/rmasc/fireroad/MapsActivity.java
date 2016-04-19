@@ -293,7 +293,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 PintarRecorrido(Puntos);
 
-
             } catch (Exception e) {
 
             }
