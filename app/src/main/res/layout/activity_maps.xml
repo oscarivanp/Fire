@@ -21,11 +21,12 @@
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
             android:id="@+id/btnIniciarRecorrido"
             android:text="Iniciar Recorrido"
             android:textColor="@color/com_facebook_button_background_color_focused"
             android:background="@color/colorPrimaryDark"
+            android:textAlignment="center"
             />
 
 
