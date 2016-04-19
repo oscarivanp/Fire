@@ -40,6 +40,32 @@ public class DeviceData {
         Fix = TiempoReporte = false;
     }
 
+
+    public String FormatHora(String Hora){
+
+        try
+        {
+            String[] hora= Hora.split(":");
+            int parteHora= Integer.parseInt(hora[0]);
+
+            if (parteHora==0){
+
+                parteHora=24;
+            }
+            parteHora=parteHora-5;
+
+            String horaTemp=String.valueOf(parteHora);
+
+            return horaTemp;
+
+        }
+        catch (Exception e){
+
+        }
+
+        return "00:00:00";
+    }
+
     public String FormatDate()
     {
         try {
@@ -64,7 +90,7 @@ public class DeviceData {
                 Modelo = Integer.parseInt(DatosIn[2]);
                 VersionSoftware = Integer.parseInt(DatosIn[3]);
                 Fecha = DatosIn[4];
-                Hora = DatosIn[5];
+                Hora =FormatHora(DatosIn[5]);
                 LocationCode = DatosIn[6];
                 Latitud = Float.parseFloat(DatosIn[7]);
                 Longitud = Float.parseFloat(DatosIn[8]);
