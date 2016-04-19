@@ -55,7 +55,12 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -68,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     TwitterLoginButton twitterloginButton;
 
-    ImageView imageViewBateria, imageViewGps,tipoTransmisionImagen;
+    ImageView imageViewBateria, imageViewGps, tipoTransmisionImagen;
     Button btnRecorrido;
     ImageView btnMapa;
     TextView txtUser, txtReporteDispositivo, txtBattMoto, txtBattDispositivo, txtValueProgress;
@@ -88,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView circularImageView;
     private static boolean isRecorrido = false;
     private static int countTramas = 0;
+    private Timer refreshTim;
 
     private TransmisionesHelper transmisionesHelper;
 
@@ -98,8 +104,6 @@ public class MainActivity extends AppCompatActivity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
-        tipoTransmisionImagen =(ImageView) findViewById(R.id.modoTransmision) ;
-
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -148,6 +152,13 @@ public class MainActivity extends AppCompatActivity {
 
             AssignViews();
         }
+        refreshTim = new Timer();
+        refreshTim.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                TimerMethod();
+            }
+        }, 0, 10000);
     }
 
     @Override
@@ -156,6 +167,11 @@ public class MainActivity extends AppCompatActivity {
             bluetoothLE.bleGatt.disconnect();
             bluetoothLE.bleGatt.close();
             unregisterReceiver(bluetoothLE.bleBroadcastReceiver);
+        }
+        if (refreshTim != null)
+        {
+            refreshTim.cancel();
+            refreshTim.purge();
         }
         super.onDestroy();
     }
@@ -170,9 +186,9 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
         imageViewBateria = (ImageView) findViewById(R.id.imgBateria);
         imageViewGps = (ImageView) findViewById(R.id.imgGps);
+        tipoTransmisionImagen = (ImageView) findViewById(R.id.modoTransmision);
 
-
-        circularImageView =(ImageView) findViewById(R.id.CircularImageViewUser);
+        circularImageView = (ImageView) findViewById(R.id.CircularImageViewUser);
         circularImageView.setOnClickListener(buttonClickListener);
 
         switchEncendido = (Switch) findViewById(R.id.switchEncendido);
@@ -381,7 +397,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isVisible = false;
         for (int i = 0; i < bluetoothLE.bleDevices.size(); i++) {
             if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:AF:8A:67")) {
-            //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
+                //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
                 //if (bluetoothLE.bleDevices.get(i).getName().equals(DispositivoAsociado.Name)) {
                 try {
                     bluetoothLE.ConnectToGattServer(bluetoothLE.bleDevices.get(i), true);
@@ -442,8 +458,21 @@ public class MainActivity extends AppCompatActivity {
         tramaIncompleta += tramaIn;
     }
 
-    private class ActualizarDeweb extends AsyncTask<String, Void, String>
-    {
+    private Date parseDateTime(String lastModified) {
+        Date date = null;
+        if (lastModified != null && lastModified.length() > 0) {
+            try {
+                lastModified = lastModified.replace("/Date(","");
+                lastModified = lastModified.replace(")/", "");
+                date = new Date(Long.parseLong(lastModified));
+            } catch (Exception e) {
+                // otherwise we just leave it empty
+            }
+        }
+        return date;
+    }
+
+    private class ActualizarDeweb extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
             ArrayList<WebServiceParameter> parameters = new ArrayList<>();
@@ -465,8 +494,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            try
-            {
+            try {
                 JSONObject dataRe = new JSONObject(s);
                 JSONObject puntosMapa = dataRe.optJSONObject("d");
                 ArrayList<DeviceData> Puntos = new ArrayList<DeviceData>();
@@ -475,15 +503,14 @@ public class MainActivity extends AppCompatActivity {
                 punto.Id = puntosMapa.optInt("Id");
                 punto.Latitud = Float.valueOf(puntosMapa.optString("Latitud"));
                 punto.Longitud = Float.valueOf(puntosMapa.optString("Longitud"));
-                punto.Fecha = puntosMapa.optString("FechaTransmision");
+                Date fechaN = parseDateTime(puntosMapa.optString("FechaTransmision"));
+                punto.Fecha = new SimpleDateFormat("dd/mm/yyyy").format(fechaN);
                 punto.Bateria = puntosMapa.optInt("Bateria");
                 punto.Velocidad = puntosMapa.optInt("Velocidad");
                 DispositivoAsociado.DataReceived = punto;
 
                 ActualizarControles(false);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
 
             }
         }
@@ -523,29 +550,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void ActualizarControles(final boolean tipoTransmision) throws IOException {
+    private void ActualizarControles(final boolean isBluetooth) throws IOException {
         SetProgressBar(((int) DispositivoAsociado.DataReceived.Velocidad));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txtReporteDispositivo.setText("ùlt. vez "+DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
+                txtReporteDispositivo.setText("ùlt. vez " + DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
                 SetImageViews();
                 UpdateWidget();
-
-                if(tipoTransmision){
+                if (isBluetooth) {
                     tipoTransmisionImagen.setImageResource(R.drawable.bluetoothlogo);
-                }
-                else
-                {
+                } else {
                     tipoTransmisionImagen.setImageResource(R.drawable.web);
                 }
+
             }
         });
-
-
-
-
-
     }
 
     private void SetImageViews() {
@@ -553,77 +573,75 @@ public class MainActivity extends AppCompatActivity {
         double battPercent = ((double) (DispositivoAsociado.DataReceived.Bateria));
         double battExtern = (double) (DispositivoAsociado.DataReceived.VoltajeEntrada);
 
-        if(battPercent==0) {
+        if (battPercent == 0) {
 
             imageViewGps.setImageResource(R.drawable.bateria_0);
 
         }
 
-        if(battPercent<=10 && battPercent>1) {
+        if (battPercent <= 10 && battPercent > 1) {
 
             imageViewGps.setImageResource(R.drawable.bateria_12_5);
 
         }
-        if(battPercent<=12 && battPercent >10) {
+        if (battPercent <= 12 && battPercent > 10) {
 
             imageViewGps.setImageResource(R.drawable.bateria_25);
 
         }
-        if(battPercent<=12.8 && battPercent >12) {
+        if (battPercent <= 12.8 && battPercent > 12) {
 
             imageViewGps.setImageResource(R.drawable.bateria_37_5);
 
         }
 
-        if(battPercent<=15 && battPercent >12.8) {
+        if (battPercent <= 15 && battPercent > 12.8) {
 
             imageViewGps.setImageResource(R.drawable.bateria_100);
 
         }
 
 
-
-
-        if(battExtern<=13) {
+        if (battExtern <= 13) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_0);
 
         }
-        if(battExtern<=26 && battExtern>13) {
+        if (battExtern <= 26 && battExtern > 13) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_12_5);
 
         }
-        if(battExtern<=39 && battExtern >26) {
+        if (battExtern <= 39 && battExtern > 26) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_25);
 
         }
-        if(battExtern<=52 && battExtern >39) {
+        if (battExtern <= 52 && battExtern > 39) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_37_5);
 
         }
 
-        if(battExtern<=65 && battExtern >52) {
+        if (battExtern <= 65 && battExtern > 52) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_50);
 
         }
 
-        if(battExtern<=79 && battExtern >65) {
+        if (battExtern <= 79 && battExtern > 65) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_62_5);
 
         }
 
-        if(battExtern<=92 && battExtern >79) {
+        if (battExtern <= 92 && battExtern > 79) {
 
 
             imageViewBateria.setImageResource(R.drawable.bateria_75);
         }
 
-        if(battExtern<=100&& battExtern >92) {
+        if (battExtern <= 100 && battExtern > 92) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_100);
 
@@ -640,7 +658,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     prueba = new URL(path).openStream();
                     Bitmap foto = BitmapFactory.decodeStream(prueba);
-                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,getResources().getColor(R.color.colorPrimaryDark)));
+                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, getResources().getColor(R.color.colorPrimaryDark)));
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -652,22 +670,21 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     prueba = new URL(user.getString("FotoPath", "")).openStream();
                     Bitmap foto = BitmapFactory.decodeStream(prueba);
-                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,getResources().getColor(R.color.colorPrimaryDark)));
+                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, getResources().getColor(R.color.colorPrimaryDark)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
 
             }
-        }
-        else {
+        } else {
             if (user.getString("FotoPath", "").equals("")) {
                 String path2 = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
                 InputStream prueba2 = null;
                 try {
                     prueba2 = new URL(path2).openStream();
                     Bitmap foto = BitmapFactory.decodeStream(prueba2);
-                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,Color.RED));
+                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, Color.RED));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -678,7 +695,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     prueba = new URL(user.getString("FotoPath", "")).openStream();
                     Bitmap foto = BitmapFactory.decodeStream(prueba);
-                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,Color.RED));
+                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, Color.RED));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -700,10 +717,10 @@ public class MainActivity extends AppCompatActivity {
         int width = 0;
         int height = 0;
 
-        Bitmap bitmap = drawable ;
+        Bitmap bitmap = drawable;
 
-        if(square){
-            if(bitmap.getWidth() < bitmap.getHeight()){
+        if (square) {
+            if (bitmap.getWidth() < bitmap.getHeight()) {
                 width = bitmap.getWidth();
                 height = bitmap.getWidth();
             } else {
@@ -736,7 +753,7 @@ public class MainActivity extends AppCompatActivity {
 
         canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
 
-       paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(colorMargen);
@@ -746,15 +763,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    public static Bitmap getRoundedCornerBitmap(Drawable drawable, boolean square,int colorMargen) {
+    public static Bitmap getRoundedCornerBitmap(Drawable drawable, boolean square, int colorMargen) {
         int width = 0;
         int height = 0;
         Paint mBorderPaint;
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap() ;
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
-        if(square){
-            if(bitmap.getWidth() < bitmap.getHeight()){
+        if (square) {
+            if (bitmap.getWidth() < bitmap.getHeight()) {
                 width = bitmap.getWidth();
                 height = bitmap.getWidth();
             } else {
@@ -795,8 +811,6 @@ public class MainActivity extends AppCompatActivity {
         canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
         return output;
     }
-
-
 
 
     private Intent setIntentToMap(boolean isUpdate) {
@@ -1045,4 +1059,23 @@ public class MainActivity extends AppCompatActivity {
         DispositivoAsociado.DataReceived.ReporteId = transmisionToSave.ReporteId;
         transmisionesHelper.InsertTransmision(transmisionesHelper.getWritableDatabase(), transmisionToSave);
     }
+
+    private void TimerMethod() {
+        this.runOnUiThread(Timer_Tick);
+    }
+
+    private Runnable Timer_Tick = new Runnable() {
+        @Override
+        public void run() {
+            ShowMessage("Verificando web..");
+            if (bluetoothLE != null) {
+                if (bluetoothLE.DeviceStatus.equals("Disconnected"))
+                {
+                    new ActualizarDeweb().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ObtenerPosicionReciente");
+                    return;
+                }
+            }
+            new ActualizarDeweb().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ObtenerPosicionReciente");
+        }
+    };
 }
