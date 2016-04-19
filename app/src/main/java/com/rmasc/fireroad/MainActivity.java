@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
-        ImageView tipoTransmisionImagen =(ImageView) findViewById(R.id.modoTransmision) ;
+        tipoTransmisionImagen =(ImageView) findViewById(R.id.modoTransmision) ;
 
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -523,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void ActualizarControles(boolean tipoTransmision) throws IOException {
+    private void ActualizarControles(final boolean tipoTransmision) throws IOException {
         SetProgressBar(((int) DispositivoAsociado.DataReceived.Velocidad));
         runOnUiThread(new Runnable() {
             @Override
@@ -531,16 +531,18 @@ public class MainActivity extends AppCompatActivity {
                 txtReporteDispositivo.setText("ùlt. vez "+DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
                 SetImageViews();
                 UpdateWidget();
+
+                if(tipoTransmision){
+                    tipoTransmisionImagen.setImageResource(R.drawable.bluetoothlogo);
+                }
+                else
+                {
+                    tipoTransmisionImagen.setImageResource(R.drawable.web);
+                }
             }
         });
 
-        if(tipoTransmision){
-            tipoTransmisionImagen.setImageResource(R.drawable.bluetoothlogo);
-        }
-        else
-        {
-            tipoTransmisionImagen.setImageResource(R.drawable.web);
-        }
+
 
 
 
@@ -828,9 +830,7 @@ public class MainActivity extends AppCompatActivity {
             i.putExtra("Tipo", 3);
             startActivity(i);
         }
-        Intent i = new Intent(getBaseContext(), MapsActivity.class);
-        i.putExtra("Tipo", 3);
-        startActivity(i);
+
     }
 
     public void UpdateWidget() {
