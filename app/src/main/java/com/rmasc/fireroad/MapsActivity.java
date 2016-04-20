@@ -77,7 +77,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (!isRecorrido) {
                         new CrearRecorrido().execute();
                     } else {
-                        new EnviarRecorrido().execute(transmisionesHelper.SelectTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + DispositivoAsociado.DataReceived.VehiculoId + " AND ReporteId = " + DispositivoAsociado.DataReceived.ReporteId, null));
+                        if (transmisionesHelper == null) {
+                            transmisionesHelper = new TransmisionesHelper(getBaseContext());
+                        }
+                        SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+                        new EnviarRecorrido().execute(transmisionesHelper.SelectTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + moto.getInt("Id", 0) + " AND ReporteId = " + moto.getInt("IdRecorrido", 0), null));
                     }
 
                 }
@@ -179,18 +183,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
 
         switch (intent.getIntExtra("Tipo", 1)) {
-            case 1:
+            case 1: //Mapa actualizando la ultima posición bluetooth
                 if (intent.getBooleanExtra("IsRecorrido", true)) {
                     polyOptionsUpdate = mMap.addPolyline(new PolylineOptions().color(Color.RED).geodesic(true).width(5));
+                    btnIniciarRecorrido.setText("Stop");
+                    btnIniciarRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
+                    isRecorrido = true;
                 }
+                btnIniciarRecorrido.setVisibility(View.VISIBLE);
                 markerOptionsUpdate = mMap.addMarker(new MarkerOptions().visible(false).position(new LatLng(0, 0)));
                 registerReceiver(broadcastReceiver, new IntentFilter("UPDATE_MAP"));
                 CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
                 break;
-            case 2:
+            case 2: //Mapa cargando de la base de datos un recorrido previo
                 CargarRecorrido(intent.getIntExtra("IdRecorrido", 0), intent.getIntExtra("IdVehiculo", 0));
                 break;
-            case 3:
+            case 3: //Mapa cargando la ultima posicion registrada en la base de datos por el dispositivo
                 SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
                 SharedPreferences moto = getBaseContext().getSharedPreferences("Moto", MODE_PRIVATE);
                 new ObtenerUltimaTransmision().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ObtenerPosicionReciente", String.valueOf(user.getInt("Id", 0)), String.valueOf((moto.getInt("Id", 0))));
@@ -382,6 +390,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     isRecorrido = false;
                     btnIniciarRecorrido.setText("IniciarRecorrido");
                     btnIniciarRecorrido.setTextColor(getResources().getColor(R.color.colorOk));
+                    SharedPreferences moto = getBaseContext().getSharedPreferences("Moto", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = moto.edit();
+                    editor.putInt("IdRecorrido", 0);
+                    editor.apply();
                 }
 
             } catch (Exception e) {
