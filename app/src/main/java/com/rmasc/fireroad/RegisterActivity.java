@@ -295,6 +295,8 @@ public class RegisterActivity extends AppCompatActivity {
                     case R.id.btnFinish:
                         imageButtonUser.buildDrawingCache();
                         Bitmap imagen = imageButtonUser.getDrawingCache();
+
+
                         if (ComparePassword()) {
                             if (SaveImage("FireUser", imagen)) {
                                 imageButtonMoto.buildDrawingCache();

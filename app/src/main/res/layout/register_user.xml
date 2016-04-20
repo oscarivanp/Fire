@@ -20,7 +20,7 @@
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_gravity="center_horizontal"
-        android:background="@null"
+        android:scaleType="fitXY"
         android:contentDescription="@string/descriptor_Foto"
         />
 
