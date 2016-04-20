@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 TimerMethod();
             }
-        }, 0, 10000);
+        }, 0, 60000);
     }
 
     @Override
@@ -168,8 +168,7 @@ public class MainActivity extends AppCompatActivity {
             bluetoothLE.bleGatt.close();
             unregisterReceiver(bluetoothLE.bleBroadcastReceiver);
         }
-        if (refreshTim != null)
-        {
+        if (refreshTim != null) {
             refreshTim.cancel();
             refreshTim.purge();
         }
@@ -225,17 +224,17 @@ public class MainActivity extends AppCompatActivity {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
                 InputStream prueba = new URL(path).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-                circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,Color.RED));
+                circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, Color.RED));
 
             } else {
                 InputStream prueba = new URL(user.getString("FotoPath", "")).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-                circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true,Color.RED));
+                circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, Color.RED));
 
             }
         } catch (Exception e) {
             e.printStackTrace();
-            circularImageView.setImageBitmap(getRoundedCornerBitmap(getResources().getDrawable(R.drawable.no_user), true,Color.RED));
+            circularImageView.setImageBitmap(getRoundedCornerBitmap(getResources().getDrawable(R.drawable.no_user), true, Color.RED));
 
         }
 
@@ -462,7 +461,7 @@ public class MainActivity extends AppCompatActivity {
         Date date = null;
         if (lastModified != null && lastModified.length() > 0) {
             try {
-                lastModified = lastModified.replace("/Date(","");
+                lastModified = lastModified.replace("/Date(", "");
                 lastModified = lastModified.replace(")/", "");
                 date = new Date(Long.parseLong(lastModified));
             } catch (Exception e) {
@@ -504,7 +503,7 @@ public class MainActivity extends AppCompatActivity {
                 punto.Latitud = Float.valueOf(puntosMapa.optString("Latitud"));
                 punto.Longitud = Float.valueOf(puntosMapa.optString("Longitud"));
                 Date fechaN = parseDateTime(puntosMapa.optString("FechaTransmision"));
-                punto.Fecha = new SimpleDateFormat("dd/mm/yyyy").format(fechaN);
+                punto.Fecha = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(fechaN.getTime());
                 punto.Bateria = puntosMapa.optInt("Bateria");
                 punto.Velocidad = puntosMapa.optInt("Velocidad");
                 DispositivoAsociado.DataReceived = punto;
@@ -523,26 +522,40 @@ public class MainActivity extends AppCompatActivity {
                 String tramaCompleta = params[0];
                 DispositivoAsociado.DataReceived = new DeviceData(tramaCompleta);
                 ActualizarControles(true);
+                final SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+                if (moto.getInt("IdRecorrido", 0) == 0) {
+                    isRecorrido = false;
+                }
+                else
+                    isRecorrido = true;
                 sendBroadcast(setIntentToMap(true));
+
                 if (isRecorrido) {
-                    //SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
-                    //SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
                     GuardarTransmision(DispositivoAsociado.DataReceived);
-                    if (countTramas == 10) {
+                    if (countTramas == 1) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-
-                                //new EnviarTrama().execute(String.valueOf(user.getInt("Id", 0)), String.valueOf(moto.getInt("IdRecorrido", 0)), String.valueOf(moto.getInt("Id", 0)),
-                                //      String.valueOf(DispositivoAsociado.DataReceived.Latitud), String.valueOf(DispositivoAsociado.DataReceived.Longitud),
-                                //     DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora, String.valueOf(((int) DispositivoAsociado.DataReceived.Bateria)),
-                                //     String.valueOf(1), String.valueOf(((int) DispositivoAsociado.DataReceived.Velocidad)), "0");
+                                DispositivoAsociado.DataReceived.ReporteId = moto.getInt("IdRecorrido", 0);
+                                btnRecorrido.setText("Stop");
+                                btnRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
                             }
                         });
                         countTramas = 0;
                     } else {
                         countTramas++;
                     }
+                }
+                else
+                {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            DispositivoAsociado.DataReceived.ReporteId = 0;
+                            btnRecorrido.setText("Iniciar Recorrido");
+                            btnRecorrido.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                        }
+                    });
                 }
             } catch (Exception e) {
             }
@@ -555,7 +568,10 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txtReporteDispositivo.setText("ùlt. vez " + DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
+                if (isBluetooth)
+                    txtReporteDispositivo.setText("Últ. vez " + DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
+                else
+                    txtReporteDispositivo.setText("Últ. vez " + DispositivoAsociado.DataReceived.Fecha);
                 SetImageViews();
                 UpdateWidget();
                 if (isBluetooth) {
@@ -850,7 +866,7 @@ public class MainActivity extends AppCompatActivity {
     public void UpdateWidget() {
         SharedPreferences sharedPref = getBaseContext().getSharedPreferences("DeviceBLE", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-         editor.putInt("Speed", ((int) DispositivoAsociado.DataReceived.Velocidad));
+        editor.putInt("Speed", ((int) DispositivoAsociado.DataReceived.Velocidad));
         editor.commit();
 
         Intent updateWidget = new Intent(getBaseContext(), VelocityWidget.class);
@@ -969,7 +985,11 @@ public class MainActivity extends AppCompatActivity {
                 if (result.equals("true")) {
                     isRecorrido = false;
                     btnRecorrido.setText("IniciarRecorrido");
-                    btnRecorrido.setTextColor(getResources().getColor(R.color.colorOk));
+                    btnRecorrido.setTextColor(Color.WHITE);
+                    SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = moto.edit();
+                    editor.putInt("IdRecorrido", 0);
+                    editor.apply();
                 }
 
             } catch (Exception e) {
@@ -1067,13 +1087,12 @@ public class MainActivity extends AppCompatActivity {
     private Runnable Timer_Tick = new Runnable() {
         @Override
         public void run() {
-            ShowMessage("Verificando web..");
             if (bluetoothLE != null) {
-                if (bluetoothLE.DeviceStatus.equals("Disconnected"))
-                {
+                if (bluetoothLE.DeviceStatus.equals("Disconnected")) {
                     new ActualizarDeweb().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ObtenerPosicionReciente");
                     return;
                 }
+                return;
             }
             new ActualizarDeweb().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ObtenerPosicionReciente");
         }
