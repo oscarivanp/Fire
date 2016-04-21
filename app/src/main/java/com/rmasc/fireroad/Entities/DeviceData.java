@@ -56,7 +56,7 @@ public class DeviceData {
 
             String horaTemp=String.valueOf(parteHora);
 
-            return horaTemp;
+            return horaTemp + ":" + hora[1] + ":" + hora[2];
 
         }
         catch (Exception e){
@@ -90,7 +90,7 @@ public class DeviceData {
                 Modelo = Integer.parseInt(DatosIn[2]);
                 VersionSoftware = Integer.parseInt(DatosIn[3]);
                 Fecha = DatosIn[4];
-                Hora =FormatHora(DatosIn[5]);
+                Hora = FormatHora(DatosIn[5]);
                 LocationCode = DatosIn[6];
                 Latitud = Float.parseFloat(DatosIn[7]);
                 Longitud = Float.parseFloat(DatosIn[8]);

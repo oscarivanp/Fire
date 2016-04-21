@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -73,10 +75,8 @@ public class RegisterActivity extends AppCompatActivity {
     private static EditText editTextNombre, editTextCorreo, editTextTelefono, editTexPassword, editTexPasswordConfirmacion, editTextMarca, editTextPlaca, editTextColor, editTextModelo, editTextMacBlue;
     private static TextView textViewResumen;
     private static ImageButton imageButtonUser, imageButtonMoto;
-    private static Button btnScan, btnPoliticas, btnFinish, btnFecha;
-    private static ListView listVDevices;
+    private static Button btnPoliticas, btnFinish, btnFecha;
     private static View.OnClickListener buttonClickListener;
-    private static AdapterView.OnItemClickListener itemClickListener;
     private static Spinner spinnerSexo, spinnerRh;
 
     private static int IdUser = 0;
@@ -231,13 +231,6 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        itemClickListener = new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SaveDevice(view);
-            }
-        };
-
         buttonClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -295,8 +288,6 @@ public class RegisterActivity extends AppCompatActivity {
                     case R.id.btnFinish:
                         imageButtonUser.buildDrawingCache();
                         Bitmap imagen = imageButtonUser.getDrawingCache();
-
-
                         if (ComparePassword()) {
                             if (SaveImage("FireUser", imagen)) {
                                 imageButtonMoto.buildDrawingCache();
@@ -496,33 +487,6 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private boolean ScanBluetooth() {
-        try {
-            if (BluetoothAdapter.getDefaultAdapter() == null) {
-                ShowMessage("Su dispositivo no es compatible con Bluetooth");
-                return false;
-            } else {
-                if (bluetoothLE == null) {
-                    bluetoothLE = new BluetoothLE(getBaseContext());
-
-                    if (!bluetoothLE.isEnabled()) {
-                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        startActivityForResult(enableBtIntent, 1);
-                    }
-
-                } else {
-                    if (!bluetoothLE.isEnabled()) {
-                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        startActivityForResult(enableBtIntent, 1);
-                    }
-                }
-                listVDevices.setAdapter(bluetoothLE.mAdapter);
-                return true;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-    }
 
     private void ShowMessage(final String message) {
         runOnUiThread(new Runnable() {

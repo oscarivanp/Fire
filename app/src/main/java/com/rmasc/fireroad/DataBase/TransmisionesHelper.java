@@ -64,7 +64,7 @@ public class TransmisionesHelper extends SQLiteOpenHelper {
         ArrayList<DeviceData> listToReturn = new ArrayList<DeviceData>();
         Cursor cursor = db.query(TABLE_TRANSMISION, null, where, null, Orderby, null, null);
         if (cursor != null) {
-            if (cursor.getCount() > 0 && cursor.moveToFirst()) {
+             if (cursor.getCount() > 0 && cursor.moveToFirst()) {
                 do {
                     DeviceData transmision = new DeviceData();
                     transmision.Latitud = cursor.getFloat(0);

@@ -525,8 +525,7 @@ public class MainActivity extends AppCompatActivity {
                 final SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
                 if (moto.getInt("IdRecorrido", 0) == 0) {
                     isRecorrido = false;
-                }
-                else
+                } else
                     isRecorrido = true;
                 sendBroadcast(setIntentToMap(true));
 
@@ -545,15 +544,13 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         countTramas++;
                     }
-                }
-                else
-                {
+                } else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             DispositivoAsociado.DataReceived.ReporteId = 0;
                             btnRecorrido.setText("Iniciar Recorrido");
-                            btnRecorrido.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                            btnRecorrido.setTextColor(Color.WHITE);
                         }
                     });
                 }
@@ -568,18 +565,15 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (isBluetooth)
-                    txtReporteDispositivo.setText("Últ. vez " + DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
-                else
-                    txtReporteDispositivo.setText("Últ. vez " + DispositivoAsociado.DataReceived.Fecha);
-                SetImageViews();
-                UpdateWidget();
                 if (isBluetooth) {
+                    txtReporteDispositivo.setText("Últ. vez " + DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
                     tipoTransmisionImagen.setImageResource(R.drawable.bluetoothlogo);
                 } else {
+                    txtReporteDispositivo.setText("Últ. vez " + DispositivoAsociado.DataReceived.Fecha);
                     tipoTransmisionImagen.setImageResource(R.drawable.web);
                 }
-
+                SetImageViews();
+                UpdateWidget();
             }
         });
     }
@@ -595,75 +589,53 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        if (battPercent <= 10 && battPercent > 1) {
+        if (battPercent <= 2.8 && battPercent > 3) {
 
             imageViewGps.setImageResource(R.drawable.bateria_12_5);
 
         }
-        if (battPercent <= 12 && battPercent > 10) {
+        if (battPercent <= 3.4 && battPercent > 2.8) {
 
             imageViewGps.setImageResource(R.drawable.bateria_25);
 
         }
-        if (battPercent <= 12.8 && battPercent > 12) {
+        if (battPercent <= 3.7 && battPercent > 3.4) {
 
             imageViewGps.setImageResource(R.drawable.bateria_37_5);
 
         }
 
-        if (battPercent <= 15 && battPercent > 12.8) {
+        if (battPercent <= 5 && battPercent > 3.7) {
 
             imageViewGps.setImageResource(R.drawable.bateria_100);
 
         }
 
 
-        if (battExtern <= 13) {
+        if (battExtern == 0) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_0);
 
         }
-        if (battExtern <= 26 && battExtern > 13) {
 
-            imageViewBateria.setImageResource(R.drawable.bateria_12_5);
-
-        }
-        if (battExtern <= 39 && battExtern > 26) {
+        if (battExtern <= 11.5 && battExtern > 1) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_25);
 
         }
-        if (battExtern <= 52 && battExtern > 39) {
+        if (battExtern <= 12.8 && battExtern > 11.5) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_37_5);
 
         }
 
-        if (battExtern <= 65 && battExtern > 52) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_50);
-
-        }
-
-        if (battExtern <= 79 && battExtern > 65) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_62_5);
-
-        }
-
-        if (battExtern <= 92 && battExtern > 79) {
-
-
-            imageViewBateria.setImageResource(R.drawable.bateria_75);
-        }
-
-        if (battExtern <= 100 && battExtern > 92) {
+        if (battExtern <= 15 && battExtern > 12.8) {
 
             imageViewBateria.setImageResource(R.drawable.bateria_100);
 
         }
 
-        txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada).substring(0, 3) + "v");
+        txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada).substring(0, 4) + "v");
         txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria).substring(0, 3) + "v");
         SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
         if (DispositivoAsociado.DataReceived.Modo == 2) {
@@ -1077,6 +1049,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
         transmisionToSave.ReporteId = moto.getInt("IdRecorrido", 0);
         DispositivoAsociado.DataReceived.ReporteId = transmisionToSave.ReporteId;
+        DispositivoAsociado.DataReceived.VehiculoId = moto.getInt("Id", 0);
         transmisionesHelper.InsertTransmision(transmisionesHelper.getWritableDatabase(), transmisionToSave);
     }
 

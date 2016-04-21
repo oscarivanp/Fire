@@ -114,7 +114,7 @@
                     android:background="@color/dgts__default_accent"
                     android:onClick="guardar"
                     android:text="Guardar"
-                    android:textColor="@color/colorBackground"></Button>
+                    android:textColor="@color/colorBackground"/>
             </TableRow>
 
         </TableLayout>
