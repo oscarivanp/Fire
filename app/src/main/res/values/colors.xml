@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#008023</color>
     <color name="colorPrimaryBlue">#FF4186C8</color>
 
-
+    <color name="colored">#FF0303</color>
     <color name="colorAccent">#ff0037</color>
     <color name="colorButton">#055E58</color>
     <color name="colorBackground">#055E58</color>

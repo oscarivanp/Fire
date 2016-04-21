@@ -77,11 +77,17 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
+
                <ImageView
                    android:id="@+id/CircularImageViewUser"
-                    android:src="@drawable/no_user"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:src="@drawable/bordes"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   android:background="@drawable/no_user"
+                   android:scaleType="fitXY"
+                   android:padding="0dp"
+
+
                           />
 
             </LinearLayout>
