@@ -19,6 +19,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.widget.LoginButton;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.ObtenerUsuario;
+import com.rmasc.fireroad.Services.ObtenerVehiculo;
 import com.rmasc.fireroad.Services.WebService;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -38,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TWITTER_KEY = "ZQqwjflLo84ULNenXXiHAGR9s";
     private static final String TWITTER_SECRET = "ZttElB9UKZfgl3My0xgkjgol5OLtVtRDuQrCpQ7052eipvxhYR";
+
     private Button btnGo;
     private TextView btnRegistrar;
 
@@ -45,17 +47,14 @@ public class LoginActivity extends AppCompatActivity {
     public ProgressDialog progressDialog;
 
 
-    private ImageButton imgBtnFace, imgBtnTwitt;
     private static TwitterLoginButton twitterloginButton;
     private View.OnClickListener buttonClickListener;
 
-    Intent goToMain;
     SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -64,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         final LoginButton button = (LoginButton) findViewById(R.id.login_button);
         button.setBackgroundResource(R.drawable.facebook_redondo);
-        button.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+        button.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         twitterloginButton = (TwitterLoginButton) findViewById(R.id.btnTwitter);
         twitterloginButton.setCallback(new Callback<TwitterSession>() {
 
@@ -74,17 +73,17 @@ public class LoginActivity extends AppCompatActivity {
 
                 TwitterSession session = result.data;
 
-           //  TODO: Remove toast and use the TwitterSession's userID
-            //    with your app's user model
+                //  TODO: Remove toast and use the TwitterSession's userID
+                //    with your app's user model
                 Intent goToLogin;
                 Bundle bundle = new Bundle();
-                bundle.putString("UserName" ,session.getUserName() );
-                bundle.putString("TipoLogin", "twitter" );
+                bundle.putString("UserName", session.getUserName());
+                bundle.putString("TipoLogin", "twitter");
                 goToLogin = new Intent(getBaseContext(), RegisterActivity.class);
-               goToLogin.putExtras(bundle);
+                goToLogin.putExtras(bundle);
                 startActivity(goToLogin);
 
-           }
+            }
 
             @Override
             public void failure(TwitterException exception) {
@@ -94,29 +93,23 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             protected Object clone() throws CloneNotSupportedException {
                 return super.clone();
-           }
+            }
         });
-
-
 
         // TODO: Use a more specific parent
 
-
-        goToMain = new Intent(getBaseContext(), MainActivity.class);
         sharedPref = getBaseContext().getSharedPreferences("User", Context.MODE_PRIVATE);
 
         buttonClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent goToLogin;
-                switch (v.getId())
-                {
+                switch (v.getId()) {
                     case R.id.btnGo:
                         IniciarLogin();
                         break;
                     case R.id.btnRegistrar:
-                        goToLogin = new Intent(getBaseContext(), RegisterActivity.class);
-                        startActivity(goToLogin);
+                        Intent goToRegister = new Intent(getBaseContext(), RegisterActivity.class);
+                        startActivity(goToRegister);
                         break;
 
                     default:
@@ -129,21 +122,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void AssignControls()
-    {
+    private void AssignControls() {
         btnGo = (Button) findViewById(R.id.btnGo);
         btnGo.setOnClickListener(buttonClickListener);
-
         btnRegistrar = (TextView) findViewById(R.id.btnRegistrar);
         btnRegistrar.setOnClickListener(buttonClickListener);
-
         editTextContrasena = (EditText) findViewById(R.id.editTextContrasena);
-        editTextCorreo= (EditText) findViewById(R.id.editTextCorreo);
+        editTextCorreo = (EditText) findViewById(R.id.editTextCorreo);
     }
 
 
-    private void ShowMessage(final String message)
-    {
+    private void ShowMessage(final String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -151,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -158,8 +148,7 @@ public class LoginActivity extends AppCompatActivity {
         twitterloginButton.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void IniciarLogin()
-    {
+    private void IniciarLogin() {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading...");
         progressDialog.setIndeterminate(true);
@@ -167,11 +156,10 @@ public class LoginActivity extends AppCompatActivity {
         new LoginWebService().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/Login", editTextCorreo.getText().toString(), editTextContrasena.getText().toString());
     }
 
-    private class LoginWebService extends AsyncTask<String, Void, String>
-    {
+    private class LoginWebService extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
-            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
             WebServiceParameter parametro = new WebServiceParameter();
 
             parametro.Nombre = "Correo";
@@ -188,32 +176,28 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            try{
+            try {
                 JSONObject jsonResponse = new JSONObject(s);
                 int IdUser = jsonResponse.optInt("d");
-                if (IdUser == 0)
-                {
+                if (IdUser == 0) {
                     ShowMessage("Correo y/o contraseña incorrectos.");
-                }
-                else
-                {
+                } else {
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putInt("Id", IdUser);
-                    editor.commit();
+                    editor.apply();
 
                     new ObtenerUsuario().execute(getBaseContext());
+                    new ObtenerVehiculo().execute(getBaseContext());
 
                     if (progressDialog != null)
                         progressDialog.dismiss();
 
+                    Intent goToMain = new Intent(getBaseContext(), MainActivity.class);
                     ShowMessage("Bienvenido");
                     startActivity(goToMain);
                     finish();
                 }
-            }
-            catch (Exception e)
-            {
-                ShowMessage(e.getMessage());
+            } catch (Exception e) {
             }
         }
     }

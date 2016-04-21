@@ -30,6 +30,7 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
@@ -523,7 +524,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject dataRe = new JSONObject(s);
                 JSONObject puntosMapa = dataRe.optJSONObject("d");
-                ArrayList<DeviceData> Puntos = new ArrayList<DeviceData>();
+                ArrayList<DeviceData> Puntos = new ArrayList<>();
                 DeviceData punto = new DeviceData();
 
                 punto.Id = puntosMapa.optInt("Id");
@@ -582,6 +583,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             } catch (Exception e) {
+                Log.w("Error", e.toString());
             }
             return null;
         }
@@ -729,8 +731,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static Bitmap getRoundedCornerBitmap(Bitmap drawable, boolean square, int colorMargen) {
-        int width = 0;
-        int height = 0;
+        int width;
+        int height;
 
         Bitmap bitmap = drawable;
 
@@ -779,8 +781,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static Bitmap getRoundedCornerBitmap(Drawable drawable, boolean square, int colorMargen) {
-        int width = 0;
-        int height = 0;
+        int width;
+        int height;
         Paint mBorderPaint;
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
@@ -866,7 +868,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getBaseContext().getSharedPreferences("DeviceBLE", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt("Speed", ((int) DispositivoAsociado.DataReceived.Velocidad));
-        editor.commit();
+        editor.apply();
 
         Intent updateWidget = new Intent(getBaseContext(), VelocityWidget.class);
         updateWidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
@@ -941,6 +943,7 @@ public class MainActivity extends AppCompatActivity {
                 } else
                     isRecorrido = false;
             } catch (Exception e) {
+                Log.w("Error", e.toString());
             }
         }
     }
@@ -948,7 +951,7 @@ public class MainActivity extends AppCompatActivity {
     private class EnviarRecorrido extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
             SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
             SharedPreferences moto = getBaseContext().getSharedPreferences("Moto", MODE_PRIVATE);
             WebServiceParameter parametro = new WebServiceParameter();
@@ -992,7 +995,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             } catch (Exception e) {
-
+                Log.w("Error", e.toString());
             }
         }
     }

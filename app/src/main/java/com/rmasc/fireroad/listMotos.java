@@ -63,7 +63,7 @@ public class listMotos extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
             WebServiceParameter parametro = new WebServiceParameter();
             SharedPreferences userPref = getSharedPreferences("User", MODE_PRIVATE);
 

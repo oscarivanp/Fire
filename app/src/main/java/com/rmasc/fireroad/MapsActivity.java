@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -55,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 unregisterReceiver(broadcastReceiver);
             } catch (Exception e) {
+                Log.w("Error", e.toString());
             }
         }
         super.onDestroy();
@@ -268,7 +270,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private class ObtenerUltimaTransmision extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
             WebServiceParameter parametro = new WebServiceParameter();
 
             parametro.Nombre = "IdUser";
@@ -288,7 +290,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 JSONObject dataRe = new JSONObject(s);
                 JSONObject puntosMapa = dataRe.optJSONObject("d");
-                ArrayList<DeviceData> Puntos = new ArrayList<DeviceData>();
+                ArrayList<DeviceData> Puntos = new ArrayList<>();
                 DeviceData punto = new DeviceData();
 
                 punto.Id = puntosMapa.optInt("Id");
@@ -302,7 +304,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PintarRecorrido(Puntos);
 
             } catch (Exception e) {
-
+                Log.w("Error", e.toString());
             }
         }
     }
@@ -311,7 +313,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected String doInBackground(String... params) {
-            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
             WebServiceParameter parametro = new WebServiceParameter();
             SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
             SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
@@ -346,6 +348,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else
                     isRecorrido = false;
             } catch (Exception e) {
+                Log.w("Error", e.toString());
             }
         }
     }
@@ -353,7 +356,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private class EnviarRecorrido extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
             SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
             SharedPreferences moto = getBaseContext().getSharedPreferences("Moto", MODE_PRIVATE);
             WebServiceParameter parametro = new WebServiceParameter();
@@ -397,7 +400,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
             } catch (Exception e) {
-
+                Log.w("Error", e.toString());
             }
         }
     }
@@ -409,7 +412,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 JSONObject dataRe = new JSONObject(s);
                 JSONArray puntosMapa = dataRe.optJSONArray("d");
-                ArrayList<DeviceData> Puntos = new ArrayList<DeviceData>();
+                ArrayList<DeviceData> Puntos = new ArrayList<>();
 
                 for (int i = 0; i < puntosMapa.length(); i++) {
                     JSONObject puntoTemp = puntosMapa.optJSONObject(i);
@@ -426,13 +429,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PintarRecorrido(Puntos);
 
             } catch (Exception e) {
-
+                Log.w("Error", e.toString());
             }
         }
 
         @Override
         protected String doInBackground(String... params) {
-            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
             WebServiceParameter parametro = new WebServiceParameter();
 
             parametro.Nombre = "IdUser";
