@@ -192,13 +192,13 @@ public class MainActivity extends AppCompatActivity {
 
         switchEncendido = (Switch) findViewById(R.id.switchEncendido);
         switchEncendido.setEnabled(true);
-        switchEncendido.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchEncendido.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+            public void onClick(View v) {
+                if (switchEncendido.isChecked()) {
                     if (bluetoothLE != null && DispositivoAsociado != null) {
                         bluetoothLE.bleDevices = new ArrayList<BluetoothDevice>();
-                        bluetoothLE.scanLeDevice(isChecked);
+                        bluetoothLE.scanLeDevice(true);
                         switchEncendido.setText("Buscando");
                         switchEncendido.setEnabled(false);
 
@@ -219,6 +219,33 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+//        switchEncendido.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    if (bluetoothLE != null && DispositivoAsociado != null) {
+//                        bluetoothLE.bleDevices = new ArrayList<BluetoothDevice>();
+//                        bluetoothLE.scanLeDevice(isChecked);
+//                        switchEncendido.setText("Buscando");
+//                        switchEncendido.setEnabled(false);
+//
+//                        new android.os.Handler().postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                ConnectToDevice();
+//                            }
+//                        }, 5000);
+//                    }
+//                } else {
+//                    switchEncendido.setText("Desconectado");
+//                    if (bluetoothLE != null && bluetoothLE.bleGatt != null) {
+//                        //bluetoothLE.bleGatt.disconnect();
+//                        bluetoothLE.bleGatt.close();
+//                        bluetoothLE.bleGatt = null;
+//                    }
+//                }
+//            }
+//        });
         try {
             if (user.getString("FotoPath", "").equals("")) {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
