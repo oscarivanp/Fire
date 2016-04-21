@@ -34,7 +34,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
@@ -56,7 +55,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -252,17 +250,17 @@ public class MainActivity extends AppCompatActivity {
                 String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
                 InputStream prueba = new URL(path).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-                circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, Color.RED));
+                circularImageView.setBackground(new BitmapDrawable(getRoundedCornerBitmap(foto, true)));
 
             } else {
                 InputStream prueba = new URL(user.getString("FotoPath", "")).openStream();
                 Bitmap foto = BitmapFactory.decodeStream(prueba);
-                circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, Color.RED));
+                circularImageView.setBackground(new BitmapDrawable(getRoundedCornerBitmap(foto, true)));
 
             }
         } catch (Exception e) {
             e.printStackTrace();
-            circularImageView.setImageBitmap(getRoundedCornerBitmap(getResources().getDrawable(R.drawable.no_user), true, Color.RED));
+            circularImageView.setBackground(new BitmapDrawable(getRoundedCornerBitmap(getResources().getDrawable(R.drawable.no_user), true)));
 
         }
 
@@ -668,57 +666,10 @@ public class MainActivity extends AppCompatActivity {
         txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria).substring(0, 3) + "v");
         SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
         if (DispositivoAsociado.DataReceived.Modo == 2) {
-            if (user.getString("FotoPath", "").equals("")) {
-                String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
+            circularImageView.setImageResource((R.drawable.bordeverde));
 
-                InputStream prueba = null;
-                try {
-                    prueba = new URL(path).openStream();
-                    Bitmap foto = BitmapFactory.decodeStream(prueba);
-                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, getResources().getColor(R.color.colorPrimaryDark)));
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            } else {
-                InputStream prueba = null;
-                try {
-                    prueba = new URL(user.getString("FotoPath", "")).openStream();
-                    Bitmap foto = BitmapFactory.decodeStream(prueba);
-                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, getResources().getColor(R.color.colorPrimaryDark)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
         } else {
-            if (user.getString("FotoPath", "").equals("")) {
-                String path2 = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
-                InputStream prueba2 = null;
-                try {
-                    prueba2 = new URL(path2).openStream();
-                    Bitmap foto = BitmapFactory.decodeStream(prueba2);
-                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, Color.RED));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            } else {
-                InputStream prueba = null;
-                try {
-                    prueba = new URL(user.getString("FotoPath", "")).openStream();
-                    Bitmap foto = BitmapFactory.decodeStream(prueba);
-                    circularImageView.setImageBitmap(getRoundedCornerBitmap(foto, true, Color.RED));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
+            circularImageView.setImageResource((R.drawable.bordes));
         }
     }
 
@@ -730,9 +681,10 @@ public class MainActivity extends AppCompatActivity {
             return false;
     }
 
-    public static Bitmap getRoundedCornerBitmap(Bitmap drawable, boolean square, int colorMargen) {
-        int width;
-        int height;
+    public static Bitmap getRoundedCornerBitmap(Bitmap drawable, boolean square) {
+        int width = 0;
+        int height = 0;
+
 
         Bitmap bitmap = drawable;
 
@@ -754,7 +706,7 @@ public class MainActivity extends AppCompatActivity {
 
         Canvas canvas = new Canvas(output);
 
-        final int color = Color.RED;
+        final int color = Color.BLUE;
         final Paint paint = new Paint();
         final Rect rect = new Rect(0, 0, width, height);
         final RectF rectF = new RectF(rect);
@@ -772,17 +724,14 @@ public class MainActivity extends AppCompatActivity {
 
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(colorMargen);
-        paint.setStrokeWidth(25);
-        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
         return output;
     }
 
 
-    public static Bitmap getRoundedCornerBitmap(Drawable drawable, boolean square, int colorMargen) {
-        int width;
-        int height;
+    public static Bitmap getRoundedCornerBitmap(Drawable drawable, boolean square) {
+        int width = 0;
+        int height = 0;
         Paint mBorderPaint;
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
@@ -804,7 +753,7 @@ public class MainActivity extends AppCompatActivity {
 
         Canvas canvas = new Canvas(output);
 
-        final int color = Color.RED;
+        final int color = Color.BLUE;
         final Paint paint = new Paint();
         final Rect rect = new Rect(0, 0, width, height);
         final RectF rectF = new RectF(rect);
@@ -822,10 +771,7 @@ public class MainActivity extends AppCompatActivity {
 
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(colorMargen);
-        paint.setStrokeWidth(20);
-        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
         return output;
     }
 
