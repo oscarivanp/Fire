@@ -18,7 +18,7 @@ public class TransmisionesHelper extends SQLiteOpenHelper {
     private static String DATABASE_NAME = "FireRoadDB";
     public static String TABLE_TRANSMISION = "Transmisiones";
     private static int DATABASE_VERSION = 1;
-    private static String DATABASE_CREATE = "CREATE TABLE "+ TABLE_TRANSMISION + " (" +
+    private static String DATABASE_CREATE = "CREATE TABLE IF NOT EXISTS "+ TABLE_TRANSMISION + " (" +
             "Latitud TEXT, " +
             "Longitud TEXT, " +
             "Fecha TEXT, " +
@@ -59,6 +59,13 @@ public class TransmisionesHelper extends SQLiteOpenHelper {
         db.insert(TABLE_TRANSMISION, null, parametros);
     }
 
+    public  void UpdateIdRecorrido (SQLiteDatabase db, int ReporteId)
+    {
+        ContentValues parametros = new ContentValues();
+        parametros.put("ReporteId", ReporteId);
+        db.update(TABLE_TRANSMISION, parametros, "ReporteId = 9999", null);
+    }
+
     public ArrayList<DeviceData> ArrayTransmision (SQLiteDatabase db, String where, String Orderby)
     {
         ArrayList<DeviceData> listToReturn = new ArrayList<DeviceData>();
@@ -75,6 +82,7 @@ public class TransmisionesHelper extends SQLiteOpenHelper {
                     transmision.Fix = cursor.getInt(11) > 0;
                     listToReturn.add(transmision);
                 } while (cursor.moveToNext());
+                cursor.close();
             }
         }
         return listToReturn;
@@ -92,6 +100,7 @@ public class TransmisionesHelper extends SQLiteOpenHelper {
                             + ";" + cursor.getString(5) + ";0;" + cursor.getString(6) + ";" + cursor.getString(7) + ";" + cursor.getString(8) + ";" + cursor.getString(9)
                             + ";" + cursor.getString(10) + ";" + cursor.getString(11) + ",";
                 } while (cursor.moveToNext());
+                cursor.close();
                 return transmision;
             }
         }

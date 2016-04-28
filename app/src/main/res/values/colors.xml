@@ -12,6 +12,7 @@
     <color name="colorLink">#00ADB5</color>
     <color name="colorWaiting">#ffd91a</color>
     <color name="colorOk">#3dff33</color>
+    <color name="colorBlack">#000000</color>
     <color name="navigationBarColor">#EEEEEE</color>
     <color name="windowBackground">#FFFFFF</color>
 </resources>

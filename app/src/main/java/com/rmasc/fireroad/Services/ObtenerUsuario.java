@@ -61,7 +61,6 @@ public class ObtenerUsuario extends AsyncTask <Context, Void, String> {
                 editor.putString("FotoPath", data.optString("FotoPath"));
                 editor.apply();
 
-                //new ObtenerVehiculo().execute(appContext);
             }
 
         }

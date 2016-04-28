@@ -30,6 +30,7 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -45,10 +46,12 @@ import com.rmasc.fireroad.DataBase.TransmisionesHelper;
 import com.rmasc.fireroad.Entities.DeviceBluetooth;
 import com.rmasc.fireroad.Entities.DeviceData;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
+import com.rmasc.fireroad.Services.SubirArchivoRecorrido;
 import com.rmasc.fireroad.Services.WebService;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.tweetui.internal.util.HtmlEntities;
 
 import org.json.JSONObject;
 
@@ -130,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case R.id.btnRecorrido:
                             if (!isRecorrido) {
-                                new CrearRecorrido().execute();
+                                //new CrearRecorrido().execute();
+                                IniciarRecorrido();
                             } else {
                                 new EnviarRecorrido().execute(transmisionesHelper.SelectTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + DispositivoAsociado.DataReceived.VehiculoId + " AND ReporteId = " + DispositivoAsociado.DataReceived.ReporteId, null));
                             }
@@ -143,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (LoadDevice()) {
                 if (ManagerBluetooth()) {
-                    bluetoothLE.scanLeDevice(true);
+                    //bluetoothLE.scanLeDevice(true);
                 }
             } else {
                 ShowMessage("No hay dispositivo previamente guardado.");
@@ -422,7 +426,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isVisible = false;
         for (int i = 0; i < bluetoothLE.bleDevices.size(); i++) {
             if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:AF:8A:67")) {
-                //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
+            //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
                 //if (bluetoothLE.bleDevices.get(i).getName().equals(DispositivoAsociado.Name)) {
                 try {
                     bluetoothLE.ConnectToGattServer(bluetoothLE.bleDevices.get(i), true);
@@ -854,7 +858,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
+            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
             WebServiceParameter parametro = new WebServiceParameter();
             SharedPreferences user = getSharedPreferences("User", MODE_PRIVATE);
             SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
@@ -894,43 +898,59 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void IniciarRecorrido() {
+        SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+        SharedPreferences.Editor editor = moto.edit();
+
+        editor.putInt("IdRecorrido", 9999);
+        editor.apply();
+        DispositivoAsociado.DataReceived.ReporteId = 9999;
+        btnRecorrido.setText("Stop");
+        btnRecorrido.setTextColor(getResources().getColor(R.color.colorAccent));
+        isRecorrido = true;
+    }
+
     private class EnviarRecorrido extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
-            SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
-            SharedPreferences moto = getBaseContext().getSharedPreferences("Moto", MODE_PRIVATE);
-            WebServiceParameter parametro = new WebServiceParameter();
+//            ArrayList<WebServiceParameter> parameters = new ArrayList<>();
+//            SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
+//            SharedPreferences moto = getBaseContext().getSharedPreferences("Moto", MODE_PRIVATE);
+//            WebServiceParameter parametro = new WebServiceParameter();
+//
+//            parametro.Nombre = "IdUser";
+//            parametro.Valor = String.valueOf(user.getInt("Id", 0));
+//            parameters.add(parametro);
+//
+//            parametro = new WebServiceParameter();
+//            parametro.Nombre = "IdVehiculo";
+//            parametro.Valor = String.valueOf(moto.getInt("Id", 0));
+//            parameters.add(parametro);
+//
+//            parametro = new WebServiceParameter();
+//            parametro.Nombre = "IdRecorrido";
+//            parametro.Valor = String.valueOf(moto.getInt("IdRecorrido", 0));
+//            parameters.add(parametro);
+//
+//            parametro = new WebServiceParameter();
+//            parametro.Nombre = "Tramas";
+//            parametro.Valor = params[0];
+//            parameters.add(parametro);
 
-            parametro.Nombre = "IdUser";
-            parametro.Valor = String.valueOf(user.getInt("Id", 0));
-            parameters.add(parametro);
+            SubirArchivoRecorrido fileHelper = new SubirArchivoRecorrido(getBaseContext());
 
-            parametro = new WebServiceParameter();
-            parametro.Nombre = "IdVehiculo";
-            parametro.Valor = String.valueOf(moto.getInt("Id", 0));
-            parameters.add(parametro);
-
-            parametro = new WebServiceParameter();
-            parametro.Nombre = "IdRecorrido";
-            parametro.Valor = String.valueOf(moto.getInt("IdRecorrido", 0));
-            parameters.add(parametro);
-
-            parametro = new WebServiceParameter();
-            parametro.Nombre = "Tramas";
-            parametro.Valor = params[0];
-            parameters.add(parametro);
-
-            return WebService.ConexionWS("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/GuardarPuntosRecorrido", parameters);
+            //WebService.ConexionWS("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/GuardarPuntosRecorrido", parameters);
+            if (fileHelper.CrearArchivo())
+                return fileHelper.UploadFile();
+            return "";
         }
 
         @Override
         protected void onPostExecute(String s) {
             try {
-                JSONObject jsonResponse = new JSONObject(s);
-                String result = jsonResponse.optString("d");
-                ShowMessage(result);
-                if (result.equals("true")) {
+                int result = Integer.parseInt(s);
+                ShowMessage(String.valueOf(result));
+                if (result > 0) {
                     isRecorrido = false;
                     btnRecorrido.setText("IniciarRecorrido");
                     btnRecorrido.setTextColor(Color.WHITE);
@@ -938,6 +958,7 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = moto.edit();
                     editor.putInt("IdRecorrido", 0);
                     editor.apply();
+                    transmisionesHelper.UpdateIdRecorrido(transmisionesHelper.getWritableDatabase(), result);
                 }
 
             } catch (Exception e) {

@@ -18,44 +18,43 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="3dp"
-            android:gravity="center"
             android:background="@color/colorBackLight"
-            android:orientation="vertical">
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="3dp">
 
             <TextView
                 android:id="@+id/txtUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textColor="@color/colorPrimary"
                 android:layout_weight="1"
                 android:text="User Name"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimary"
                 android:textSize="18sp" />
-
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-            <TextView
-                android:id="@+id/txtReporteDispositivo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-                android:textAlignment="center"
-                android:layout_weight="1"
-                android:text="dd/mm/aaaa HH:mm" />
+
+                <TextView
+                    android:id="@+id/txtReporteDispositivo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="dd/mm/aaaa HH:mm"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary" />
 
                 <ImageView
+                    android:id="@+id/modoTransmision"
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:layout_gravity="right"
-                    android:src="@drawable/bluetoothlogo"
                     android:scaleType="fitXY"
-                    android:id="@+id/modoTransmision"
-                    />
+                    android:src="@drawable/bluetoothlogo" />
 
 
             </LinearLayout>
@@ -63,11 +62,11 @@
 
 
         <LinearLayout
-            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:layout_marginTop="20dp"
             android:layout_weight="0.78"
             android:orientation="horizontal">
 
@@ -78,17 +77,17 @@
                 android:orientation="vertical">
 
 
-               <ImageView
-                   android:id="@+id/CircularImageViewUser"
+                <ImageView
+                    android:id="@+id/CircularImageViewUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/no_user"
+                    android:padding="0dp"
+                    android:scaleType="fitXY"
                     android:src="@drawable/bordes"
-                   android:layout_width="match_parent"
-                   android:layout_height="match_parent"
-                   android:background="@drawable/no_user"
-                   android:scaleType="fitXY"
-                   android:padding="0dp"
 
 
-                          />
+                    />
 
             </LinearLayout>
 
@@ -98,51 +97,50 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:paddingLeft="10dp">
-<LinearLayout
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/txtTituloBluetooth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Bluetooth"
-        android:gravity="center_horizontal"
-        android:layout_gravity="center_horizontal"
-        android:textAlignment="center"
-        android:textColor="@color/colorAccent" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
+                    <TextView
+                        android:id="@+id/txtTituloBluetooth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center_horizontal"
+                        android:text="Bluetooth"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorAccent" />
 
-   <Switch
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
 
-        android:id="@+id/switchEncendido"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:theme="@style/Color1SwitchStyle"
-        android:textColor="@color/colorPrimary"
-        android:layout_marginBottom="5dp"
-        android:text="Conectado"/>
+                        <Switch
+
+                            android:id="@+id/switchEncendido"
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:text="Desconectado"
+                            android:textColor="@color/colorPrimary"
+                            android:theme="@style/Color1SwitchStyle" />
 
 
+                    </LinearLayout>
 
-</LinearLayout>
-
-    <ImageView
-        android:layout_marginTop="5dp"
-        android:id="@+id/btnMapa"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:scaleType="fitXY"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/mapa"
-        />
-</LinearLayout>
+                    <ImageView
+                        android:id="@+id/btnMapa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="5dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/mapa" />
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -150,12 +148,12 @@
 
         <LinearLayout
 
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="0.5"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="5dp">
 
             <LinearLayout
 
@@ -173,19 +171,17 @@
                         android:id="@+id/imgBateria"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:textColor="@color/colorPrimary"
                         android:layout_weight="0.7"
                         android:src="@drawable/bateria_0"
-                        />
+                        android:textColor="@color/colorPrimary" />
 
                     <ImageView
                         android:id="@+id/imgGasolina"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:textColor="@color/colorPrimary"
                         android:layout_weight="0.7"
                         android:src="@drawable/gass_0"
-                        />
+                        android:textColor="@color/colorPrimary" />
 
                     <ImageView
 
@@ -193,8 +189,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_weight="0.7"
-                        android:src="@drawable/bateria_0"
-                        />
+                        android:src="@drawable/bateria_0" />
 
                 </LinearLayout>
 
@@ -208,20 +203,20 @@
                         android:id="@+id/txtbatMoto"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:textColor="@color/colorPrimary"
                         android:layout_weight="0.7"
                         android:gravity="center_horizontal"
+                        android:text="Bateria Moto"
 
-                        android:text="Bateria Moto"/>
+                        android:textColor="@color/colorPrimary" />
 
                     <TextView
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:textColor="@color/colorPrimary"
                         android:layout_weight="0.7"
                         android:gravity="center_horizontal"
+                        android:text="gasolina"
 
-                        android:text="gasolina"/>
+                        android:textColor="@color/colorPrimary" />
 
                     <TextView
                         android:id="@+id/txtbatGps"
@@ -229,8 +224,8 @@
                         android:layout_height="50dp"
                         android:layout_weight="0.7"
                         android:gravity="center_horizontal"
-                        android:textColor="@color/colorPrimary"
-                        android:text="Bateria Gps"/>
+                        android:text="Bateria Gps"
+                        android:textColor="@color/colorPrimary" />
 
                 </LinearLayout>
 
@@ -251,23 +246,24 @@
                 <TextView
                     android:id="@+id/txtKilometraje"
                     android:layout_width="match_parent"
-                    android:textColor="@color/colorPrimary"
-                    android:textAlignment="center"
+                    android:layout_height="25dp"
                     android:text="00:00:00"
-                    android:textSize="18dp"
-                    android:layout_height="25dp" />
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="horizontal">
+
                     <Button
                         android:id="@+id/btnRecorrido"
                         android:layout_width="match_parent"
-                        android:gravity="center"
-                        android:background="@color/colorPrimaryDark"
                         android:layout_height="70dp"
+                        android:background="@color/colorPrimaryDark"
+                        android:gravity="center"
                         android:text="@string/nuevo_recorrido" />
 
                 </LinearLayout>
@@ -291,7 +287,7 @@
 
         </LinearLayout>
 
-</LinearLayout>
+    </LinearLayout>
 
 
 </RelativeLayout>

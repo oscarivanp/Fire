@@ -166,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
             parametro.Valor = urls[1];
             parameters.add(parametro);
 
-            parametro = new WebServiceParameter(); // Si no se reinicia genera error.
+            parametro = new WebServiceParameter();
             parametro.Nombre = "Password";
             parametro.Valor = urls[2];
             parameters.add(parametro);
@@ -180,14 +180,16 @@ public class LoginActivity extends AppCompatActivity {
                 JSONObject jsonResponse = new JSONObject(s);
                 int IdUser = jsonResponse.optInt("d");
                 if (IdUser == 0) {
+                    if (progressDialog != null)
+                        progressDialog.dismiss();
                     ShowMessage("Correo y/o contraseña incorrectos.");
                 } else {
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putInt("Id", IdUser);
                     editor.apply();
 
-                    new ObtenerUsuario().execute(getBaseContext());
                     new ObtenerVehiculo().execute(getBaseContext());
+                    new ObtenerUsuario().execute(getBaseContext());
 
                     if (progressDialog != null)
                         progressDialog.dismiss();

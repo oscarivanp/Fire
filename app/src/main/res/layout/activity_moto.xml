@@ -51,6 +51,7 @@
                 <EditText
                     android:id="@+id/editTextPlaca"
                     android:ems="10"
+                    android:textColor="@color/colorBlack"
                     android:inputType="textPersonName" />
             </TableRow>
 
@@ -62,6 +63,7 @@
 
                 <EditText
                     android:id="@+id/editTextMarca"
+                    android:textColor="@color/colorBlack"
                     android:ems="10"
                     android:inputType="textPersonName" />
             </TableRow>
@@ -74,6 +76,7 @@
 
                 <EditText
                     android:id="@+id/editTextModelo"
+                    android:textColor="@color/colorBlack"
                     android:ems="10"
                     android:inputType="textPersonName" />
             </TableRow>
@@ -86,6 +89,7 @@
 
                 <EditText
                     android:id="@+id/editTextColor"
+                    android:textColor="@color/colorBlack"
                     android:ems="10"
                     android:inputType="textPersonName" />
             </TableRow>
@@ -99,6 +103,7 @@
                 <EditText
                     android:id="@+id/editTextMacBlue"
                     android:ems="10"
+                    android:textColor="@color/colorBlack"
                     android:inputType="textPersonName" />
             </TableRow>
 

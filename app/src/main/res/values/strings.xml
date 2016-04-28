@@ -37,7 +37,6 @@
     <string name="motos">Mis motos</string>
 
 
-
     <string-array name="GeneroItems">
         <item value="1">Masculino</item>
         <item value="2">Femenino</item>

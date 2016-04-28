@@ -46,6 +46,7 @@
                 <EditText
                     android:id="@+id/editTextNombre"
                     android:focusable="true"
+                    android:textColor="@color/colorBlack"
                     android:focusableInTouchMode="true"
                     android:inputType="textPersonName" />
             </TableRow>
@@ -58,6 +59,7 @@
 
                 <EditText
                     android:id="@+id/editTextTelefono"
+                    android:textColor="@color/colorBlack"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:inputType="phone" />
@@ -71,6 +73,7 @@
 
                 <Spinner
                     android:id="@+id/spinnerSexo"
+                    android:textColor="@color/colorBlack"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:entries="@array/GeneroItems" />
@@ -83,6 +86,7 @@
                     android:text="@string/fechaNacimiento" />
 
                 <Button
+                    android:textColor="@color/colorBlack"
                     android:id="@+id/btnFecha"
                     style="@style/Base.Widget.AppCompat.ActionButton"
                     android:text="@string/fechaNacimiento" />
@@ -96,17 +100,19 @@
 
                 <Spinner
                     android:id="@+id/spinnerRh"
+                    android:textColor="@color/colorBlack"
                     android:entries="@array/RhItems" />
             </TableRow>
 
             <TableRow>
 
                 <TextView
+
                     android:layout_column="0"
                     android:text="@string/mail" />
 
                 <EditText
-
+                   android:textColor="@color/colorBlack"
                     android:id="@+id/editTextCorreo"
                     android:ems="10"
                     android:focusable="true"
@@ -138,7 +144,9 @@
                     android:text="@string/Contraseña" />
 
                 <EditText
+                    android:textColor="@color/colorBlack"
                     android:id="@+id/editTexPassword"
+
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:inputType="textPassword" />
@@ -152,6 +160,7 @@
                     android:text="@string/Confirmacion" />
 
                 <EditText
+                    android:textColor="@color/colorBlack"
                     android:id="@+id/editTexPasswordConfirmacion"
                     android:focusable="true"
                     android:focusableInTouchMode="true"

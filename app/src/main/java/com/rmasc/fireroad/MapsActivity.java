@@ -32,7 +32,9 @@ import com.rmasc.fireroad.Services.WebService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -66,12 +68,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        btnSatelite = (Button)findViewById(R.id.btnMapaSatelital);
-        btnHibrido = (Button)findViewById(R.id.btnMapaHibrido);
-        btnStreetMap = (Button)findViewById(R.id.btnMapaStreetView);
-        btnIniciarRecorrido=(Button)findViewById(R.id.btnIniciarRecorrido);
+        btnSatelite = (Button) findViewById(R.id.btnMapaSatelital);
+        btnHibrido = (Button) findViewById(R.id.btnMapaHibrido);
+        btnStreetMap = (Button) findViewById(R.id.btnMapaStreetView);
+        btnIniciarRecorrido = (Button) findViewById(R.id.btnIniciarRecorrido);
 
-        if(LoadDevice()) {
+        if (LoadDevice()) {
 
             btnIniciarRecorrido.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -88,8 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-        }
-        else {
+        } else {
             btnIniciarRecorrido.setText("Sin Dispositivo");
         }
 
@@ -105,7 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     btnStreetMap.setTextColor(getResources().getColor(R.color.windowBackground));
                     btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
                     btnSatelite.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
-                 } else {
+                } else {
                     mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                     btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
                     btnHibrido.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
@@ -120,11 +121,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-
         btnHibrido.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if( mMap.getMapType()==GoogleMap.MAP_TYPE_HYBRID) {
+                if (mMap.getMapType() == GoogleMap.MAP_TYPE_HYBRID) {
                     mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                     btnHibrido.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
                     btnHibrido.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
@@ -132,8 +132,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     btnStreetMap.setTextColor(getResources().getColor(R.color.windowBackground));
                     btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
                     btnSatelite.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
-                }
-                else {
+                } else {
                     mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                     btnHibrido.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
                     btnHibrido.setTextColor(getResources().getColor(R.color.windowBackground));
@@ -142,7 +141,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     btnSatelite.setBackgroundColor(getResources().getColor(R.color.tw__transparent));
                     btnSatelite.setTextColor(getResources().getColor(R.color.colorPrimaryBlue));
                 }
-                }
+            }
         });
 
 
@@ -160,7 +159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-                // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -193,7 +192,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     isRecorrido = true;
                 }
                 btnIniciarRecorrido.setVisibility(View.VISIBLE);
-                markerOptionsUpdate = mMap.addMarker(new MarkerOptions().visible(false).position(new LatLng(0, 0)));
+                SharedPreferences userP = getSharedPreferences("Moto", MODE_PRIVATE);
+                markerOptionsUpdate = mMap.addMarker(new MarkerOptions().visible(false).position(new LatLng(0, 0)).title(userP.getString("Placa", "")));
                 registerReceiver(broadcastReceiver, new IntentFilter("UPDATE_MAP"));
                 CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
                 break;
@@ -238,7 +238,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         markerOptionsUpdate.setPosition(ptoActual);
         markerOptionsUpdate.setVisible(true);
-        markerOptionsUpdate.setTitle(userP.getString("Placa", ""));
+        //markerOptionsUpdate.setTitle(userP.getString("Placa", ""));
+        markerOptionsUpdate.setSnippet(Fecha);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(ptoActual));
     }
 
@@ -258,9 +259,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void PintarRecorrido(ArrayList<DeviceData> Puntos) {
         ArrayList<LatLng> puntosLinea = new ArrayList<>();
+        SharedPreferences userP = getSharedPreferences("Moto", MODE_PRIVATE);
         for (int i = 0; i < Puntos.size(); i++) {
-            mMap.addMarker(new MarkerOptions().position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
-                    .title("Velocidad: " + Puntos.get(i).Velocidad + "Km/h \r\n Fecha:" + Puntos.get(i).Fecha));
+            mMap.addMarker(new MarkerOptions().snippet("").position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
+                    .snippet("Velocidad: " + Puntos.get(i).Velocidad + "Km/h               Fecha: " + Puntos.get(i).Fecha)
+                    .title(userP.getString("Placa", "")).infoWindowAnchor(0,1).anchor(0,1));
             puntosLinea.add(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
         }
         mMap.addPolyline(new PolylineOptions().addAll(puntosLinea).color(Color.RED).width(5).geodesic(true));
@@ -296,7 +299,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 punto.Id = puntosMapa.optInt("Id");
                 punto.Latitud = Float.valueOf(puntosMapa.optString("Latitud"));
                 punto.Longitud = Float.valueOf(puntosMapa.optString("Longitud"));
-                punto.Fecha = puntosMapa.optString("FechaTransmision");
+                Date fechaN = parseDateTime(puntosMapa.optString("FechaTransmision"));
+                punto.Fecha = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(fechaN.getTime());
                 punto.Bateria = puntosMapa.optInt("Bateria");
                 punto.Velocidad = puntosMapa.optInt("Velocidad");
                 Puntos.add(punto);
@@ -307,6 +311,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.w("Error", e.toString());
             }
         }
+    }
+
+    private Date parseDateTime(String lastModified) {
+        Date date = null;
+        if (lastModified != null && lastModified.length() > 0) {
+            try {
+                lastModified = lastModified.replace("/Date(", "");
+                lastModified = lastModified.replace(")/", "");
+                date = new Date(Long.parseLong(lastModified));
+            } catch (Exception e) {
+                // otherwise we just leave it empty
+            }
+        }
+        return date;
     }
 
     private class CrearRecorrido extends AsyncTask<String, Void, String> {
@@ -421,7 +439,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     punto.Id = puntoTemp.optInt("Id");
                     punto.Latitud = Float.valueOf(puntoTemp.optString("Latitud"));
                     punto.Longitud = Float.valueOf(puntoTemp.optString("Longitud"));
-                    punto.Fecha = puntoTemp.optString("FechaTransmision");
+                    Date fechaN = parseDateTime(puntoTemp.optString("FechaTransmision"));
+                    punto.Fecha = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(fechaN.getTime());
                     punto.Bateria = puntoTemp.optInt("Bateria");
                     punto.Velocidad = puntoTemp.optInt("Velocidad");
                     Puntos.add(punto);

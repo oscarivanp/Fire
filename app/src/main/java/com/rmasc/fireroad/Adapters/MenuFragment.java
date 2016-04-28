@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.rmasc.fireroad.AudioTextActivity;
 import com.rmasc.fireroad.MainActivity;
 import com.rmasc.fireroad.MotoActivity;
 import com.rmasc.fireroad.PerfilActivity;
@@ -52,6 +53,8 @@ public class MenuFragment extends Fragment {
                     startActivity(goTo);
                     break;
                 case R.id.btnSettings:
+                    //goTo = new Intent(getContext(), AudioTextActivity.class);
+                    //startActivity(goTo);
                     break;
                 default:
                     break;

@@ -7,11 +7,12 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <uses-feature android:name="android.hardware.camera" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
 
     <!-- Tell the system this app requires OpenGL ES 3.0. -->
     <uses-feature
@@ -42,25 +43,25 @@
 
         <activity
             android:name=".IntroActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/MyAppTheme.NoActionBar" />
+            android:theme="@style/MyAppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".LoginActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/MyAppTheme.NoActionBar" />
+            android:theme="@style/MyAppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".RegisterActivity"
             android:label="@string/title_activity_register"
-            android:windowSoftInputMode="adjustResize"
             android:theme="@style/MyAppTheme.NoActionBar"
-           />
-        <activity android:name=".MotoActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".MotoActivity"
             android:theme="@style/MyAppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/MyAppTheme.NoActionBar">
+            android:theme="@style/MyAppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -90,26 +91,32 @@
 
         <activity
             android:name=".MapsActivity"
-            android:windowSoftInputMode="adjustResize"
             android:label="@string/title_activity_maps"
-            android:theme="@style/MyAppTheme.NoActionBar" />
+            android:theme="@style/MyAppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".PerfilActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/MyAppTheme.NoActionBar" />
+            android:theme="@style/MyAppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.facebook.FacebookActivity"
-            android:windowSoftInputMode="adjustResize"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".RutasMasterActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/MyAppTheme.NoActionBar"/>
-        <activity android:name=".listMotos"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/MyAppTheme.NoActionBar"/>
-        <activity android:name=".DetallesActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".RutasMasterActivity"
+            android:theme="@style/MyAppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".listMotos"
+            android:theme="@style/MyAppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".DetallesActivity"
+            android:theme="@style/MyAppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".AudioTextActivity"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/MyAppTheme.NoActionBar"/>
     </application>
