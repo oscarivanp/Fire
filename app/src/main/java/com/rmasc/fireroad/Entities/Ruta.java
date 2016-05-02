@@ -12,14 +12,23 @@ public class Ruta {
     public String FechaInicio;
     public String FechaFin;
     public String Distancia;
+    public String VelMedia;
+    public String VelMax;
+    public int IdVehiculo;
 
     public  Ruta()
     {
         Id = 0;
+        IdVehiculo = 0;
         Descripcion = "";
         formatoFecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         FechaInicio = "";
         FechaFin = "";
         Distancia="";
+        VelMax = "";
+        VelMedia = "";
+
+
+
     }
 }

@@ -1,7 +1,9 @@
 package com.rmasc.fireroad.Adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
@@ -16,6 +18,7 @@ import com.rmasc.fireroad.MainActivity;
 import com.rmasc.fireroad.MotoActivity;
 import com.rmasc.fireroad.PerfilActivity;
 import com.rmasc.fireroad.R;
+import com.rmasc.fireroad.RutasMasterActivity;
 import com.rmasc.fireroad.listMotos;
 
 /**
@@ -27,15 +30,14 @@ public class MenuFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent goTo;
-            switch (v.getId())
-            {
+            switch (v.getId()) {
                 case R.id.btnHome:
 
                     //goTo = new Intent(getContext(), MainActivity.class);
                     //NavUtils.navigateUpFromSameTask(getActivity());
                     //startActivity(goTo);
 
-                    Intent openMainActivity= new Intent(getContext(), MainActivity.class);
+                    Intent openMainActivity = new Intent(getContext(), MainActivity.class);
                     openMainActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     //openMainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(openMainActivity);
@@ -49,8 +51,16 @@ public class MenuFragment extends Fragment {
                     startActivity(goTo);
                     break;
                 case R.id.btnRutas:
-                    goTo = new Intent(getContext(), listMotos.class);
-                    startActivity(goTo);
+                    SharedPreferences user = getContext().getSharedPreferences("User", Context.MODE_PRIVATE);
+                    SharedPreferences moto = getContext().getSharedPreferences("Moto",Context.MODE_PRIVATE);
+                    if (user.getInt("NMotos", 0) > 1) {
+                        goTo = new Intent(getContext(), listMotos.class);
+                        startActivity(goTo);
+                    } else {
+                        goTo = new Intent(getContext(), RutasMasterActivity.class);
+                        goTo.putExtra("IdMoto", moto.getInt("Id", 0));
+                        startActivity(goTo);
+                    }
                     break;
                 case R.id.btnSettings:
                     //goTo = new Intent(getContext(), AudioTextActivity.class);
@@ -65,8 +75,7 @@ public class MenuFragment extends Fragment {
     View.OnLongClickListener buttonInfo = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
-            switch (v.getId())
-            {
+            switch (v.getId()) {
                 case R.id.btnPerfil:
                     ShowMessage("Perfil");
                     break;
@@ -90,8 +99,7 @@ public class MenuFragment extends Fragment {
         }
     };
 
-    private void ShowMessage(final String message)
-    {
+    private void ShowMessage(final String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 

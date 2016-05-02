@@ -42,9 +42,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
+import com.rmasc.fireroad.DataBase.RecorridosHelper;
 import com.rmasc.fireroad.DataBase.TransmisionesHelper;
 import com.rmasc.fireroad.Entities.DeviceBluetooth;
 import com.rmasc.fireroad.Entities.DeviceData;
+import com.rmasc.fireroad.Entities.Ruta;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.SubirArchivoRecorrido;
 import com.rmasc.fireroad.Services.WebService;
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private Timer refreshTim;
 
     private TransmisionesHelper transmisionesHelper;
+    private RecorridosHelper recorridosHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
 
             transmisionesHelper = new TransmisionesHelper(this);
+            recorridosHelper = new RecorridosHelper(this);
 
             buttonClickListener = new View.OnClickListener() {
                 @Override
@@ -426,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isVisible = false;
         for (int i = 0; i < bluetoothLE.bleDevices.size(); i++) {
             if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:AF:8A:67")) {
-            //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
+                //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
                 //if (bluetoothLE.bleDevices.get(i).getName().equals(DispositivoAsociado.Name)) {
                 try {
                     bluetoothLE.ConnectToGattServer(bluetoothLE.bleDevices.get(i), true);
@@ -948,23 +952,38 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             try {
-                int result = Integer.parseInt(s);
-                ShowMessage(String.valueOf(result));
-                if (result > 0) {
+                Ruta recorrido = GetFromXml(s);
+                if (recorrido.Id > 0) {
                     isRecorrido = false;
                     btnRecorrido.setText("IniciarRecorrido");
                     btnRecorrido.setTextColor(Color.WHITE);
                     SharedPreferences moto = getSharedPreferences("Moto", MODE_PRIVATE);
+                    recorrido.IdVehiculo = moto.getInt("Id", 0);
                     SharedPreferences.Editor editor = moto.edit();
                     editor.putInt("IdRecorrido", 0);
                     editor.apply();
-                    transmisionesHelper.UpdateIdRecorrido(transmisionesHelper.getWritableDatabase(), result);
+                    recorridosHelper.InsertRuta(recorridosHelper.getWritableDatabase(), recorrido);
+                    transmisionesHelper.UpdateIdRecorrido(transmisionesHelper.getWritableDatabase(), recorrido.Id);
                 }
 
             } catch (Exception e) {
                 Log.w("Error", e.toString());
             }
         }
+    }
+
+    private Ruta GetFromXml(String stringXml) {
+        Ruta rutaToReturn = new Ruta();
+        rutaToReturn.Id = Integer.parseInt(stringXml.substring(stringXml.lastIndexOf("<Id>") + 4, stringXml.lastIndexOf("</Id>")));
+        rutaToReturn.Descripcion = stringXml.substring(stringXml.lastIndexOf("<Descripcion>") + 13, stringXml.lastIndexOf("</Descripcion>"));
+        rutaToReturn.FechaInicio = stringXml.substring(stringXml.lastIndexOf("<FechaInicio>") + 13, stringXml.lastIndexOf("</FechaInicio>"));
+        rutaToReturn.FechaInicio = rutaToReturn.FechaInicio.replace("T", " ");
+        rutaToReturn.FechaFin = stringXml.substring(stringXml.lastIndexOf("<FechaFin>") + 10, stringXml.lastIndexOf("</FechaFin>"));
+        rutaToReturn.FechaFin = rutaToReturn.FechaFin.replace("T", " ");
+        rutaToReturn.Distancia = stringXml.substring(stringXml.lastIndexOf("<Distancia>") + 11, stringXml.lastIndexOf("</Distancia>"));
+        rutaToReturn.VelMedia = stringXml.substring(stringXml.lastIndexOf("<VelMedia>") + 10, stringXml.lastIndexOf("</VelMedia>"));
+        rutaToReturn.VelMax = stringXml.substring(stringXml.lastIndexOf("<VelMax>") + 8, stringXml.lastIndexOf("</VelMax>"));
+        return rutaToReturn;
     }
 
     private class EnviarTrama extends AsyncTask<String, Void, String> {

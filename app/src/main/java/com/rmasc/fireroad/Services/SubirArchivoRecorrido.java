@@ -76,8 +76,7 @@ public class SubirArchivoRecorrido {
             HttpResponse response = httpclient.execute(httppost);
             InputStream inputStream = response.getEntity().getContent();
             if (inputStream != null) {
-                String textToReturn = convertInputStreamToString(inputStream);
-                return textToReturn.substring(textToReturn.lastIndexOf("\">") + 2, textToReturn.indexOf("</int>"));
+                return convertInputStreamToString(inputStream);
             }
 
             return "Did not work!";

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.rmasc.fireroad.Adapters.ExpandableListAdapter;
 import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.Adapters.ViewHolder;
+import com.rmasc.fireroad.DataBase.RecorridosHelper;
 import com.rmasc.fireroad.Entities.Ruta;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.WebService;
@@ -33,11 +35,11 @@ public class RutasMasterActivity extends AppCompatActivity {
     TextView RecorridoTotales;
     TextView DuracionTotales;
     TextView kilometrosTotales;
-    int totalRecorrido=0;
-    int totalHoras=0;
-    int totalminutos=0;
-    int totalsegundos=0;
-    int totalKilometros=0;
+    int totalRecorrido = 0;
+    int totalHoras = 0;
+    int totalminutos = 0;
+    int totalsegundos = 0;
+    int totalKilometros = 0;
     ImageView imageViewUser;
     ExpandableListView expandableListView;
     List<String> listDataHeader;
@@ -48,78 +50,75 @@ public class RutasMasterActivity extends AppCompatActivity {
     public TextView textViewTitulo;
     public ArrayList<Ruta> MisRutas = new ArrayList<Ruta>();
     Intent goToPageDetalles;
+
+    private RecorridosHelper recorridosHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rutas_master);
-        kilometrosTotales= (TextView) findViewById(R.id.txtKilometros);
-        DuracionTotales= (TextView) findViewById(R.id.txtDuraconRecorrido);
-        RecorridoTotales= (TextView) findViewById(R.id.txtRecorridos);
-        listFechas= new ArrayList<String>();
+        kilometrosTotales = (TextView) findViewById(R.id.txtKilometros);
+        DuracionTotales = (TextView) findViewById(R.id.txtDuraconRecorrido);
+        RecorridoTotales = (TextView) findViewById(R.id.txtRecorridos);
+        listFechas = new ArrayList<String>();
+        recorridosHelper = new RecorridosHelper(this);
         new CargarRutas().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListarRecorridos");
         expandableListView = (ExpandableListView) findViewById(R.id.lvExp);
         // preparing list data
-        imageViewUser=(ImageView) findViewById(R.id.image_viewRecorrido);
+        imageViewUser = (ImageView) findViewById(R.id.image_viewRecorrido);
         imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
-       // AssignViews();
+        // AssignViews();
 
 
     }
 
 
-    private class CargarRutas extends AsyncTask<String, Void, String>
-    {
+    private class CargarRutas extends AsyncTask<String, Void, ArrayList<Ruta>> {
 
         @Override
-        protected String doInBackground(String... params) {
+        protected ArrayList<Ruta> doInBackground(String... params) {
             ArrayList<WebServiceParameter> parameters = new ArrayList<WebServiceParameter>();
             WebServiceParameter parametro = new WebServiceParameter();
 
-            SharedPreferences userPref = getSharedPreferences("User", MODE_PRIVATE);
+            SharedPreferences motoPref = getSharedPreferences("Moto", MODE_PRIVATE);
             parametro.Nombre = "IdVehiculo";
             parametro.Valor = String.valueOf(getIntent().getIntExtra("IdMoto", 0));
             parameters.add(parametro);
 
-            parametro = new WebServiceParameter();
-            parametro.Nombre = "IdUser";
-            parametro.Valor = String.valueOf(userPref.getInt("Id", 0));
-            parameters.add(parametro);
-
-            return WebService.ConexionWS(params[0], parameters);
+            //return WebService.ConexionWS(params[0], parameters);
+            return recorridosHelper.SelectRecorridos(recorridosHelper.getReadableDatabase(), "VehiculoId = " + getIntent().getIntExtra("IdMoto", 0), null);
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            try
-            {
-                JSONObject dataRe = new JSONObject(s);
-                JSONArray recorridos = dataRe.optJSONArray("d");
+        protected void onPostExecute(ArrayList<Ruta> Recorridos) {
+            try {
 
-                for (int i = 0; i < recorridos.length(); i++)
-                {
-                    JSONObject recoTemp = recorridos.optJSONObject(i);
-                    Ruta rutaTemp = new Ruta();
-                    rutaTemp.Id = recoTemp.optInt("Id");
-                    rutaTemp.Descripcion = recoTemp.optString("Descripcion");
-                    rutaTemp.FechaInicio = recoTemp.optString("FechaInicio");
-                    rutaTemp.FechaFin = recoTemp.optString("FechaFin");
-                    rutaTemp.Distancia=recoTemp.optString("Distancia");
+                for (int i = 0; i < Recorridos.size(); i++) {
+                    //JSONObject recoTemp = recorridos.optJSONObject(i);
+                    Ruta rutaTemp = Recorridos.get(i);
+                    //rutaTemp.Id = recoTemp.optInt("Id");
+                    //rutaTemp.Descripcion = recoTemp.optString("Descripcion");
+                    //rutaTemp.FechaInicio = recoTemp.optString("FechaInicio");
+                    //rutaTemp.FechaFin = recoTemp.optString("FechaFin");
+                    //rutaTemp.Distancia=recoTemp.optString("Distancia");
                     MisRutas.add(rutaTemp);
 
                     final Calendar c = Calendar.getInstance();
 
-                    c.setTime(parseDateTime(recoTemp.optString("FechaInicio")));
+                    //c.setTime(parseDateTime(recoTemp.optString("FechaInicio")));
+                    //c.setTime(parseDateTime(rutaTemp.FechaInicio.split(" ")[0]));
+                    c.setTime(new Date(Date.parse(rutaTemp.FechaInicio.split(" ")[0].replace("-", "/"))));
 
-                  if(!listFechas.contains(obtenerMesNombre(c.get(Calendar.MONTH))+" / "+String.valueOf(c.get(Calendar.YEAR)))) {
+                    if (!listFechas.contains(obtenerMesNombre(c.get(Calendar.MONTH)) + " / " + String.valueOf(c.get(Calendar.YEAR)))) {
 
-                      listFechas.add(obtenerMesNombre(c.get(Calendar.MONTH))+" / "+String.valueOf(c.get(Calendar.YEAR)));
+                        listFechas.add(obtenerMesNombre(c.get(Calendar.MONTH)) + " / " + String.valueOf(c.get(Calendar.YEAR)));
+
+                    }
 
                 }
+                //     listViewRutas.setAdapter(new RutasAdapter( getBaseContext(), MisRutas));
 
-            }
-           //     listViewRutas.setAdapter(new RutasAdapter( getBaseContext(), MisRutas));
-
-                expandableListDetail = prepareListData(listFechas,MisRutas);
+                expandableListDetail = prepareListData(listFechas, MisRutas);
                 expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
                 expandableListAdapter = new ExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
                 expandableListView.setAdapter(expandableListAdapter);
@@ -158,85 +157,70 @@ public class RutasMasterActivity extends AppCompatActivity {
                     }
                 });
 
+            } catch (Exception e) {
+                Log.w("Error", e.toString());
             }
-            catch (Exception e)
-            {
-            }
-            DuracionTotales.setText(String.valueOf(totalHoras)+":"+String.valueOf(totalminutos)+":"+String.valueOf(totalsegundos));
+            DuracionTotales.setText(String.valueOf(totalHoras) + ":" + String.valueOf(totalminutos) + ":" + String.valueOf(totalsegundos));
             kilometrosTotales.setText(totalKilometros + " kms");
             RecorridoTotales.setText(String.valueOf(totalRecorrido));
 
         }
     }
 
-    private String obtenerMesNombre(int mes)
-    {
+    private String obtenerMesNombre(int mes) {
         String mesNombre;
 
-        switch(mes){
-            case 0:
-            {
-                mesNombre="Enero";
+        switch (mes) {
+            case 0: {
+                mesNombre = "Enero";
                 break;
             }
-            case 1:
-            {
-                mesNombre="Febrero";
+            case 1: {
+                mesNombre = "Febrero";
                 break;
             }
-            case 2:
-            {
-                mesNombre="Marzo";
+            case 2: {
+                mesNombre = "Marzo";
                 break;
             }
-            case 3:
-            {
-                mesNombre="Abril";
+            case 3: {
+                mesNombre = "Abril";
                 break;
             }
-            case 4:
-            {
-                mesNombre="Mayo";
+            case 4: {
+                mesNombre = "Mayo";
                 break;
             }
-            case 5:
-            {
-                mesNombre="Junio";
+            case 5: {
+                mesNombre = "Junio";
                 break;
             }
-            case 6:
-            {
-                mesNombre="Julio";
+            case 6: {
+                mesNombre = "Julio";
                 break;
             }
-            case 7:
-            {
-                mesNombre="Agosto";
+            case 7: {
+                mesNombre = "Agosto";
                 break;
             }
-            case 8:
-            {
-                mesNombre="Septiembre";
+            case 8: {
+                mesNombre = "Septiembre";
                 break;
             }
-            case 9:
-            {
-                mesNombre="Octubre";
+            case 9: {
+                mesNombre = "Octubre";
                 break;
             }
-            case 10:
-            {
-                mesNombre="Noviembre";
+            case 10: {
+                mesNombre = "Noviembre";
                 break;
             }
-            case 11:
-            {
-                mesNombre="Diciembre";
+            case 11: {
+                mesNombre = "Diciembre";
                 break;
             }
-            default:
-            {
-                mesNombre="Error";
+            default: {
+                mesNombre = "Error";
                 break;
             }
         }
@@ -245,6 +229,7 @@ public class RutasMasterActivity extends AppCompatActivity {
 
 
     }
+
     private void ShowMessage(final String message) {
         runOnUiThread(new Runnable() {
             @Override
@@ -258,7 +243,7 @@ public class RutasMasterActivity extends AppCompatActivity {
         Date date = null;
         if (lastModified != null && lastModified.length() > 0) {
             try {
-                lastModified = lastModified.replace("/Date(","");
+                lastModified = lastModified.replace("/Date(", "");
                 lastModified = lastModified.replace(")/", "");
                 date = new Date(Long.parseLong(lastModified));
             } catch (Exception e) {
@@ -269,63 +254,60 @@ public class RutasMasterActivity extends AppCompatActivity {
     }
 
 
-    private  HashMap<String, List<String>> prepareListData(ArrayList<String> Fechas, ArrayList<Ruta> Recorridos) {
+    private HashMap<String, List<String>> prepareListData(ArrayList<String> Fechas, ArrayList<Ruta> Recorridos) {
 
-        expandableListDetail =  new HashMap<String, List<String>>();
+        expandableListDetail = new HashMap<String, List<String>>();
 
-        for(int x=0; x<Fechas.size();x++) {
-             List<String> lista  = new ArrayList<String>();
+        for (int x = 0; x < Fechas.size(); x++) {
+            List<String> lista = new ArrayList<String>();
 
             for (int y = 0; y < Recorridos.size(); y++) {
                 final Calendar c = Calendar.getInstance();
 
-                Date FechaInicio=parseDateTime(Recorridos.get(y).FechaInicio);
-                Date FechaFin=parseDateTime(Recorridos.get(y).FechaFin);
-                long HorasInicio= FechaInicio.getHours();
-                long MinutosInicio= FechaInicio.getMinutes();
-                long segundosInicio= FechaInicio.getSeconds();
+                Date FechaInicio = new Date(Date.parse(Recorridos.get(y).FechaInicio.replace("-", "/")));// parseDateTime(Recorridos.get(y).FechaInicio);
+                Date FechaFin =new Date(Date.parse(Recorridos.get(y).FechaFin.replace("-", "/"))); // parseDateTime(Recorridos.get(y).FechaFin);
+                long HorasInicio = FechaInicio.getHours();
+                long MinutosInicio = FechaInicio.getMinutes();
+                long segundosInicio = FechaInicio.getSeconds();
 
-                long HorasFin= FechaFin.getHours();
-                long MinutosFin= FechaFin.getMinutes();
-                long segundosFin= FechaFin.getSeconds();
+                long HorasFin = FechaFin.getHours();
+                long MinutosFin = FechaFin.getMinutes();
+                long segundosFin = FechaFin.getSeconds();
 
-                long difHoras=Math.abs(HorasFin-HorasInicio);
-                long difMinutos=Math.abs(MinutosFin-MinutosInicio);
-                long difSegundos=Math.abs(segundosFin-segundosInicio);
+                long difHoras = Math.abs(HorasFin - HorasInicio);
+                long difMinutos = Math.abs(MinutosFin - MinutosInicio);
+                long difSegundos = Math.abs(segundosFin - segundosInicio);
 
-                c.setTime(parseDateTime(Recorridos.get(y).FechaInicio));
+                c.setTime(new Date(Date.parse(Recorridos.get(y).FechaInicio.replace("-", "/"))));
 
-               if ((obtenerMesNombre(c.get(Calendar.MONTH))+" / "+String.valueOf(c.get(Calendar.YEAR))).equals(Fechas.get(x))) {
-                    lista.add(String.valueOf(c.get((Calendar.DAY_OF_MONTH)))+"/"+obtenerMesNombre(c.get((Calendar.MONTH)))+"-"+Recorridos.get(y).Id+"-"+Recorridos.get(y).Distancia+"-"+difHoras+":"+difMinutos+":"+difSegundos);
+                if ((obtenerMesNombre(c.get(Calendar.MONTH)) + " / " + String.valueOf(c.get(Calendar.YEAR))).equals(Fechas.get(x))) {
+                    lista.add(String.valueOf(c.get((Calendar.DAY_OF_MONTH))) + "/" + obtenerMesNombre(c.get((Calendar.MONTH))) + "-" + Recorridos.get(y).Id + "-" + Recorridos.get(y).Distancia + "-" + difHoras + ":" + difMinutos + ":" + difSegundos);
                 }
 
-                totalHoras+=difHoras;
-               if( totalminutos+difMinutos>59){
+                totalHoras += difHoras;
+                if (totalminutos + difMinutos > 59) {
 
-                   totalHoras=totalHoras+1;
-                   totalminutos=(int)(long)(59-(difMinutos-totalminutos));
+                    totalHoras = totalHoras + 1;
+                    totalminutos = (int) (long) (59 - (difMinutos - totalminutos));
 
-               }
-                else
-               {
-                   totalminutos+=difMinutos;
-
-               }
-
-                if( totalsegundos+difSegundos>59){
-
-                    totalminutos=totalminutos+1;
-                    totalsegundos=(int)(long)(60-(totalsegundos-difSegundos));
-                }
-                else {
-
-                    totalsegundos+=difSegundos;
+                } else {
+                    totalminutos += difMinutos;
 
                 }
 
-                totalKilometros+=Integer.parseInt(Recorridos.get(y).Distancia);
+                if (totalsegundos + difSegundos > 59) {
+
+                    totalminutos = totalminutos + 1;
+                    totalsegundos = (int) (long) (60 - (totalsegundos - difSegundos));
+                } else {
+
+                    totalsegundos += difSegundos;
+
+                }
+
+                totalKilometros += Double.parseDouble(Recorridos.get(y).Distancia);
             }
-            totalRecorrido=Recorridos.size();
+            totalRecorrido = Recorridos.size();
 
             expandableListDetail.put(Fechas.get(x), lista);
         }
