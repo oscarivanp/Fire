@@ -18,15 +18,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorBackLight"
+            android:padding="3dp"
             android:gravity="center"
-            android:orientation="vertical"
-            android:padding="3dp">
+            android:background="@color/colorBackLight"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/txtUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimary"
                 android:layout_weight="1"
                 android:text="User Name"
                 android:textAlignment="center"
@@ -203,20 +205,20 @@
                         android:id="@+id/txtbatMoto"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
+                        android:textColor="@color/colorPrimary"
                         android:layout_weight="0.7"
                         android:gravity="center_horizontal"
-                        android:text="Bateria Moto"
-
-                        android:textColor="@color/colorPrimary" />
+                        android:text="Bateria Moto"/>
 
                     <TextView
                         android:layout_width="50dp"
                         android:layout_height="50dp"
+                        android:textColor="@color/colorPrimary"
                         android:layout_weight="0.7"
                         android:gravity="center_horizontal"
                         android:text="gasolina"
 
-                        android:textColor="@color/colorPrimary" />
+                      />
 
                     <TextView
                         android:id="@+id/txtbatGps"
