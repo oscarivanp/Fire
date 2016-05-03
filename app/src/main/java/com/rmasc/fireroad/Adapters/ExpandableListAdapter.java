@@ -1,6 +1,7 @@
 package com.rmasc.fireroad.Adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,6 +94,7 @@ import java.util.List;
             TextView listTitleTextView = (TextView) convertView
                     .findViewById(R.id.lblListHeader);
             listTitleTextView.setTypeface(null, Typeface.BOLD);
+            listTitleTextView.setBackgroundColor(context.getResources().getColor(R.color.colorParendView));
             listTitleTextView.setText(listTitle);
             return convertView;
         }
