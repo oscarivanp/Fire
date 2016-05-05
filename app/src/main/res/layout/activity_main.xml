@@ -266,7 +266,7 @@
                         android:id="@+id/btnRecorrido"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"
-                        android:background="@drawable/buttonborderVerde"
+                        android:background="@drawable/buttonborderverde"
                         android:gravity="center"
                         android:text="@string/nuevo_recorrido" />
 

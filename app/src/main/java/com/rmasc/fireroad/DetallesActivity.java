@@ -42,7 +42,7 @@ import java.util.Date;
 /**
  * Created by rafaelmartinez on 10/03/16.
  */
-public class DetallesActivity extends AppCompatActivity {
+public class DetallesActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     //ImageView imageViewUser;
     Button btnRecorrido, btnMapa;
