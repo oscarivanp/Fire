@@ -15,4 +15,14 @@
     <color name="colorBlack">#000000</color>
     <color name="navigationBarColor">#EEEEEE</color>
     <color name="windowBackground">#FFFFFF</color>
+
+    <color name="colorruta1">#33ff00</color>
+    <color name="colorruta2">#66EE00</color>
+    <color name="colorruta3">#FFEE00</color>
+    <color name="colorruta4">#FFBB00</color>
+    <color name="colorruta5">#FF7700</color>
+    <color name="colorruta6">#FF0000</color>
+
+
+
 </resources>

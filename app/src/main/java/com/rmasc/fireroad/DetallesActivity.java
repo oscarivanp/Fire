@@ -35,7 +35,7 @@ public class DetallesActivity extends AppCompatActivity {
     Button btnRecorrido, btnMapa;
     TextView txtKilometraje, txtDuracion, txtVelPro, txtVelMax;
     int IdRecorrido = 0;
-
+    int velMax=0;
 
     private Date parseDateTime(String lastModified) {
         Date date = null;
@@ -85,6 +85,7 @@ public class DetallesActivity extends AppCompatActivity {
                 goToMapa.putExtra("Tipo", 2);
                 goToMapa.putExtra("IdRecorrido", IdRecorrido);
                 goToMapa.putExtra("IdVehiculo", getIntent().getIntExtra("IdVehiculo", 0));
+                goToMapa.putExtra("VelMax", velMax);
                 startActivity(goToMapa);
             }
         });
@@ -126,7 +127,7 @@ public class DetallesActivity extends AppCompatActivity {
                     long difMinutos = Math.abs(MinutosFin - MinutosInicio);
                     long difSegundos = Math.abs(segundosFin - segundosInicio);
 
-
+                    velMax=Integer.parseInt(data.optString("VelMax"));
                     txtDuracion.setText(difHoras + ":" + difMinutos + ":" + difSegundos);
                     txtKilometraje.setText(data.optString("Distancia") + " kms");
                     txtVelPro.setText(data.optString("VelMedia") + " kms/h");

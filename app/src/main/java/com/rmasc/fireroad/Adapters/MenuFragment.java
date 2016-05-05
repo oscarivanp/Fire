@@ -1,19 +1,16 @@
 package com.rmasc.fireroad.Adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.rmasc.fireroad.AudioTextActivity;
 import com.rmasc.fireroad.MainActivity;
 import com.rmasc.fireroad.MotoActivity;
 import com.rmasc.fireroad.PerfilActivity;

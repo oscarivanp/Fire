@@ -30,7 +30,6 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -53,7 +52,6 @@ import com.rmasc.fireroad.Services.WebService;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-import com.twitter.sdk.android.tweetui.internal.util.HtmlEntities;
 
 import org.json.JSONObject;
 
@@ -641,33 +639,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (battPercent <= 5 && battPercent > 3.7) {
-
             imageViewGps.setImageResource(R.drawable.bateria_100);
-
         }
+
+
 
 
         if (battExtern == 0) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_0);
-
+            imageViewBateria.setImageResource(R.drawable.bateria0);
         }
 
         if (battExtern <= 11.5 && battExtern > 1) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_25);
+            imageViewBateria.setImageResource(R.drawable.bateria1);
 
         }
         if (battExtern <= 12.8 && battExtern > 11.5) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_37_5);
-
+            imageViewBateria.setImageResource(R.drawable.bateria4);
         }
 
         if (battExtern <= 15 && battExtern > 12.8) {
-
-            imageViewBateria.setImageResource(R.drawable.bateria_100);
-
+            imageViewBateria.setImageResource(R.drawable.bateria2);
         }
 
         txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada).substring(0, 4) + "v");
