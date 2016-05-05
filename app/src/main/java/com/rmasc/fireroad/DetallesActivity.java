@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,7 +15,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.rmasc.fireroad.Adapters.RoundImages;
+import com.rmasc.fireroad.DataBase.TransmisionesHelper;
+import com.rmasc.fireroad.Entities.DeviceData;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
 import com.rmasc.fireroad.Services.WebService;
 
@@ -31,10 +42,13 @@ import java.util.Date;
  */
 public class DetallesActivity extends AppCompatActivity {
 
-    ImageView imageViewUser;
+    //ImageView imageViewUser;
     Button btnRecorrido, btnMapa;
     TextView txtKilometraje, txtDuracion, txtVelPro, txtVelMax;
     int IdRecorrido = 0;
+    private GoogleMap mMap;
+    private TransmisionesHelper transmisionesHelper;
+
     int velMax=0;
 
     private Date parseDateTime(String lastModified) {
@@ -55,6 +69,11 @@ public class DetallesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detallehistorico);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         IdRecorrido = getIntent().getIntExtra("IdRecorrido", 0);
         txtKilometraje = (TextView) findViewById(R.id.txtKilometros);
         txtDuracion = (TextView) findViewById(R.id.txtDuracion);
@@ -74,9 +93,26 @@ public class DetallesActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.getUiSettings().setAllGesturesEnabled(false);
+        CargarRecorrido(IdRecorrido, getIntent().getIntExtra("IdVehiculo", 0));
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Intent goToMapa = new Intent(getBaseContext(), MapsActivity.class);
+                goToMapa.putExtra("Tipo", 2);
+                goToMapa.putExtra("IdRecorrido", IdRecorrido);
+                goToMapa.putExtra("IdVehiculo", getIntent().getIntExtra("IdVehiculo", 0));
+                startActivity(goToMapa);
+            }
+        });
+    }
+
 
     private void AssignViews() {
-        imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
+        //imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
         btnMapa = (Button) findViewById(R.id.btnMapa);
         btnMapa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,15 +126,40 @@ public class DetallesActivity extends AppCompatActivity {
             }
         });
 
-        try {
-            String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
-            File streamImage = new File(path);
-            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
-        } catch (Exception e) {
-            e.printStackTrace();
-            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
-        }
+//        try {
+//            String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
+//            File streamImage = new File(path);
+//            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
+//        }
 
+    }
+
+    private void CargarRecorrido(int IdRecorrido, int IdVehiculo) {
+        if (transmisionesHelper == null) {
+            transmisionesHelper = new TransmisionesHelper(this);
+            ArrayList<DeviceData> deviceDataArrayList = transmisionesHelper.ArrayTransmision(transmisionesHelper.getReadableDatabase(), "VehiculoId = " + IdVehiculo + " AND ReporteId = " + IdRecorrido, null);
+            if (deviceDataArrayList.size() > 0) {
+                PintarRecorrido(deviceDataArrayList);
+                return;
+            }
+        }
+    }
+
+    private void PintarRecorrido(ArrayList<DeviceData> Puntos) {
+        ArrayList<LatLng> puntosLinea = new ArrayList<>();
+        SharedPreferences userP = getSharedPreferences("Moto", MODE_PRIVATE);
+        for (int i = 0; i < Puntos.size(); i++) {
+            //mMap.addMarker(new MarkerOptions().snippet("").position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
+            //        .snippet("Velocidad: " + Puntos.get(i).Velocidad + "Km/h               Fecha: " + Puntos.get(i).Fecha)
+           //         .title(userP.getString("Placa", "")).infoWindowAnchor(0,1).anchor(0,1));
+            puntosLinea.add(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
+        }
+        mMap.addPolyline(new PolylineOptions().addAll(puntosLinea).color(Color.RED).width(5).geodesic(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(puntosLinea.get(0), puntosLinea.get(puntosLinea.size()-1)), 10, 10, 1));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntosLinea.get(0), 10));
     }
 
 ////Cargar detalles historico

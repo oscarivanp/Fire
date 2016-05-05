@@ -127,9 +127,6 @@ public class MainActivity extends AppCompatActivity {
                     switch (v.getId()) {
                         //Modo parqueo on/off activa o desactiva notificaciones de alarma.
                         //EnviarAlDispositivo(R.id.imageButtonCandado);
-                        case R.id.imageViewUser:
-
-                            break;
                         case R.id.btnMapa:
                             VerDispositivoMapa();
                             break;
