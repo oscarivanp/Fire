@@ -9,118 +9,130 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".RutasMasterActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:textColor="@color/colorPrimary"
-        android:text="@string/recorridos"
-        android:id="@+id/textViewTitulo"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
 
     <LinearLayout
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="50dp"
-                        android:layout_width="match_parent"
-                        android:orientation="horizontal"
-                        android:layout_height="wrap_content">
-
-                            <LinearLayout
-                            android:orientation="vertical"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                           android:id="@+id/image_viewRecorrido"
-                           android:layout_width="150dp"
-                           android:layout_height="150dp" />
-                            </LinearLayout>
-
+        <TextView
+            android:id="@+id/textViewTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="@string/recorridos"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp" />
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginLeft="4dp"
+
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="kim"
-                android:id="@+id/txtKilometros"
-                />
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/image_viewRecorrido"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp" />
+            </LinearLayout>
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Distancia Recorrida"/>
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/road"
-                    android:scaleType="fitXY"/>
-            </LinearLayout>
-            <TextView
+                android:layout_marginLeft="4dp"
+                android:orientation="vertical">
 
-                android:layout_marginTop="20dp"
-                android:id="@+id/txtRecorridos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Recorrido"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
                 <TextView
+                    android:id="@+id/txtKilometros"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Num. Recorridos"/>
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/transport"
-                    android:scaleType="fitXY"/>
-            </LinearLayout>
-            <TextView
-                android:layout_marginTop="20dp"
-                android:id="@+id/txtDuraconRecorrido"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Duracion"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tiempo Empleado"/>
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/clock"
-                    android:scaleType="fitXY"/>
-            </LinearLayout>
+                    android:text="kim" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Distancia Recorrida" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/road" />
+                </LinearLayout>
+
+                <TextView
+
+                    android:id="@+id/txtRecorridos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Recorrido" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Num. Recorridos" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="5dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/transport" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtDuraconRecorrido"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Duracion" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Tiempo Empleado" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="5dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/clock" />
+                </LinearLayout>
+
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-    <ExpandableListView
-        android:layout_marginTop="20dp"
-        android:id="@+id/lvExp"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"/>
+        <ExpandableListView
+            android:id="@+id/lvExp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp" />
     </LinearLayout>
 </RelativeLayout>
 

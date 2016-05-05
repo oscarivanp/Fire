@@ -14,7 +14,7 @@
         android:layout_gravity="bottom">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:orientation="horizontal"
             android:layout_height="wrap_content">
 
@@ -50,7 +50,7 @@
                 android:layout_width="50sp"
                 android:layout_height="50sp"
                 android:layout_marginLeft="@dimen/iconosmargen"
-                android:background="@drawable/rutas"
+                android:background="@drawable/historico"
                 android:id="@+id/btnRutas"
                 android:scaleType="fitXY"
                 />

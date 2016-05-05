@@ -19,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -240,7 +241,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerOptionsUpdate.setVisible(true);
         //markerOptionsUpdate.setTitle(userP.getString("Placa", ""));
         markerOptionsUpdate.setSnippet(Fecha);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(ptoActual));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ptoActual, 10));
     }
 
     private void CargarRecorrido(int IdRecorrido, int IdVehiculo) {
@@ -259,15 +260,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void PintarRecorrido(ArrayList<DeviceData> Puntos) {
         ArrayList<LatLng> puntosLinea = new ArrayList<>();
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
         SharedPreferences userP = getSharedPreferences("Moto", MODE_PRIVATE);
         for (int i = 0; i < Puntos.size(); i++) {
             mMap.addMarker(new MarkerOptions().snippet("").position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
-                    .snippet("Velocidad: " + Puntos.get(i).Velocidad + "Km/h               Fecha: " + Puntos.get(i).Fecha)
+                    .snippet("Velocidad: " + Puntos.get(i).Velocidad + "Km/h   Fecha: " + Puntos.get(i).Fecha)
                     .title(userP.getString("Placa", "")).infoWindowAnchor(0,1).anchor(0,1));
             puntosLinea.add(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
+            builder.include(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
         }
         mMap.addPolyline(new PolylineOptions().addAll(puntosLinea).color(Color.RED).width(5).geodesic(true));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntosLinea.get(0), 10));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntosLinea.get(0), 10));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 15, 15, 1));
     }
 
     private class ObtenerUltimaTransmision extends AsyncTask<String, Void, String> {

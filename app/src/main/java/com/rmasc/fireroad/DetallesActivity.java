@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.DataBase.TransmisionesHelper;
@@ -149,15 +151,17 @@ public class DetallesActivity extends AppCompatActivity implements OnMapReadyCal
     private void PintarRecorrido(ArrayList<DeviceData> Puntos) {
         ArrayList<LatLng> puntosLinea = new ArrayList<>();
         SharedPreferences userP = getSharedPreferences("Moto", MODE_PRIVATE);
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (int i = 0; i < Puntos.size(); i++) {
             //mMap.addMarker(new MarkerOptions().snippet("").position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
             //        .snippet("Velocidad: " + Puntos.get(i).Velocidad + "Km/h               Fecha: " + Puntos.get(i).Fecha)
            //         .title(userP.getString("Placa", "")).infoWindowAnchor(0,1).anchor(0,1));
             puntosLinea.add(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
+            builder.include(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
         }
         mMap.addPolyline(new PolylineOptions().addAll(puntosLinea).color(Color.RED).width(5).geodesic(true));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(puntosLinea.get(0), puntosLinea.get(puntosLinea.size()-1)), 10, 10, 1));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntosLinea.get(0), 10));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(puntosLinea.get(0), puntosLinea.get(puntosLinea.size()-1)), 10, 10, 1));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 20, 20, 1));
     }
 
 ////Cargar detalles historico

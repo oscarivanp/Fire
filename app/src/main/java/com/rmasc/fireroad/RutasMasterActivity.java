@@ -2,9 +2,20 @@ package com.rmasc.fireroad;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +35,8 @@ import com.rmasc.fireroad.Services.WebService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -60,18 +73,128 @@ public class RutasMasterActivity extends AppCompatActivity {
         kilometrosTotales = (TextView) findViewById(R.id.txtKilometros);
         DuracionTotales = (TextView) findViewById(R.id.txtDuraconRecorrido);
         RecorridoTotales = (TextView) findViewById(R.id.txtRecorridos);
-        listFechas = new ArrayList<String>();
+        listFechas = new ArrayList<>();
         recorridosHelper = new RecorridosHelper(this);
         new CargarRutas().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListarRecorridos");
         expandableListView = (ExpandableListView) findViewById(R.id.lvExp);
         // preparing list data
         imageViewUser = (ImageView) findViewById(R.id.image_viewRecorrido);
-        imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
+        try {
+            SharedPreferences user = getSharedPreferences("Moto", MODE_PRIVATE);
+            if (user.getString("FotoPath", "").equals("")) {
+                String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
+                InputStream prueba = new URL(path).openStream();
+                Bitmap foto = BitmapFactory.decodeStream(prueba);
+                imageViewUser.setBackground(new BitmapDrawable(getRoundedCornerBitmap(foto, true)));
+
+            } else {
+                InputStream prueba = new URL(user.getString("FotoPath", "")).openStream();
+                Bitmap foto = BitmapFactory.decodeStream(prueba);
+                imageViewUser.setBackground(new BitmapDrawable(getRoundedCornerBitmap(foto, true)));
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            imageViewUser.setBackground(new BitmapDrawable(getRoundedCornerBitmap(getResources().getDrawable(R.drawable.no_user), true)));
+
+        }
         // AssignViews();
 
 
     }
 
+    public static Bitmap getRoundedCornerBitmap(Bitmap drawable, boolean square) {
+        int width = 0;
+        int height = 0;
+
+
+        Bitmap bitmap = drawable;
+
+        if (square) {
+            if (bitmap.getWidth() < bitmap.getHeight()) {
+                width = bitmap.getWidth();
+                height = bitmap.getWidth();
+            } else {
+                width = bitmap.getHeight();
+                height = bitmap.getHeight();
+            }
+        } else {
+            height = bitmap.getHeight();
+            width = bitmap.getWidth();
+        }
+
+        Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+
+        Canvas canvas = new Canvas(output);
+
+        final int color = Color.BLUE;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, width, height);
+        final RectF rectF = new RectF(rect);
+        final float roundPx = 90;
+
+        paint.setStrokeWidth(5);
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+
+
+        paint.setColor(color);
+
+
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return output;
+    }
+
+    public static Bitmap getRoundedCornerBitmap(Drawable drawable, boolean square) {
+        int width = 0;
+        int height = 0;
+        Paint mBorderPaint;
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+
+        if (square) {
+            if (bitmap.getWidth() < bitmap.getHeight()) {
+                width = bitmap.getWidth();
+                height = bitmap.getWidth();
+            } else {
+                width = bitmap.getHeight();
+                height = bitmap.getHeight();
+            }
+        } else {
+            height = bitmap.getHeight();
+            width = bitmap.getWidth();
+        }
+
+        Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+
+        Canvas canvas = new Canvas(output);
+
+        final int color = Color.BLUE;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, width, height);
+        final RectF rectF = new RectF(rect);
+        final float roundPx = 90;
+
+        paint.setStrokeWidth(5);
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+
+
+        paint.setColor(color);
+
+
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return output;
+    }
 
     private class CargarRutas extends AsyncTask<String, Void, ArrayList<Ruta>> {
 

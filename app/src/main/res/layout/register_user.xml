@@ -28,8 +28,10 @@
 
     <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:isScrollContainer="false">
+        android:layout_height="fill_parent"
+        android:textAlignment="center"
+        android:isScrollContainer="false"
+        android:layout_gravity="center_horizontal">
 
         <TableLayout
             android:layout_width="match_parent"

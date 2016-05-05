@@ -27,8 +27,6 @@
                 android:id="@+id/txtUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textColor="@color/colorPrimary"
                 android:layout_weight="1"
                 android:text="User Name"
                 android:textAlignment="center"
@@ -81,11 +79,12 @@
 
                 <ImageView
                     android:id="@+id/CircularImageViewUser"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/no_user"
                     android:padding="0dp"
-                    android:scaleType="fitXY"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
                     android:src="@drawable/bordes"
 
 
@@ -263,7 +262,7 @@
                     <Button
                         android:id="@+id/btnRecorrido"
                         android:layout_width="match_parent"
-                        android:layout_height="70dp"
+                        android:layout_height="75dp"
                         android:background="@color/colorPrimaryDark"
                         android:gravity="center"
                         android:text="@string/nuevo_recorrido" />
