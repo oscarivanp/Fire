@@ -124,9 +124,7 @@
 
                             android:id="@+id/switchEncendido"
                             android:layout_width="match_parent"
-                            android:layout_height="5dp"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_height="wrap_content"
                             android:text="Desconectado"
                             android:textColor="@color/colorPrimary"
                             android:theme="@style/Color1SwitchStyle" />

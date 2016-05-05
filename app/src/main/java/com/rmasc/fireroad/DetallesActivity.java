@@ -3,15 +3,10 @@ package com.rmasc.fireroad;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +20,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.rmasc.fireroad.Adapters.RoundImages;
 import com.rmasc.fireroad.DataBase.TransmisionesHelper;
 import com.rmasc.fireroad.Entities.DeviceData;
 import com.rmasc.fireroad.Entities.WebServiceParameter;
@@ -44,14 +38,12 @@ import java.util.Date;
  */
 public class DetallesActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    //ImageView imageViewUser;
-    Button btnRecorrido, btnMapa;
     TextView txtKilometraje, txtDuracion, txtVelPro, txtVelMax;
     int IdRecorrido = 0;
     private GoogleMap mMap;
     private TransmisionesHelper transmisionesHelper;
 
-    int velMax=0;
+    int velMax = 0;
 
     private Date parseDateTime(String lastModified) {
         Date date = null;
@@ -77,10 +69,7 @@ public class DetallesActivity extends AppCompatActivity implements OnMapReadyCal
         mapFragment.getMapAsync(this);
 
         IdRecorrido = getIntent().getIntExtra("IdRecorrido", 0);
-        txtKilometraje = (TextView) findViewById(R.id.txtKilometros);
-        txtDuracion = (TextView) findViewById(R.id.txtDuracion);
-        txtVelMax = (TextView) findViewById(R.id.txtvelMax);
-        txtVelPro = (TextView) findViewById(R.id.txtvelMedia);
+
         AssignViews();
 
         if (IdRecorrido != 0) {
@@ -107,6 +96,7 @@ public class DetallesActivity extends AppCompatActivity implements OnMapReadyCal
                 goToMapa.putExtra("Tipo", 2);
                 goToMapa.putExtra("IdRecorrido", IdRecorrido);
                 goToMapa.putExtra("IdVehiculo", getIntent().getIntExtra("IdVehiculo", 0));
+                goToMapa.putExtra("VelMax", velMax);
                 startActivity(goToMapa);
             }
         });
@@ -114,29 +104,10 @@ public class DetallesActivity extends AppCompatActivity implements OnMapReadyCal
 
 
     private void AssignViews() {
-        //imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
-        btnMapa = (Button) findViewById(R.id.btnMapa);
-        btnMapa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent goToMapa = new Intent(getBaseContext(), MapsActivity.class);
-                goToMapa.putExtra("Tipo", 2);
-                goToMapa.putExtra("IdRecorrido", IdRecorrido);
-                goToMapa.putExtra("IdVehiculo", getIntent().getIntExtra("IdVehiculo", 0));
-                goToMapa.putExtra("VelMax", velMax);
-                startActivity(goToMapa);
-            }
-        });
-
-//        try {
-//            String path = Environment.getExternalStorageDirectory().toString() + "/FireMoto";
-//            File streamImage = new File(path);
-//            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeStream(new FileInputStream(streamImage))));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            imageViewUser.setImageDrawable(new RoundImages(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.no_user)));
-//        }
-
+        txtKilometraje = (TextView) findViewById(R.id.txtKilometros);
+        txtDuracion = (TextView) findViewById(R.id.txtDuracion);
+        txtVelMax = (TextView) findViewById(R.id.txtvelMax);
+        txtVelPro = (TextView) findViewById(R.id.txtvelMedia);
     }
 
     private void CargarRecorrido(int IdRecorrido, int IdVehiculo) {
@@ -154,10 +125,10 @@ public class DetallesActivity extends AppCompatActivity implements OnMapReadyCal
         ArrayList<LatLng> puntosLinea = new ArrayList<>();
         SharedPreferences userP = getSharedPreferences("Moto", MODE_PRIVATE);
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (int i = 0; i < Puntos.size(); i++) {
+        for (int i = 1; i < Puntos.size(); i++) {
             //mMap.addMarker(new MarkerOptions().snippet("").position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
             //        .snippet("Velocidad: " + Puntos.get(i).Velocidad + "Km/h               Fecha: " + Puntos.get(i).Fecha)
-           //         .title(userP.getString("Placa", "")).infoWindowAnchor(0,1).anchor(0,1));
+            //         .title(userP.getString("Placa", "")).infoWindowAnchor(0,1).anchor(0,1));
             puntosLinea.add(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
             builder.include(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
         }
@@ -192,7 +163,7 @@ public class DetallesActivity extends AppCompatActivity implements OnMapReadyCal
                     long difMinutos = Math.abs(MinutosFin - MinutosInicio);
                     long difSegundos = Math.abs(segundosFin - segundosInicio);
 
-                    velMax=Integer.parseInt(data.optString("VelMax"));
+                    velMax = Integer.parseInt(data.optString("VelMax"));
                     txtDuracion.setText(difHoras + ":" + difMinutos + ":" + difSegundos);
                     txtKilometraje.setText(data.optString("Distancia") + " kms");
                     txtVelPro.setText(data.optString("VelMedia") + " kms/h");
