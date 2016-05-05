@@ -254,7 +254,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return;
             }
         }
-        new ObtenerPuntosRecorrido().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListTransmision", String.valueOf(userPref.getInt("Id", 0)), String.valueOf(IdVehiculo), String.valueOf((IdRecorrido)));
+        new ObtenerPuntosRecorrido().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListTransmision", String.valueOf(userPref.getInt("Id", 0)), String.valueOf(IdVehiculo), String.valueOf((IdRecorrido)),String.valueOf(IdVehiculo));
     }
 
 
@@ -273,6 +273,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntosLinea.get(0), 10));
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 15, 15, 1));
     }
+
+
+    private void PintarRecorridoColores(ArrayList<DeviceData> Puntos, int VelocidadMaxima) {
+        ArrayList<LatLng> puntosLinea = new ArrayList<>();
+
+        int rango=VelocidadMaxima/6;
+        int ColorRuta=0;
+        SharedPreferences userP = getSharedPreferences("Moto", MODE_PRIVATE);
+        for (int i = 0; i < Puntos.size(); i++) {
+            mMap.addMarker(new MarkerOptions().snippet("").position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
+                    .snippet("Velocidad: " + Puntos.get(i).Velocidad + "Km/h               Fecha: " + Puntos.get(i).Fecha)
+                    .title(userP.getString("Placa", "")).infoWindowAnchor(0,1).anchor(0,1));
+            int VelocidadTemp=(int)Puntos.get(i).Velocidad;
+          //  puntosLinea.add(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
+            if( VelocidadTemp>0&&VelocidadTemp<=rango){
+             ColorRuta=R.color.colorruta1;
+            }
+            if (VelocidadTemp>rango&&VelocidadTemp<rango*2)
+            {
+                ColorRuta=R.color.colorruta2;
+            }
+            if (VelocidadTemp>rango*2&&VelocidadTemp<rango*3)
+            {
+                ColorRuta=R.color.colorruta3;
+            }
+            if (VelocidadTemp>rango*3&&VelocidadTemp<rango*4)
+            {
+                ColorRuta=R.color.colorruta4;
+            }
+            if (VelocidadTemp>rango*4&&VelocidadTemp<rango*5)
+            {
+                ColorRuta=R.color.colorruta5;
+            }
+            if (VelocidadTemp>rango*5&&VelocidadTemp<rango*6)
+            {
+                ColorRuta=R.color.colorruta6;
+            }
+            mMap.addPolyline(new PolylineOptions().add(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud)).color(ColorRuta).width(5).geodesic(true));
+        }
+       // mMap.addPolyline(new PolylineOptions().(puntosLinea).color(Color.RED).width(5).geodesic(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntosLinea.get(0), 10));
+    }
+
 
     private class ObtenerUltimaTransmision extends AsyncTask<String, Void, String> {
         @Override
@@ -449,7 +492,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     punto.Velocidad = puntoTemp.optInt("Velocidad");
                     Puntos.add(punto);
                 }
-                PintarRecorrido(Puntos);
+                PintarRecorridoColores(Puntos, getIntent().getIntExtra("VelMax", 0));
 
             } catch (Exception e) {
                 Log.w("Error", e.toString());

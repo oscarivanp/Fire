@@ -54,8 +54,8 @@
                 android:inputType="textEmailAddress"
                 android:textColorHint="@color/colorPrimary"
                 android:textColor="@color/colorPrimary"
-                android:background="@color/com_facebook_button_login_silver_background_color_pressed"
                 android:hint="Email"
+                android:background="@drawable/edittextborder"
                 android:ems="10"
                 android:id="@+id/editTextCorreo" />
 
@@ -68,19 +68,19 @@
                 android:textColorHint="@color/colorPrimary"
                 android:textColor="@color/colorPrimary"
                 android:hint="Contraseña"
-                android:background="@color/com_facebook_button_login_silver_background_color_pressed"
+                android:background="@drawable/edittextborder"
                 android:ems="10"
                 android:id="@+id/editTextContrasena" />
 
             <Button
+                android:background="@drawable/buttonborder"
                 android:layout_marginTop="20dp"
                 android:layout_width="213dp"
                 android:layout_height="30dp"
                 android:text="Ingresar"
                 android:textAlignment="center"
-                android:background="@color/dgts__default_accent"
                 android:layout_gravity="center_horizontal"
-                android:textColor="@color/colorBackground"
+                android:textColor="@color/colorBlack"
                 android:id="@+id/btnGo"/>
 
             <TextView

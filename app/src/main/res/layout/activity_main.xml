@@ -20,18 +20,18 @@
             android:layout_height="wrap_content"
             android:padding="3dp"
             android:gravity="center"
-            android:background="@color/colorBackLight"
+            android:background="@drawable/linearredondo"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/txtUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="User Name"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp" />
+                android:layout_weight="1"
+                android:text="User Name"
+                 android:textSize="18sp" />
 
 
             <LinearLayout
@@ -116,7 +116,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="30dp"
                         android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
@@ -126,6 +126,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="5dp"
                             android:layout_marginBottom="5dp"
+                            android:layout_marginTop="10dp"
                             android:text="Desconectado"
                             android:textColor="@color/colorPrimary"
                             android:theme="@style/Color1SwitchStyle" />
@@ -135,10 +136,11 @@
 
                     <ImageView
                         android:id="@+id/btnMapa"
+
                         android:layout_width="wrap_content"
-                        android:layout_height="50dp"
+                        android:layout_height="60dp"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="20dp"
                         android:scaleType="fitXY"
                         android:src="@drawable/mapa" />
                 </LinearLayout>
@@ -173,7 +175,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_weight="0.7"
-                        android:src="@drawable/bateria_0"
+                        android:src="@drawable/bateria0"
                         android:textColor="@color/colorPrimary" />
 
                     <ImageView
@@ -257,13 +259,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
+                    android:background="@drawable/buttonborder"
                     android:orientation="horizontal">
 
                     <Button
                         android:id="@+id/btnRecorrido"
                         android:layout_width="match_parent"
-                        android:layout_height="75dp"
-                        android:background="@color/colorPrimaryDark"
+                        android:layout_height="25dp"
+                        android:background="@drawable/buttonborderVerde"
                         android:gravity="center"
                         android:text="@string/nuevo_recorrido" />
 
