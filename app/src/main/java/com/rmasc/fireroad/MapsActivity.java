@@ -307,7 +307,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         // mMap.addPolyline(new PolylineOptions().(puntosLinea).color(Color.RED).width(5).geodesic(true));
         // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntosLinea.get(0), 10));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 250, 250, 10));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 350, 350, 10));
     }
 
 
