@@ -18,6 +18,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -197,6 +199,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 markerOptionsUpdate = mMap.addMarker(new MarkerOptions().visible(false).position(new LatLng(0, 0)).title(userP.getString("Placa", "")));
                 registerReceiver(broadcastReceiver, new IntentFilter("UPDATE_MAP"));
                 CargarUltimaPosicionBle(intent.getFloatExtra("Lat", 0), intent.getFloatExtra("Lon", 0), intent.getStringExtra("Fecha"));
+
+                ///prueba
+                LatLng mapCenter = new LatLng(intent.getFloatExtra("Lat", 0),intent.getFloatExtra("Lon", 0));
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, 13));
+
+                // Flat markers will rotate when the map is rotated,
+                // and change perspective when the map is tilted.
+                mMap.addMarker(new MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.flecha))
+                        .position(mapCenter)
+                        .flat(true)
+                        .rotation(245));
+
+                CameraPosition cameraPosition = CameraPosition.builder()
+                        .target(mapCenter)
+                        .zoom(13)
+                        .bearing(90)
+                        .build();
+
+                // Animate the change in camera view over 2 seconds
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+                        2000, null);
+
                 break;
             case 2: //Mapa cargando de la base de datos un recorrido previo
                 CargarRecorrido(intent.getIntExtra("IdRecorrido", 0), intent.getIntExtra("IdVehiculo", 0));
@@ -259,7 +285,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-     private void PintarRecorridoColores(ArrayList<DeviceData> Puntos, int VelocidadMaxima) {
+    private void PintarRecorridoColores(ArrayList<DeviceData> Puntos, int VelocidadMaxima) {
         ArrayList<LatLng> puntosLinea = new ArrayList<>();
 
         int rango = VelocidadMaxima / 6;
@@ -274,7 +300,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .snippet("Fecha: " + Puntos.get(i).Fecha)
                         .title("Inicio Recorrido").infoWindowAnchor(0, 1).anchor(0, 1));
             }
-            if ( i == Puntos.size() - 1) {
+            if (i == Puntos.size() - 1) {
 
                 mMap.addMarker(new MarkerOptions().snippet("").position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
                         .snippet("Fecha: " + Puntos.get(i).Fecha)

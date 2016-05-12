@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:padding="3dp"
             android:gravity="center"
-            android:background="@drawable/linearredondo"
+            android:background="@color/com_facebook_button_border_color_focused"
             android:orientation="vertical">
 
             <TextView
@@ -86,8 +86,6 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:src="@drawable/bordes"
-
-
                     />
 
             </LinearLayout>
@@ -155,7 +153,6 @@
             android:layout_weight="0.5"
             android:orientation="vertical"
             android:padding="5dp">
-
             <LinearLayout
 
 
@@ -216,7 +213,6 @@
                         android:layout_weight="0.7"
                         android:gravity="center_horizontal"
                         android:text="gasolina"
-
                       />
 
                     <TextView
@@ -264,7 +260,7 @@
                         android:id="@+id/btnRecorrido"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"
-                        android:background="@drawable/buttonborderverde"
+                        android:background="@drawable/buttonbordeverde"
                         android:gravity="center"
                         android:text="@string/nuevo_recorrido" />
 
