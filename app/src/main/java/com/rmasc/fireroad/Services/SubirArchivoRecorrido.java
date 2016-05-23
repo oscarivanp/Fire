@@ -11,9 +11,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.xml.sax.XMLReader;
-import org.xmlpull.v1.XmlPullParser;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,9 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 
-/**
- * Created by ADMIN on 25/04/2016.
- */
 public class SubirArchivoRecorrido {
 
     String URLServer;

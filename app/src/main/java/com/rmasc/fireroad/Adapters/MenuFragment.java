@@ -16,6 +16,7 @@ import com.rmasc.fireroad.MotoActivity;
 import com.rmasc.fireroad.PerfilActivity;
 import com.rmasc.fireroad.R;
 import com.rmasc.fireroad.RutasMasterActivity;
+import com.rmasc.fireroad.SettingsActivity;
 import com.rmasc.fireroad.listMotos;
 
 /**
@@ -61,7 +62,8 @@ public class MenuFragment extends Fragment {
                     break;
                 case R.id.btnSettings:
                     //goTo = new Intent(getContext(), AudioTextActivity.class);
-                    //startActivity(goTo);
+                    goTo = new Intent(getContext(), SettingsActivity.class);
+                    startActivity(goTo);
                     break;
                 default:
                     break;

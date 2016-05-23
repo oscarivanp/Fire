@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -115,8 +116,11 @@
             android:name=".DetallesActivity"
             android:theme="@style/MyAppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".AudioTextActivity"
-            android:windowSoftInputMode="adjustResize"
+        <activity
+            android:name=".AudioTextActivity"
+            android:theme="@style/MyAppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".SettingsActivity"
             android:theme="@style/MyAppTheme.NoActionBar"/>
     </application>
 

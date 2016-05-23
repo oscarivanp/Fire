@@ -54,5 +54,13 @@
         <item>O-</item>
     </string-array>
 
+    <string-array name="puntosInteres">
+        <item>Bar</item>
+        <item>Iglesia</item>
+        <item>Restaurante</item>
+        <item>Hospital</item>
+        <item>Parqueadero</item>
+    </string-array>
+    <string name="title_activity_settings">Settings</string>
 
 </resources>

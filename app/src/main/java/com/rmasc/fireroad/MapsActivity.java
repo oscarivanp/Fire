@@ -1,5 +1,6 @@
 package com.rmasc.fireroad;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +51,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button btnStreetMap = null;
     DeviceBluetooth DispositivoAsociado;
     private static boolean isRecorrido = false;
+    private ProgressDialog progressDialog;
 
     private Button btnIniciarRecorrido;
 
@@ -69,6 +71,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         btnSatelite = (Button) findViewById(R.id.btnMapaSatelital);
         btnHibrido = (Button) findViewById(R.id.btnMapaHibrido);
         btnStreetMap = (Button) findViewById(R.id.btnMapaStreetView);
@@ -160,11 +166,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -204,6 +205,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case 3: //Mapa cargando la ultima posicion registrada en la base de datos por el dispositivo
                 SharedPreferences user = getBaseContext().getSharedPreferences("User", MODE_PRIVATE);
                 SharedPreferences moto = getBaseContext().getSharedPreferences("Moto", MODE_PRIVATE);
+                progressDialog = ProgressDialog.show(this, "Cargando..", "", true);
                 new ObtenerUltimaTransmision().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ObtenerPosicionReciente", String.valueOf(user.getInt("Id", 0)), String.valueOf((moto.getInt("Id", 0))));
                 break;
             default:
@@ -258,13 +260,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new ObtenerPuntosRecorrido().execute("http://gladiatortrackr.com/FireRoadService/MobileService.asmx/ListTransmision", String.valueOf(userPref.getInt("Id", 0)), String.valueOf(IdVehiculo), String.valueOf((IdRecorrido)), String.valueOf(IdVehiculo));
     }
 
-
-     private void PintarRecorridoColores(ArrayList<DeviceData> Puntos, int VelocidadMaxima) {
+    private void PintarRecorrido(ArrayList<DeviceData> Puntos) {
         ArrayList<LatLng> puntosLinea = new ArrayList<>();
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        SharedPreferences userP = getSharedPreferences("Moto", MODE_PRIVATE);
+        for (int i = 0; i < Puntos.size(); i++) {
+            mMap.addMarker(new MarkerOptions().snippet("").position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
+                    .snippet("Velocidad: " + Puntos.get(i).Velocidad + "Km/h   Fecha: " + Puntos.get(i).Fecha)
+                    .title(userP.getString("Placa", "")).infoWindowAnchor(0, 1).anchor(0, 1));
+            puntosLinea.add(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
+            builder.include(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud));
+        }
+        mMap.addPolyline(new PolylineOptions().addAll(puntosLinea).color(Color.RED).width(5).geodesic(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(puntosLinea.get(0), 10));
+        progressDialog.dismiss();
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 15, 15, 1));
+    }
 
+    private void PintarRecorridoColores(ArrayList<DeviceData> Puntos, int VelocidadMaxima) {
         int rango = VelocidadMaxima / 6;
         int ColorRuta = 0;
-        SharedPreferences userP = getSharedPreferences("Moto", MODE_PRIVATE);
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (int i = 1; i < Puntos.size(); i++) {
 
@@ -274,7 +289,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .snippet("Fecha: " + Puntos.get(i).Fecha)
                         .title("Inicio Recorrido").infoWindowAnchor(0, 1).anchor(0, 1));
             }
-            if ( i == Puntos.size() - 1) {
+            if (i == Puntos.size() - 1) {
 
                 mMap.addMarker(new MarkerOptions().snippet("").position(new LatLng(Puntos.get(i).Latitud, Puntos.get(i).Longitud))
                         .snippet("Fecha: " + Puntos.get(i).Fecha)
@@ -346,7 +361,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 punto.Velocidad = puntosMapa.optInt("Velocidad");
                 Puntos.add(punto);
 
-                PintarRecorridoColores(Puntos, getIntent().getIntExtra("VelMax", 0));
+                PintarRecorrido(Puntos);
 
             } catch (Exception e) {
                 Log.w("Error", e.toString());
