@@ -1,5 +1,7 @@
 package com.rmasc.fireroad;
 
+import android.*;
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.appwidget.AppWidgetManager;
 import android.bluetooth.BluetoothAdapter;
@@ -13,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -24,10 +27,16 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -40,6 +49,16 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceLikelihood;
+import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.rmasc.fireroad.BluetoothLe.BluetoothLE;
 import com.rmasc.fireroad.DataBase.RecorridosHelper;
 import com.rmasc.fireroad.DataBase.TransmisionesHelper;
@@ -61,6 +80,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -97,8 +117,16 @@ public class MainActivity extends AppCompatActivity {
     private static int countTramas = 0;
     private Timer refreshTim;
 
+    private int MAX_VELOCITY = 230;
+    private int MIN_TIME_REFRESH = 3 * 60 * 1000;
+    private int MIN_DISTANCE_REFRESH = 200;
+    private TextToSpeech mTts;
+
     private TransmisionesHelper transmisionesHelper;
     private RecorridosHelper recorridosHelper;
+
+    private LocationManager locationManager;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                 ShowMessage("No hay dispositivo previamente guardado.");
             }
 
+            InitializeCopiloto();
             AssignViews();
         }
         refreshTim = new Timer();
@@ -181,6 +210,120 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         ShowMessage("Resumiendo..");
+    }
+
+    private void InitializeCopiloto() {
+        SharedPreferences settingsPreferences = getBaseContext().getSharedPreferences("Settings", MODE_PRIVATE);
+        if (settingsPreferences.getBoolean("Copiloto", false)) {
+            mTts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    //mTts.setLanguage(Locale.getDefault());
+                    mTts.setLanguage(new Locale("es"));
+                }
+            });
+            locationManager = (LocationManager) getBaseContext().getSystemService(LOCATION_SERVICE);
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Places.PLACE_DETECTION_API)
+                    .addApi(Places.GEO_DATA_API)
+                    .enableAutoManage(this, 0, new GoogleApiClient.OnConnectionFailedListener() {
+                        @Override
+                        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                        }
+                    }).build();
+            googleApiClient.connect();
+            if (checkPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION, 0, 0) == PackageManager.PERMISSION_GRANTED) {
+                locationManager.requestLocationUpdates(locationManager.getBestProvider(new Criteria(), true), MIN_TIME_REFRESH, MIN_DISTANCE_REFRESH, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(final Location location) {
+                        if (checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, 0, 0) == PackageManager.PERMISSION_GRANTED) {
+                            PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi.getCurrentPlace(googleApiClient, null);
+                            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+                                @Override
+                                public void onResult(@NonNull PlaceLikelihoodBuffer placeLikelihoods) {
+                                    for (int i = 0; i < placeLikelihoods.getCount(); i++) {
+                                        PlaceLikelihood placeLikelihood = placeLikelihoods.get(i);
+                                        Place place = placeLikelihood.getPlace();
+
+                                        if (place.getPlaceTypes().get(0) != Place.TYPE_RESTAURANT && place.getPlaceTypes().get(0) != Place.TYPE_UNIVERSITY && place.getPlaceTypes().get(0) != Place.TYPE_CAFE && place.getPlaceTypes().get(0) != Place.TYPE_BUS_STATION)
+                                            break;
+
+                                        if (CheckPlaceType(place.getPlaceTypes().get(0))) {
+
+                                            Location location1 = new Location("Interest place");
+                                            location1.setLatitude(place.getLatLng().latitude);
+                                            location1.setLongitude(place.getLatLng().longitude);
+                                            if (location.distanceTo(location1) < 200) {
+                                                if (mTts != null)
+                                                    mTts.speak("Usted está a " + location.distanceTo(location1) + " metros de " + place.getName().toString(), TextToSpeech.QUEUE_FLUSH, null);
+                                            }
+                                        }
+                                    }
+                                    placeLikelihoods.release();
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                    }
+
+                    @Override
+                    public void onProviderEnabled(String provider) {
+
+                    }
+
+                    @Override
+                    public void onProviderDisabled(String provider) {
+
+                    }
+                });
+            }
+        }
+    }
+
+    private boolean CheckPlaceType(int placeType)
+    {
+        SharedPreferences settings = getBaseContext().getSharedPreferences("Settings", MODE_PRIVATE);
+        byte typesSaved = ((byte) settings.getInt("PuntosInteres", 0));
+        for (int i = 0; i < 5; i++) {
+
+            if ((typesSaved & (1 << i ) ) == 0)
+                break;
+            switch ((typesSaved & (1 << i ) ))
+            {
+                case 1:
+                    if (placeType == Place.TYPE_BAR)
+                        return true;
+                    break;
+                case 2:
+                    if (placeType == Place.TYPE_CHURCH)
+                        return true;
+                    break;
+                case 4:
+                    if (placeType == Place.TYPE_RESTAURANT)
+                        return true;
+                    break;
+                case 8:
+                    if (placeType == Place.TYPE_HOSPITAL)
+                        return true;
+                    break;
+                case 16:
+                    if (placeType == Place.TYPE_PARKING)
+                        return true;
+                    break;
+            }
+
+        }
+        return false;
+    }
+
+    private void SpeakTTS(String textTS) {
+        if (mTts != null) {
+            mTts.speak(textTS, TextToSpeech.QUEUE_FLUSH, null);
+        }
     }
 
     private void AssignViews() {
@@ -424,8 +567,8 @@ public class MainActivity extends AppCompatActivity {
     private void ConnectToDevice() {
         boolean isVisible = false;
         for (int i = 0; i < bluetoothLE.bleDevices.size(); i++) {
-            if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:AF:8A:67")) {
-                //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) {
+            //if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:AF:8A:67")) { //Dispositivo armado
+            if (bluetoothLE.bleDevices.get(i).getAddress().equals("74:DA:EA:B2:33:01")) { //Bluetooth con FTDI
                 //if (bluetoothLE.bleDevices.get(i).getName().equals(DispositivoAsociado.Name)) {
                 try {
                     bluetoothLE.ConnectToGattServer(bluetoothLE.bleDevices.get(i), true);
@@ -592,12 +735,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void ActualizarControles(final boolean isBluetooth) throws IOException {
         SetProgressBar(((int) DispositivoAsociado.DataReceived.Velocidad));
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (isBluetooth) {
                     txtReporteDispositivo.setText("Últ. vez " + DispositivoAsociado.DataReceived.FormatDate() + " " + DispositivoAsociado.DataReceived.Hora);
                     tipoTransmisionImagen.setImageResource(R.drawable.bluetoothlogo);
+                    SharedPreferences settings = getBaseContext().getSharedPreferences("Settings", MODE_PRIVATE);
+                    if (settings.getBoolean("Copiloto", false)) {
+                        if (DispositivoAsociado.DataReceived.Velocidad > (settings.getInt("Velocidad", 100) * MAX_VELOCITY / 100))
+                            SpeakTTS("Usted ha sobrepasado los " + (settings.getInt("Velocidad", 100) * MAX_VELOCITY / 100) + " kilometros por hora");
+                    }
                 } else {
                     txtReporteDispositivo.setText("Últ. vez " + DispositivoAsociado.DataReceived.Fecha);
                     tipoTransmisionImagen.setImageResource(R.drawable.web);
@@ -638,8 +787,6 @@ public class MainActivity extends AppCompatActivity {
         if (battPercent <= 5 && battPercent > 3.7) {
             imageViewGps.setImageResource(R.drawable.bateria_100);
         }
-
-
 
 
         if (battExtern == 0) {
