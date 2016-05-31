@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TWITTER_KEY = "ZQqwjflLo84ULNenXXiHAGR9s";
     private static final String TWITTER_SECRET = "ZttElB9UKZfgl3My0xgkjgol5OLtVtRDuQrCpQ7052eipvxhYR";
 
+    private SpeedometerGauge speedometer;
 
     TwitterLoginButton twitterloginButton;
 
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 ShowMessage("No hay dispositivo previamente guardado.");
             }
 
-            InitializeCopiloto();
+            //InitializeCopiloto();
             AssignViews();
         }
         refreshTim = new Timer();
@@ -332,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewGps = (ImageView) findViewById(R.id.imgGps);
         tipoTransmisionImagen = (ImageView) findViewById(R.id.modoTransmision);
 
+        speedometer = (SpeedometerGauge) findViewById(R.id.speedometer);
         circularImageView = (ImageView) findViewById(R.id.CircularImageViewUser);
         circularImageView.setOnClickListener(buttonClickListener);
 
@@ -421,8 +423,8 @@ public class MainActivity extends AppCompatActivity {
         txtBattDispositivo = (TextView) findViewById(R.id.txtbatGps);
         txtBattMoto = (TextView) findViewById(R.id.txtbatMoto);
 
-        tachoMeter = (ProgressBar) findViewById(R.id.tachoMeter);
-        txtValueProgress = (TextView) findViewById(R.id.txtValueProgress);
+       // tachoMeter = (ProgressBar) findViewById(R.id.tachoMeter);
+      //  txtValueProgress = (TextView) findViewById(R.id.txtValueProgress);
         SetProgressBar(0);
     }
 
@@ -448,6 +450,24 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+
+                speedometer.setMaxSpeed(50);
+                speedometer.setLabelConverter(new SpeedometerGauge.LabelConverter() {
+                    @Override
+                    public String getLabelFor(double progress, double maxProgress) {
+                        return String.valueOf((int) Math.round(progress));
+                    }
+                });
+                speedometer.setMaxSpeed(220);
+                speedometer.setMajorTickStep(20);
+                speedometer.setMinorTicks(4);
+                speedometer.addColoredRange(0, 60, Color.GREEN);
+                speedometer.addColoredRange(60, 170, Color.YELLOW);
+                speedometer.addColoredRange(170, 220, Color.RED);
+                speedometer.setSpeed(value, 1000, 300);
+
+
                 ObjectAnimator animation = ObjectAnimator.ofInt(tachoMeter, "progress", tachoMeter.getProgress(), value); //Desde un valor hasta otro valor
                 animation.setDuration(3000);
                 animation.setInterpolator(new DecelerateInterpolator());
@@ -804,6 +824,8 @@ public class MainActivity extends AppCompatActivity {
         if (battExtern <= 15 && battExtern > 12.8) {
             imageViewBateria.setImageResource(R.drawable.bateria2);
         }
+
+
 
         txtBattMoto.setText(String.valueOf(DispositivoAsociado.DataReceived.VoltajeEntrada).substring(0, 4) + "v");
         txtBattDispositivo.setText(String.valueOf(DispositivoAsociado.DataReceived.Bateria).substring(0, 3) + "v");
@@ -1191,7 +1213,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             } catch (Exception e) {
-
             }
         }
     }
