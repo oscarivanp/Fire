@@ -5,23 +5,9 @@
     android:layout_height="wrap_content"
     android:background="@drawable/circle_bg">
 
-        <ProgressBar
-            android:id="@+id/tachoMeter"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="180dp"
-            android:layout_height="180dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:max="250"
-            android:progress="0"
-            android:progressDrawable="@drawable/circle" />
-        <TextView
-            android:layout_width="wrap_content"
+        <com.rmasc.fireroad.SpeedometerGauge
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/txtValueProgress"
-            android:layout_gravity="center"
-            android:lines="2"
-            android:textAlignment="center"
-            android:textColor="@color/colorPrimary"/>
-
+            android:padding="8dp"
+            android:id="@+id/speedometer"/>
 </FrameLayout>
