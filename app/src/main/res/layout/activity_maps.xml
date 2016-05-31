@@ -75,6 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
+        android:orientation="vertical"
         android:gravity="bottom">
 
 
@@ -87,6 +88,8 @@
             android:text="Iniciar Recorrido"
             android:textAlignment="center"
             android:textColor="@color/com_facebook_button_background_color_focused" />
+
+        <include layout="@layout/layout_velocity" />
 
     </LinearLayout>
 

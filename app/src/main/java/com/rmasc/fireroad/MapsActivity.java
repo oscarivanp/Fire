@@ -13,6 +13,8 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -280,6 +282,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void PintarRecorridoColores(ArrayList<DeviceData> Puntos, int VelocidadMaxima) {
         int rango = VelocidadMaxima / 6;
         int ColorRuta = 0;
+        LinearLayout layoutVelocity = (LinearLayout) findViewById(R.id.layoutVelocity);
+        layoutVelocity.setVisibility(View.VISIBLE);
+        TextView textViewVelocidad = (TextView) layoutVelocity.findViewById(R.id.textViewVelocidad);
+        textViewVelocidad.setText(VelocidadMaxima + " Km/h");
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (int i = 1; i < Puntos.size(); i++) {
 
